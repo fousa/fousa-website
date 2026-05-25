@@ -19,6 +19,11 @@ export default defineConfig({
         {id: 'en', title: 'English'},
         {id: 'nl', title: 'Nederlands'},
       ],
+      // Empty by design. We use FIELD-LEVEL translations (see
+      // src/sanity/fields/i18n.ts) rather than document-level — both locales
+      // live inside a single document so editors can compare them side by side.
+      // If we ever need a fully separate Dutch document tree, add the relevant
+      // schema names here.
       schemaTypes: [],
     }),
   ],
