@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:stack-tags": "tsx scripts/seed-stack-tags.ts"
+    "seed:stack-tags": "tsx -r dotenv/config scripts/seed-stack-tags.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "@sanity/document-internationalization": "^6.2.0",
@@ -25,6 +25,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",

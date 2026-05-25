@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 /**
  * One-shot seed script: creates the initial set of Stack tag documents in Sanity.
  *
