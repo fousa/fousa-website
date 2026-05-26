@@ -10,7 +10,9 @@
     "seed:stack-tags": "tsx -r dotenv/config scripts/seed-stack-tags.ts dotenv_config_path=.env.local",
     "backup": "sanity dataset export production backups/dataset-$(date +%Y%m%d-%H%M%S).tar.gz",
     "migrate:content": "tsx -r dotenv/config scripts/migrate-content.ts dotenv_config_path=.env.local",
-    "migrate:content:dry": "tsx -r dotenv/config scripts/migrate-content.ts dotenv_config_path=.env.local --dry-run"
+    "migrate:content:dry": "tsx -r dotenv/config scripts/migrate-content.ts dotenv_config_path=.env.local --dry-run",
+    "schema:extract": "sanity schema extract --path=./schema.json",
+    "typegen": "pnpm schema:extract && sanity typegen generate"
   },
   "dependencies": {
     "@sanity/document-internationalization": "^6.2.0",
