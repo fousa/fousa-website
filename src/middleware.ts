@@ -23,6 +23,7 @@ export function middleware(req: NextRequest) {
   if (
     pathname.startsWith('/studio') ||
     pathname.startsWith('/api') ||
+    pathname.startsWith('/og') ||
     pathname.startsWith('/_next') ||
     pathname.includes('.')
   ) {
@@ -47,5 +48,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|api|studio|.*\\..*).*)'],
+  matcher: ['/((?!_next|api|og|studio|.*\\..*).*)'],
 }
