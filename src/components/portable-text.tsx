@@ -9,8 +9,7 @@
  * Marks: em → italic, strong → font-medium (we cap at 500 — see globals.css).
  * Links open in a new tab with rel="noopener noreferrer".
  */
-import {PortableText, type PortableTextComponents} from '@portabletext/react'
-import type {PortableTextBlock} from '@portabletext/types'
+import {PortableText, type PortableTextComponents, type PortableTextBlock} from '@portabletext/react'
 
 const components: PortableTextComponents = {
   block: {

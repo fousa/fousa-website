@@ -25,7 +25,10 @@ export function AvailabilityPill({
 }) {
   if (!availability) return null
 
-  const label = pickLocale(availability.label, locale) ?? ''
+  const rawLabel = availability.label
+  const label = typeof rawLabel === 'string'
+    ? rawLabel
+    : pickLocale(rawLabel, locale) ?? ''
   const status = availability.status
 
   const isAvailable = status === 'available' || status === 'next-opening'

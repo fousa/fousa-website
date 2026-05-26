@@ -10,7 +10,7 @@
  * sub-fields. The `en` field is required; `nl` is optional and falls back
  * to `en` when missing at render time.
  */
-import {defineField, defineType, type FieldDefinition} from 'sanity'
+import {defineArrayMember, defineField, type FieldDefinition} from 'sanity'
 
 /**
  * Build a translatable string field (single-line text input per locale).
@@ -94,8 +94,7 @@ export function i18nPortableText(
   // Inline portable text block config: paragraphs only, plus marks for
   // emphasis, strong, and links. Keep it minimal — case studies don't
   // need headings inside the body.
-  const blockField = defineType({
-    name: 'block',
+  const blockField = defineArrayMember({
     type: 'block',
     styles: [{title: 'Normal', value: 'normal'}],
     lists: [],
