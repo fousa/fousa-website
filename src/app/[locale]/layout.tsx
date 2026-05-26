@@ -7,6 +7,7 @@
 import {notFound} from 'next/navigation'
 import {locales, isLocale} from '@/i18n/config'
 import {TopBar} from '@/components/top-bar'
+import {ScrollShadowSentinel} from '@/components/scroll-shadow-sentinel'
 
 export function generateStaticParams() {
   return locales.map((locale) => ({locale}))
@@ -24,6 +25,7 @@ export default async function LocaleLayout({
   return (
     <>
       <TopBar locale={locale} />
+      <ScrollShadowSentinel />
       {children}
     </>
   )

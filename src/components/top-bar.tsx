@@ -25,7 +25,7 @@ export async function TopBar({locale}: {locale: Locale}) {
   ])
 
   return (
-    <header className="border-b border-black/5 bg-page">
+    <header data-topbar className="sticky top-0 z-40 border-b border-black/5 bg-page transition-shadow duration-200">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-5">
         <Link href={`/${locale}`} className="flex flex-col leading-tight">
           <span className="font-sans text-[16px] font-medium text-ink">
