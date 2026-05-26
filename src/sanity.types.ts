@@ -680,19 +680,27 @@ export type CASE_STUDY_SLUGS_QUERY_RESULT = Array<{
 
 // Source: src/sanity/queries/profile.ts
 // Variable: PROFILE_QUERY
-// Query: *[_id == "profile"][0]{    name,    tagline,    location,    email  }
+// Query: *[_id == "profile"][0]{    name,    tagline,    location,    email,    socialLinks,    vatNumber,    copyrightYear,    "cv": cv{      "asset": asset->    }  }
 export type PROFILE_QUERY_RESULT =
   | {
       name: null;
       tagline: null;
       location: null;
       email: null;
+      socialLinks: null;
+      vatNumber: null;
+      copyrightYear: null;
+      cv: null;
     }
   | {
       name: string | null;
       tagline: null;
       location: null;
       email: null;
+      socialLinks: null;
+      vatNumber: null;
+      copyrightYear: null;
+      cv: null;
     }
   | {
       name: string | null;
@@ -702,6 +710,36 @@ export type PROFILE_QUERY_RESULT =
       } | null;
       location: string | null;
       email: string | null;
+      socialLinks: Array<{
+        label?: string;
+        url?: string;
+        _key: string;
+      }> | null;
+      vatNumber: string | null;
+      copyrightYear: number | null;
+      cv: {
+        asset: {
+          _id: string;
+          _type: "sanity.fileAsset";
+          _createdAt: string;
+          _updatedAt: string;
+          _rev: string;
+          originalFilename?: string;
+          label?: string;
+          title?: string;
+          description?: string;
+          altText?: string;
+          sha1hash?: string;
+          extension?: string;
+          mimeType?: string;
+          size?: number;
+          assetId?: string;
+          uploadId?: string;
+          path?: string;
+          url?: string;
+          source?: SanityAssetSourceData;
+        } | null;
+      } | null;
     }
   | null;
 
@@ -814,7 +852,7 @@ declare module "@sanity/client" {
     '\n  *[_id == "availability"][0]{\n    status,\n    label,\n    nextOpening\n  }\n': AVAILABILITY_QUERY_RESULT;
     '\n  *[_type == "project" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    role,\n    client,\n    deck,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    featured,\n    "employer": employer->{\n      _id,\n      name,\n      "slug": "employer-" + lower(name)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    },\n    "related": *[\n      _type == "project"\n      && slug.current != $slug\n      && references(^.employer._ref)\n    ] | order(featured desc, year desc) [0...3] {\n      _id,\n      name,\n      "slug": slug.current,\n      year,\n      deck\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
-    '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    location,\n    email\n  }\n': PROFILE_QUERY_RESULT;
+    '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    location,\n    email,\n    socialLinks,\n    vatNumber,\n    copyrightYear,\n    "cv": cv{\n      "asset": asset->\n    }\n  }\n': PROFILE_QUERY_RESULT;
     '\n  *[_type == "project"] | order(featured desc, year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    featured,\n    role,\n    client,\n    deck,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    "employer": employer->{\n      _id,\n      name\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    }\n  }\n': PROJECTS_QUERY_RESULT;
   }
 }

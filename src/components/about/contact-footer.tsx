@@ -9,23 +9,33 @@
 import {t} from '@/i18n/messages'
 import {AvailabilityPill} from '@/components/availability-pill'
 import type {Locale} from '@/i18n/config'
-import type {ABOUT_QUERY_RESULT, AVAILABILITY_QUERY_RESULT} from '@/sanity.types'
+import type {AVAILABILITY_QUERY_RESULT} from '@/sanity.types'
 
-type Profile = NonNullable<ABOUT_QUERY_RESULT>['profile']
+/**
+ * Structural type for the profile fields the footer uses. Works with
+ * both ABOUT_QUERY_RESULT['profile'] and PROFILE_QUERY_RESULT.
+ */
+type FooterProfile = {
+  name?: string | null
+  email?: string | null
+  socialLinks?: Array<{label?: string; url?: string; _key: string}> | null
+  vatNumber?: string | null
+  copyrightYear?: number | null
+  cv?: {asset?: {url?: string} | null} | null
+} | null
 
 export function ContactFooter({
   profile,
   availability,
   locale,
 }: {
-  profile: Profile
+  profile: FooterProfile
   availability: AVAILABILITY_QUERY_RESULT
   locale: Locale
 }) {
   if (!profile) return null
 
-  const cvAsset = profile.cv?.asset as {url?: string} | null | undefined
-  const cvUrl = cvAsset?.url ?? null
+  const cvUrl = profile.cv?.asset?.url ?? null
   const year = new Date().getFullYear()
   const copyright = profile.copyrightYear
     ? `© ${profile.copyrightYear}–${year} · ${t(locale, 'copyrightLine')}${profile.vatNumber ? ` · ${profile.vatNumber}` : ''}`

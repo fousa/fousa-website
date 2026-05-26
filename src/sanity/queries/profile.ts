@@ -1,9 +1,8 @@
 /**
  * GROQ query for the Profile singleton.
  *
- * Returns only what the top bar needs in Phase 3a — name, tagline, location,
- * email. The full bio + portrait + CV come into play on the about page,
- * which we'll fetch with a separate query then.
+ * Returns all fields needed by the top bar and the contact footer:
+ * name, tagline, location, email, social links, CV, VAT, copyright year.
  */
 import {defineQuery} from 'next-sanity'
 
@@ -12,6 +11,12 @@ export const PROFILE_QUERY = defineQuery(`
     name,
     tagline,
     location,
-    email
+    email,
+    socialLinks,
+    vatNumber,
+    copyrightYear,
+    "cv": cv{
+      "asset": asset->
+    }
   }
 `)
