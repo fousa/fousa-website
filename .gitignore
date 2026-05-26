@@ -40,3 +40,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Sanity dataset backups (kept locally, not in git)
+/backups/*
+!/backups/.gitkeep
+
+# Migration source content (canonical content now lives in Sanity)
+/content

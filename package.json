@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:stack-tags": "tsx -r dotenv/config scripts/seed-stack-tags.ts dotenv_config_path=.env.local"
+    "seed:stack-tags": "tsx -r dotenv/config scripts/seed-stack-tags.ts dotenv_config_path=.env.local",
+    "backup": "sanity dataset export production backups/dataset-$(date +%Y%m%d-%H%M%S).tar.gz"
   },
   "dependencies": {
     "@sanity/document-internationalization": "^6.2.0",
