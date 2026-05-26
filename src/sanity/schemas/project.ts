@@ -42,12 +42,19 @@ export const project = defineType({
     }),
     defineField({
       name: 'employer',
-      title: 'Employer / client',
+      title: 'Employer',
       type: 'reference',
       group: 'basics',
       to: [{type: 'employer'}],
-      description: 'Which employer or client this project was built for.',
+      description: 'Where you worked when this was built. For freelance work through Fousa, this is Fousa. For agency work, the agency.',
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'client',
+      title: 'End client',
+      type: 'string',
+      group: 'basics',
+      description: 'The end customer, when different from the employer. E.g. employer "icapps", client "Telenet". Leave empty if the employer was also the client.',
     }),
     defineField({
       name: 'role',
