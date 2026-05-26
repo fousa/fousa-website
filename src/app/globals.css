@@ -41,7 +41,7 @@
   --color-other-bg: #f3f4f6;
 
   /* Font stacks */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
   --font-serif: Georgia, "Times New Roman", serif;
 }
