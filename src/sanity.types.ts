@@ -380,6 +380,161 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint;
 
+// Source: src/sanity/queries/about.ts
+// Variable: ABOUT_QUERY
+// Query: {    "profile": *[_id == "profile"][0]{      name,      tagline,      bio,      location,      email,      socialLinks,      vatNumber,      copyrightYear,      "portrait": portrait{        alt,        "asset": asset->      },      "cv": cv{        "asset": asset->      }    },    "employers": *[_type == "employer"] | order(startYear desc, order desc) {      _id,      name,      role,      startYear,      endYear,      engagement,      "slug": "employer-" + lower(name)    },    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {      _id,      name,      "slug": slug.current,      deck,      year,      state,      liveUrl    }  }
+export type ABOUT_QUERY_RESULT = {
+  profile:
+    | {
+        name: null;
+        tagline: null;
+        bio: null;
+        location: null;
+        email: null;
+        socialLinks: null;
+        vatNumber: null;
+        copyrightYear: null;
+        portrait: null;
+        cv: null;
+      }
+    | {
+        name: string | null;
+        tagline: null;
+        bio: null;
+        location: null;
+        email: null;
+        socialLinks: null;
+        vatNumber: null;
+        copyrightYear: null;
+        portrait: null;
+        cv: null;
+      }
+    | {
+        name: string | null;
+        tagline: {
+          en?: string;
+          nl?: string;
+        } | null;
+        bio: {
+          en?: Array<{
+            children?: Array<{
+              marks?: Array<string>;
+              text?: string;
+              _type: "span";
+              _key: string;
+            }>;
+            style?: "normal";
+            listItem?: never;
+            markDefs?: Array<{
+              href?: string;
+              _type: "link";
+              _key: string;
+            }>;
+            level?: number;
+            _type: "block";
+            _key: string;
+          }>;
+          nl?: Array<{
+            children?: Array<{
+              marks?: Array<string>;
+              text?: string;
+              _type: "span";
+              _key: string;
+            }>;
+            style?: "normal";
+            listItem?: never;
+            markDefs?: Array<{
+              href?: string;
+              _type: "link";
+              _key: string;
+            }>;
+            level?: number;
+            _type: "block";
+            _key: string;
+          }>;
+        } | null;
+        location: string | null;
+        email: string | null;
+        socialLinks: Array<{
+          label?: string;
+          url?: string;
+          _key: string;
+        }> | null;
+        vatNumber: string | null;
+        copyrightYear: number | null;
+        portrait: {
+          alt: null;
+          asset: {
+            _id: string;
+            _type: "sanity.imageAsset";
+            _createdAt: string;
+            _updatedAt: string;
+            _rev: string;
+            originalFilename?: string;
+            label?: string;
+            title?: string;
+            description?: string;
+            altText?: string;
+            sha1hash?: string;
+            extension?: string;
+            mimeType?: string;
+            size?: number;
+            assetId?: string;
+            uploadId?: string;
+            path?: string;
+            url?: string;
+            metadata?: SanityImageMetadata;
+            source?: SanityAssetSourceData;
+          } | null;
+        } | null;
+        cv: {
+          asset: {
+            _id: string;
+            _type: "sanity.fileAsset";
+            _createdAt: string;
+            _updatedAt: string;
+            _rev: string;
+            originalFilename?: string;
+            label?: string;
+            title?: string;
+            description?: string;
+            altText?: string;
+            sha1hash?: string;
+            extension?: string;
+            mimeType?: string;
+            size?: number;
+            assetId?: string;
+            uploadId?: string;
+            path?: string;
+            url?: string;
+            source?: SanityAssetSourceData;
+          } | null;
+        } | null;
+      }
+    | null;
+  employers: Array<{
+    _id: string;
+    name: string | null;
+    role: string | null;
+    startYear: number | null;
+    endYear: number | null;
+    engagement: "freelance" | "full-time" | "internship" | "owner" | null;
+    slug: string | null;
+  }>;
+  ownApps: Array<{
+    _id: string;
+    name: string | null;
+    slug: string | null;
+    deck: {
+      en?: string;
+      nl?: string;
+    } | null;
+    year: number | null;
+    state: "cancelled" | "done" | "live" | "paused" | null;
+    liveUrl: string | null;
+  }>;
+};
+
 // Source: src/sanity/queries/availability.ts
 // Variable: AVAILABILITY_QUERY
 // Query: *[_id == "availability"][0]{    status,    label,    nextOpening  }
@@ -536,6 +691,7 @@ export type PROJECTS_QUERY_RESULT = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
+    '\n  {\n    "profile": *[_id == "profile"][0]{\n      name,\n      tagline,\n      bio,\n      location,\n      email,\n      socialLinks,\n      vatNumber,\n      copyrightYear,\n      "portrait": portrait{\n        alt,\n        "asset": asset->\n      },\n      "cv": cv{\n        "asset": asset->\n      }\n    },\n    "employers": *[_type == "employer"] | order(startYear desc, order desc) {\n      _id,\n      name,\n      role,\n      startYear,\n      endYear,\n      engagement,\n      "slug": "employer-" + lower(name)\n    },\n    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {\n      _id,\n      name,\n      "slug": slug.current,\n      deck,\n      year,\n      state,\n      liveUrl\n    }\n  }\n': ABOUT_QUERY_RESULT;
     '\n  *[_id == "availability"][0]{\n    status,\n    label,\n    nextOpening\n  }\n': AVAILABILITY_QUERY_RESULT;
     '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    location,\n    email\n  }\n': PROFILE_QUERY_RESULT;
     '\n  *[_type == "project"] | order(featured desc, year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    featured,\n    role,\n    client,\n    deck,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    "employer": employer->{\n      _id,\n      name\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    }\n  }\n': PROJECTS_QUERY_RESULT;
