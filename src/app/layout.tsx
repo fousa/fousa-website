@@ -1,5 +1,7 @@
 import type {Metadata} from 'next'
 import {Inter} from 'next/font/google'
+import {headers} from 'next/headers'
+import {isLocale, defaultLocale} from '@/i18n/config'
 import './globals.css'
 
 const inter = Inter({
@@ -14,9 +16,14 @@ export const metadata: Metadata = {
   description: 'iOS apps and Rails backends, from Edegem, Belgium.',
 }
 
-export default function RootLayout({children}: {children: React.ReactNode}) {
+export default async function RootLayout({children}: {children: React.ReactNode}) {
+  const h = await headers()
+  const pathname = h.get('x-pathname') ?? ''
+  const segment = pathname.split('/')[1] ?? ''
+  const lang = isLocale(segment) ? segment : defaultLocale
+
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang={lang} className={inter.variable}>
       <body className="bg-page text-ink antialiased">
         {children}
       </body>

@@ -34,6 +34,7 @@ export function middleware(req: NextRequest) {
 
   if (isLocale(localeInPath)) {
     const res = NextResponse.next()
+    res.headers.set('x-pathname', pathname)
     res.cookies.set(LOCALE_COOKIE, localeInPath, {
       maxAge: 60 * 60 * 24 * 365,
       path: '/',
