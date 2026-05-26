@@ -844,6 +844,14 @@ export type PROJECTS_QUERY_RESULT = Array<{
   }> | null;
 }>;
 
+// Source: src/sanity/queries/sitemap.ts
+// Variable: SITEMAP_SLUGS_QUERY
+// Query: *[_type == "project" && defined(slug.current)]{    "slug": slug.current,    "lastModified": _updatedAt  }
+export type SITEMAP_SLUGS_QUERY_RESULT = Array<{
+  slug: string | null;
+  lastModified: string;
+}>;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -854,5 +862,6 @@ declare module "@sanity/client" {
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
     '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    location,\n    email,\n    socialLinks,\n    vatNumber,\n    copyrightYear,\n    "cv": cv{\n      "asset": asset->\n    }\n  }\n': PROFILE_QUERY_RESULT;
     '\n  *[_type == "project"] | order(featured desc, year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    featured,\n    role,\n    client,\n    deck,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    "employer": employer->{\n      _id,\n      name\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    }\n  }\n': PROJECTS_QUERY_RESULT;
+    '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': SITEMAP_SLUGS_QUERY_RESULT;
   }
 }
