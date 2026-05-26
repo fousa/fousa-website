@@ -379,3 +379,165 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint;
+
+// Source: src/sanity/queries/availability.ts
+// Variable: AVAILABILITY_QUERY
+// Query: *[_id == "availability"][0]{    status,    label,    nextOpening  }
+export type AVAILABILITY_QUERY_RESULT =
+  | {
+      status: null;
+      label: null;
+      nextOpening: null;
+    }
+  | {
+      status: "available" | "booked" | "next-opening" | null;
+      label: {
+        en?: string;
+        nl?: string;
+      } | null;
+      nextOpening: string | null;
+    }
+  | {
+      status: null;
+      label: string | null;
+      nextOpening: null;
+    }
+  | null;
+
+// Source: src/sanity/queries/profile.ts
+// Variable: PROFILE_QUERY
+// Query: *[_id == "profile"][0]{    name,    tagline,    location,    email  }
+export type PROFILE_QUERY_RESULT =
+  | {
+      name: null;
+      tagline: null;
+      location: null;
+      email: null;
+    }
+  | {
+      name: string | null;
+      tagline: null;
+      location: null;
+      email: null;
+    }
+  | {
+      name: string | null;
+      tagline: {
+        en?: string;
+        nl?: string;
+      } | null;
+      location: string | null;
+      email: string | null;
+    }
+  | null;
+
+// Source: src/sanity/queries/projects.ts
+// Variable: PROJECTS_QUERY
+// Query: *[_type == "project"] | order(featured desc, year desc, name asc) {    _id,    name,    "slug": slug.current,    year,    endYear,    state,    engagement,    featured,    role,    client,    deck,    description,    outcome,    liveUrl,    githubUrl,    writeupUrl,    "employer": employer->{      _id,      name    },    "stack": stack[]->{      _id,      name,      "slug": slug.current,      category    },    "screenshots": screenshots[]{      _key,      alt,      "asset": asset->    }  }
+export type PROJECTS_QUERY_RESULT = Array<{
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  year: number | null;
+  endYear: number | null;
+  state: "cancelled" | "done" | "live" | "paused" | null;
+  engagement: "freelance" | "full-time" | "internship" | "owner" | null;
+  featured: boolean | null;
+  role: string | null;
+  client: string | null;
+  deck: {
+    en?: string;
+    nl?: string;
+  } | null;
+  description: {
+    en?: Array<{
+      children?: Array<{
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "normal";
+      listItem?: never;
+      markDefs?: Array<{
+        href?: string;
+        _type: "link";
+        _key: string;
+      }>;
+      level?: number;
+      _type: "block";
+      _key: string;
+    }>;
+    nl?: Array<{
+      children?: Array<{
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "normal";
+      listItem?: never;
+      markDefs?: Array<{
+        href?: string;
+        _type: "link";
+        _key: string;
+      }>;
+      level?: number;
+      _type: "block";
+      _key: string;
+    }>;
+  } | null;
+  outcome: {
+    en?: string;
+    nl?: string;
+  } | null;
+  liveUrl: string | null;
+  githubUrl: string | null;
+  writeupUrl: string | null;
+  employer: {
+    _id: string;
+    name: string | null;
+  } | null;
+  stack: Array<{
+    _id: string;
+    name: string | null;
+    slug: string | null;
+    category: "frontend" | "ios" | "other" | "rails" | "tooling" | null;
+  }> | null;
+  screenshots: Array<{
+    _key: string;
+    alt: string | null;
+    asset: {
+      _id: string;
+      _type: "sanity.imageAsset";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      originalFilename?: string;
+      label?: string;
+      title?: string;
+      description?: string;
+      altText?: string;
+      sha1hash?: string;
+      extension?: string;
+      mimeType?: string;
+      size?: number;
+      assetId?: string;
+      uploadId?: string;
+      path?: string;
+      url?: string;
+      metadata?: SanityImageMetadata;
+      source?: SanityAssetSourceData;
+    } | null;
+  }> | null;
+}>;
+
+// Query TypeMap
+import "@sanity/client";
+declare module "@sanity/client" {
+  interface SanityQueries {
+    '\n  *[_id == "availability"][0]{\n    status,\n    label,\n    nextOpening\n  }\n': AVAILABILITY_QUERY_RESULT;
+    '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    location,\n    email\n  }\n': PROFILE_QUERY_RESULT;
+    '\n  *[_type == "project"] | order(featured desc, year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    featured,\n    role,\n    client,\n    deck,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    "employer": employer->{\n      _id,\n      name\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    }\n  }\n': PROJECTS_QUERY_RESULT;
+  }
+}
