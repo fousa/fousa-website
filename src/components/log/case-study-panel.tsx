@@ -18,6 +18,7 @@ import type {Locale} from '@/i18n/config'
 import type {PROJECTS_QUERY_RESULT} from '@/sanity.types'
 import {PortableTextRenderer} from '@/components/portable-text'
 import {StackChip} from './stack-chip'
+import {CopyLinkButton} from './copy-link-button'
 
 type Project = NonNullable<PROJECTS_QUERY_RESULT>[number]
 
@@ -152,11 +153,17 @@ function Screenshots({project}: {project: Project}) {
  * URL (each optional), plus the "ESC to close" affordance.
  */
 function PanelLinks({project, locale}: {project: Project; locale: Locale}) {
-  const hasAny = project.liveUrl || project.githubUrl || project.writeupUrl
-  if (!hasAny) return null
+  const hasAny = project.liveUrl || project.githubUrl || project.writeupUrl || project.slug
 
   return (
     <div className="mt-5 pt-4 border-t border-black/10 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px]">
+      {project.slug && (
+        <CopyLinkButton
+          slug={String(project.slug)}
+          label={t(locale, 'copyLink')}
+          copiedLabel={t(locale, 'copied')}
+        />
+      )}
       {project.liveUrl && (
         <a
           href={project.liveUrl}
