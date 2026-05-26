@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "seed:stack-tags": "tsx -r dotenv/config scripts/seed-stack-tags.ts dotenv_config_path=.env.local",
-    "backup": "sanity dataset export production backups/dataset-$(date +%Y%m%d-%H%M%S).tar.gz"
+    "backup": "sanity dataset export production backups/dataset-$(date +%Y%m%d-%H%M%S).tar.gz",
+    "migrate:content": "tsx -r dotenv/config scripts/migrate-content.ts dotenv_config_path=.env.local",
+    "migrate:content:dry": "tsx -r dotenv/config scripts/migrate-content.ts dotenv_config_path=.env.local --dry-run"
   },
   "dependencies": {
     "@sanity/document-internationalization": "^6.2.0",
