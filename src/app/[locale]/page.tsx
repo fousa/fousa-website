@@ -4,6 +4,7 @@
  * Server component: fetches the project list once, hands it to the
  * InteractiveLog client component which owns filter/expansion state.
  */
+import {Suspense} from 'react'
 import {notFound} from 'next/navigation'
 import {isLocale} from '@/i18n/config'
 import {fetchSanity} from '@/sanity/fetch'
@@ -23,7 +24,9 @@ export default async function HomePage({
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
-      <InteractiveLog projects={projects} locale={locale} />
+      <Suspense>
+        <InteractiveLog projects={projects} locale={locale} />
+      </Suspense>
     </main>
   )
 }

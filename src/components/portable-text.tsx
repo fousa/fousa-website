@@ -9,7 +9,7 @@
  * Marks: em → italic, strong → font-medium (we cap at 500 — see globals.css).
  * Links open in a new tab with rel="noopener noreferrer".
  */
-import {PortableText, type PortableTextComponents, type PortableTextBlock} from '@portabletext/react'
+import {PortableText, type PortableTextComponents} from '@portabletext/react'
 
 const components: PortableTextComponents = {
   block: {
@@ -39,7 +39,8 @@ export function PortableTextRenderer({
   value,
   className,
 }: {
-  value: PortableTextBlock[] | null | undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any[] | null | undefined
   className?: string
 }) {
   if (!value || value.length === 0) return null
