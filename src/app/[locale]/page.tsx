@@ -23,7 +23,7 @@ export default async function HomePage({
   const projects = await fetchSanity<PROJECTS_QUERY_RESULT>(PROJECTS_QUERY)
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
+    <main id="main" className="mx-auto max-w-6xl px-6 py-10">
       <Suspense>
         <InteractiveLog projects={projects} locale={locale} />
       </Suspense>

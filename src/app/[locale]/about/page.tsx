@@ -47,7 +47,7 @@ export default async function AboutPage({
 
   if (!aboutData?.profile) {
     return (
-      <main className="mx-auto max-w-6xl px-6 py-10">
+      <main id="main" className="mx-auto max-w-6xl px-6 py-10">
         <p className="font-mono text-[12px] text-ink-muted">
           Profile not set — create the Profile singleton in /studio.
         </p>
@@ -61,7 +61,7 @@ export default async function AboutPage({
 
   return (
     <>
-      <main className="mx-auto max-w-6xl px-6 py-10 space-y-12">
+      <main id="main" className="mx-auto max-w-6xl px-6 py-10 space-y-12">
         <HeroSection profile={aboutData.profile} locale={locale} />
         <hr className="border-t border-black/5" />
         <CareerSection

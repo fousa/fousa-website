@@ -6,6 +6,7 @@
  */
 import {notFound} from 'next/navigation'
 import {locales, isLocale} from '@/i18n/config'
+import {t} from '@/i18n/messages'
 import {TopBar} from '@/components/top-bar'
 import {ScrollShadowSentinel} from '@/components/scroll-shadow-sentinel'
 
@@ -24,6 +25,12 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) notFound()
   return (
     <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-page focus:text-ink focus:px-3 focus:py-2 focus:rounded focus:outline focus:outline-2 focus:outline-accent"
+      >
+        {t(locale, 'skipToContent')}
+      </a>
       <TopBar locale={locale} />
       <ScrollShadowSentinel />
       {children}

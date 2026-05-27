@@ -124,7 +124,7 @@ export default async function CaseStudyPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
       />
-      <article>
+      <article id="main">
         <CaseStudyHero project={project} locale={locale} />
         <CaseStudyBody project={project} locale={locale} />
         <RelatedWork related={project.related ?? []} locale={locale} />
