@@ -55,14 +55,40 @@ export default async function AboutPage({
     )
   }
 
+  const profile = aboutData.profile
   const employerStackCategories = deriveEmployerStackCategories(projects)
   const employers = aboutData.employers ?? []
   const ownApps = aboutData.ownApps ?? []
 
+  const personJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: profile.name ?? 'Jelle Vandebeeck',
+    url: `https://fousa.be/${locale}/about`,
+    email: profile.email ?? undefined,
+    jobTitle: locale === 'nl' ? 'iOS- en Rails-ontwikkelaar' : 'iOS and Rails developer',
+    worksFor: {
+      '@type': 'Organization',
+      name: 'fousa',
+    },
+    sameAs: (profile.socialLinks ?? [])
+      .map((link) => link.url)
+      .filter(Boolean),
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Edegem',
+      addressCountry: 'BE',
+    },
+  }
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{__html: JSON.stringify(personJsonLd)}}
+      />
       <main id="main" className="mx-auto max-w-6xl px-6 py-10 space-y-12">
-        <HeroSection profile={aboutData.profile} locale={locale} />
+        <HeroSection profile={profile} locale={locale} />
         <hr className="border-t border-black/5" />
         <CareerSection
           employers={employers}
@@ -73,7 +99,7 @@ export default async function AboutPage({
         <BeyondCodeSection ownApps={ownApps} locale={locale} />
       </main>
       <ContactFooter
-        profile={aboutData.profile}
+        profile={profile}
         availability={availability}
         locale={locale}
       />
