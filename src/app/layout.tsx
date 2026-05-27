@@ -1,4 +1,4 @@
-import type {Metadata} from 'next'
+import type {Metadata, Viewport} from 'next'
 import {Inter} from 'next/font/google'
 import {headers} from 'next/headers'
 import {isLocale, defaultLocale} from '@/i18n/config'
@@ -13,6 +13,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://fousa.be'),
   title: {default: 'Jelle Vandebeeck', template: '%s · Jelle Vandebeeck'},
+}
+
+export const viewport: Viewport = {
+  themeColor: [
+    {media: '(prefers-color-scheme: light)', color: '#fafafa'},
+    {media: '(prefers-color-scheme: dark)', color: '#1a1612'},
+  ],
 }
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
