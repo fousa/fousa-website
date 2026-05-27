@@ -42,7 +42,7 @@ export function ContactFooter({
     : `© ${year} · ${t(locale, 'copyrightLine')}`
 
   return (
-    <footer className="bg-ink text-page mt-16">
+    <footer className="bg-footer-bg text-footer-ink mt-16">
       <div className="mx-auto max-w-6xl px-6 py-12">
         <p className="font-mono text-[9px] font-medium uppercase tracking-[2px] text-accent mb-5">
           — {t(locale, 'getInTouch')}
@@ -50,7 +50,7 @@ export function ContactFooter({
         {profile.email && (
           <a
             href={`mailto:${profile.email}`}
-            className="font-serif text-[24px] md:text-[28px] font-medium text-page hover:text-accent transition-colors break-all"
+            className="font-serif text-[24px] md:text-[28px] font-medium text-footer-ink hover:text-accent transition-colors break-all"
           >
             {profile.email}
           </a>
@@ -63,7 +63,7 @@ export function ContactFooter({
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-[11px] text-ink-faint hover:text-page transition-colors"
+                className="font-mono text-[11px] text-footer-ink-muted hover:text-footer-ink transition-colors"
               >
                 → {link.label}
               </a>
@@ -74,7 +74,7 @@ export function ContactFooter({
               href={cvUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono text-[11px] text-accent hover:text-page transition-colors"
+              className="font-mono text-[11px] text-accent hover:text-footer-ink transition-colors"
             >
               ↓ {t(locale, 'downloadCv')}
             </a>
@@ -85,7 +85,7 @@ export function ContactFooter({
           locale={locale}
           email={profile.email ?? null}
         />
-        <p className="mt-8 font-mono text-[9px] uppercase tracking-wider text-ink-muted">
+        <p className="mt-8 font-mono text-[9px] uppercase tracking-wider text-footer-ink-muted">
           {copyright}
         </p>
       </div>

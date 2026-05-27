@@ -50,6 +50,11 @@
   --color-other: #6b7280;
   --color-other-bg: #f3f4f6;
 
+  /* Footer (inverted section — stays dark in light, deeper in dark) */
+  --color-footer-bg: #0f172a;
+  --color-footer-ink: #f5f5f5;
+  --color-footer-ink-muted: #94a3b8;
+
   /* Font stacks */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
@@ -111,5 +116,10 @@
     --color-tooling-bg: #281b34;
     --color-other: #c8bfb2;
     --color-other-bg: #2c2419;
+
+    /* Footer */
+    --color-footer-bg: #100d0a;
+    --color-footer-ink: #f5ede0;
+    --color-footer-ink-muted: #968a7a;
   }
 }
