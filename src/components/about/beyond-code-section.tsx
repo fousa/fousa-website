@@ -40,7 +40,7 @@ export function BeyondCodeSection({
 
 function GlidingCard({locale}: {locale: Locale}) {
   return (
-    <article className="bg-surface p-4 rounded-lg border border-black/5">
+    <article className="bg-surface p-4 rounded-lg border border-ink/10">
       <div className="aspect-video rounded overflow-hidden mb-3">
         <GliderPortrait className="size-full" />
       </div>
@@ -56,7 +56,7 @@ function GlidingCard({locale}: {locale: Locale}) {
 
 function OwnAppsCard({ownApps, locale}: {ownApps: OwnApp[]; locale: Locale}) {
   return (
-    <article className="bg-surface p-4 rounded-lg border border-black/5">
+    <article className="bg-surface p-4 rounded-lg border border-ink/10">
       <p className="font-mono text-[9px] font-medium uppercase tracking-wider text-sepia mb-3">
         {t(locale, 'beyondCodeOwnAppsTitle')}
       </p>

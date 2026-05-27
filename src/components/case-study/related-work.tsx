@@ -26,7 +26,7 @@ export function RelatedWork({
   locale: Locale
 }) {
   return (
-    <section className="mx-auto max-w-3xl px-6 py-10 md:py-14 border-t border-black/10">
+    <section className="mx-auto max-w-3xl px-6 py-10 md:py-14 border-t border-ink/10">
       {related.length > 0 && (
         <>
           <h2 className="font-mono text-[10px] font-medium uppercase tracking-[1.5px] text-sepia mb-5">
@@ -42,7 +42,7 @@ export function RelatedWork({
                 <li key={r._id}>
                   <Link
                     href={`/${locale}/${r.slug}`}
-                    className="block bg-surface p-4 rounded-lg border border-black/5 hover:border-black/15 transition-colors h-full"
+                    className="block bg-surface p-4 rounded-lg border border-ink/10 hover:border-ink/20 transition-colors h-full"
                   >
                     <p className="font-sans text-[14px] font-medium text-ink mb-1">
                       {r.name}

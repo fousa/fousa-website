@@ -103,7 +103,7 @@ function ExternalLinks({project, locale}: {project: Project; locale: Locale}) {
   if (!hasAny) return null
 
   return (
-    <div className="flex flex-wrap gap-x-6 gap-y-2 pt-6 border-t border-black/10">
+    <div className="flex flex-wrap gap-x-6 gap-y-2 pt-6 border-t border-ink/10">
       {project.liveUrl && (
         <a
           href={project.liveUrl}

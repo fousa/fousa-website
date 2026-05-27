@@ -49,7 +49,7 @@ export function CaseStudyPanel({
       id={project.slug ? `panel-${project.slug}` : undefined}
       className="px-2 py-6 bg-surface-warm/40"
     >
-      <div className="rounded-lg bg-surface p-5 border border-black/5">
+      <div className="rounded-lg bg-surface p-5 border border-ink/10">
         {deck && (
           <p className="font-serif italic text-[15px] text-ink-soft mb-5">
             {deck}
@@ -156,7 +156,7 @@ function PanelLinks({project, locale}: {project: Project; locale: Locale}) {
   const hasAny = project.liveUrl || project.githubUrl || project.writeupUrl || project.slug
 
   return (
-    <div className="mt-5 pt-4 border-t border-black/10 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px]">
+    <div className="mt-5 pt-4 border-t border-ink/10 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px]">
       {project.slug && (
         <CopyLinkButton
           slug={String(project.slug)}

@@ -83,7 +83,7 @@ export function CaseStudyHero({project, locale}: {project: Project; locale: Loca
             {deck}
           </p>
         )}
-        <dl className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 border-y border-black/10 py-5">
+        <dl className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 border-y border-ink/10 py-5">
           <div>
             <dt className="font-mono text-[9px] font-medium uppercase tracking-wider text-sepia mb-1">
               {t(locale, 'projectFor')}

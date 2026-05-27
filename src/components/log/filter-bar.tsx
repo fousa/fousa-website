@@ -95,7 +95,7 @@ export function FilterBar({
 const VARIANT_CLASSES: Record<string, {active: string; inactive: string}> = {
   all: {
     active: 'bg-ink text-page',
-    inactive: 'bg-surface text-ink-muted border border-black/10 hover:text-ink',
+    inactive: 'bg-surface text-ink-muted border border-ink/10 hover:text-ink',
   },
   ios: {
     active: 'bg-ios text-page',

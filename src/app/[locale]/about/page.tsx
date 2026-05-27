@@ -132,13 +132,13 @@ export default async function AboutPage({
       />
       <main id="main" className="mx-auto max-w-6xl px-6 py-10 space-y-12">
         <HeroSection profile={profile} locale={locale} />
-        <hr className="border-t border-black/5" />
+        <hr className="border-t border-ink/10" />
         <CareerSection
           employers={employers}
           employerStackCategories={employerStackCategories}
           locale={locale}
         />
-        <hr className="border-t border-black/5" />
+        <hr className="border-t border-ink/10" />
         <BeyondCodeSection ownApps={ownApps} locale={locale} />
       </main>
       <ContactFooter
