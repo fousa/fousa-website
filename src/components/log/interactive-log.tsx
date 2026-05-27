@@ -68,6 +68,12 @@ export function InteractiveLog({
         />
       </div>
 
+      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        {filtered.length === projects.length
+          ? t(locale, 'allProjectsVisible')
+          : t(locale, 'filteredCount').replace('{count}', String(filtered.length))}
+      </div>
+
       {filtered.length === 0 ? (
         <EmptyState locale={locale} onReset={reset} />
       ) : (
