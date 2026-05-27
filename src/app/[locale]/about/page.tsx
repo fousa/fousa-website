@@ -12,6 +12,7 @@
 import {notFound} from 'next/navigation'
 import type {Metadata} from 'next'
 import {isLocale} from '@/i18n/config'
+import {t} from '@/i18n/messages'
 import {fetchSanity} from '@/sanity/fetch'
 import {ABOUT_QUERY} from '@/sanity/queries/about'
 import {PROJECTS_QUERY} from '@/sanity/queries/projects'
@@ -27,8 +28,50 @@ import type {
   AVAILABILITY_QUERY_RESULT,
 } from '@/sanity.types'
 
-export const metadata: Metadata = {
-  title: 'About',
+const SITE_URL = 'https://fousa.be'
+
+/**
+ * Per-locale metadata for the about page.
+ *
+ * Main reason: an explicit `alternates.canonical` so we override the
+ * inherited homepage canonical from [locale]/layout.tsx. Without this,
+ * Google treats /en/about as a duplicate of /en and skips indexing it.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{locale: string}>
+}): Promise<Metadata> {
+  const {locale} = await params
+  if (!isLocale(locale)) return {}
+
+  const title = t(locale, 'aboutTitle')
+  const description = t(locale, 'aboutDescription')
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `${SITE_URL}/${locale}/about`,
+      languages: {
+        en: `${SITE_URL}/en/about`,
+        nl: `${SITE_URL}/nl/about`,
+      },
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/${locale}/about`,
+      siteName: 'fousa.be',
+      locale: locale === 'nl' ? 'nl_BE' : 'en_US',
+      type: 'profile',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+    },
+  }
 }
 
 export default async function AboutPage({

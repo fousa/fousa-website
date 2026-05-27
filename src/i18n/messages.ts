@@ -12,6 +12,8 @@ import type {Locale} from './config'
 export const messages = {
   en: {
     about: 'About',
+    aboutDescription: 'iOS developer and Rails engineer from Edegem, Belgium. Building products since 2008, gliding the Belgian skies in between.',
+    aboutTitle: 'About',
     allProjects: 'All projects',
     allProjectsInLog: 'All projects in the log',
     allProjectsVisible: 'All projects visible',
@@ -74,6 +76,8 @@ export const messages = {
   },
   nl: {
     about: 'Over',
+    aboutDescription: 'iOS-ontwikkelaar en Rails-engineer uit Edegem, België. Bouwt producten sinds 2008, zweeft tussendoor boven de Belgische heide.',
+    aboutTitle: 'Over',
     allProjects: 'Alle projecten',
     allProjectsInLog: 'Alle projecten in het logboek',
     allProjectsVisible: 'Alle projecten zichtbaar',
