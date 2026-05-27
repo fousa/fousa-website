@@ -17,7 +17,7 @@
   /* Ink scale */
   --color-ink: #1f2937;
   --color-ink-soft: #4b5563;
-  --color-ink-muted: #6b7280;
+  --color-ink-muted: #5b6470;  /* was #6b7280 — bumped to 5.0:1 on page */
   --color-ink-faint: #9ca3afff;
 
   /* Accents */
