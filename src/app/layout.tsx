@@ -13,7 +13,6 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://fousa.be'),
   title: {default: 'Jelle Vandebeeck', template: '%s · Jelle Vandebeeck'},
-  description: 'iOS apps and Rails backends, from Edegem, Belgium.',
 }
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
