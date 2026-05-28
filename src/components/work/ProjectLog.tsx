@@ -61,7 +61,7 @@ export function ProjectLog({
         <thead>
           <tr className="text-left font-mono text-[11px] uppercase tracking-[0.09em] text-faint">
             {COLUMNS.map((h) => (
-              <th key={h} className="px-11 py-[18px] font-semibold">
+              <th key={h} className="px-11 py-[18px] align-top font-semibold">
                 {t(locale, h)}
               </th>
             ))}
@@ -136,22 +136,22 @@ function Row({
         onClick={onToggle}
         className={`group text-[14.5px] text-text [&>td]:border-t [&>td]:border-line ${open ? "" : "hover:[&>td]:bg-hover"}`}
       >
-        <td className="px-11 py-5">
+        <td className="px-11 py-5 align-top">
           <span
             className={`font-display text-base font-semibold tracking-[-0.01em] ${open ? "text-accent" : "text-ink group-hover:text-accent"}`}
           >
             {p.name}
           </span>
         </td>
-        <td className="px-11 py-5">
+        <td className="px-11 py-5 align-top">
           <ForLabelInline f={forLabel(p, t(locale, "personal"))} />
         </td>
-        <td className="px-11 py-5">{p.stack}</td>
-        <td className="px-11 py-5">{p.role}</td>
-        <td className="px-11 py-5 font-mono text-[13px] text-muted">
+        <td className="px-11 py-5 align-top">{p.stack}</td>
+        <td className="px-11 py-5 align-top">{p.role}</td>
+        <td className="px-11 py-5 align-top font-mono text-[13px] text-muted">
           {p.year}
         </td>
-        <td className="px-11 py-5">
+        <td className="px-11 py-5 align-top">
           <StatusDot status={p.status} />
         </td>
       </tr>
