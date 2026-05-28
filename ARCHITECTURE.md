@@ -55,7 +55,9 @@ fousa/
     │   ├── theme/
     │   │   └── ThemeToggle.tsx  ← dark-mode toggle (localStorage + .dark class)
     │   ├── layout/
-    │   │   └── TopBar.tsx       ← site header (wordmark, nav, locale, theme, hamburger)
+    │   │   ├── TopBar.tsx       ← site header (wordmark, nav, hamburger)
+    │   │   ├── SiteFooter.tsx   ← copyright, locale switch, theme toggle
+    │   │   └── LocaleSwitch.tsx ← responsive EN/NL switch (full names desktop, codes mobile)
     │   ├── work/
     │   │   ├── ProjectLog.tsx   ← filterable project table/cards with expand
     │   │   └── StatusDot.tsx    ← dot + word status indicator
