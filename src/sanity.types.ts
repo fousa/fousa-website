@@ -168,6 +168,32 @@ export type Employer = {
   order?: number;
 };
 
+export type SiteSettings = {
+  _id: string;
+  _type: "siteSettings";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  email?: string;
+  socials?: Array<{
+    platform?: "github" | "linkedin" | "bluesky" | "instagram" | "mastodon";
+    url?: string;
+    label?: string;
+    _key: string;
+  }>;
+  metaDescription?: {
+    en?: string;
+    nl?: string;
+  };
+  ogImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+};
+
 export type Availability = {
   _id: string;
   _type: "availability";
@@ -201,6 +227,18 @@ export type Profile = {
   _rev: string;
   name?: string;
   tagline?: {
+    en?: string;
+    nl?: string;
+  };
+  leadHeadline?: {
+    en?: string;
+    nl?: string;
+  };
+  leadSubline?: {
+    en?: string;
+    nl?: string;
+  };
+  aboutHeadline?: {
     en?: string;
     nl?: string;
   };
@@ -242,6 +280,27 @@ export type Profile = {
       _key: string;
     }>;
   };
+  beyondCode?: Array<{
+    title?: {
+      en?: string;
+      nl?: string;
+    };
+    body?: {
+      en?: string;
+      nl?: string;
+    };
+    _key: string;
+  }>;
+  cvEn?: {
+    asset?: SanityFileAssetReference;
+    media?: unknown;
+    _type: "file";
+  };
+  cvNl?: {
+    asset?: SanityFileAssetReference;
+    media?: unknown;
+    _type: "file";
+  };
   portrait?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -256,11 +315,6 @@ export type Profile = {
     url?: string;
     _key: string;
   }>;
-  cv?: {
-    asset?: SanityFileAssetReference;
-    media?: unknown;
-    _type: "file";
-  };
   vatNumber?: string;
   copyrightYear?: number;
 };
@@ -372,6 +426,7 @@ export type AllSanitySchemaTypes =
   | Slug
   | StackTag
   | Employer
+  | SiteSettings
   | Availability
   | SanityFileAssetReference
   | Profile
@@ -407,6 +462,18 @@ export type ABOUT_QUERY_RESULT = {
         bio: null;
         location: null;
         email: null;
+        socialLinks: null;
+        vatNumber: null;
+        copyrightYear: null;
+        portrait: null;
+        cv: null;
+      }
+    | {
+        name: null;
+        tagline: null;
+        bio: null;
+        location: null;
+        email: string | null;
         socialLinks: null;
         vatNumber: null;
         copyrightYear: null;
@@ -491,29 +558,7 @@ export type ABOUT_QUERY_RESULT = {
             source?: SanityAssetSourceData;
           } | null;
         } | null;
-        cv: {
-          asset: {
-            _id: string;
-            _type: "sanity.fileAsset";
-            _createdAt: string;
-            _updatedAt: string;
-            _rev: string;
-            originalFilename?: string;
-            label?: string;
-            title?: string;
-            description?: string;
-            altText?: string;
-            sha1hash?: string;
-            extension?: string;
-            mimeType?: string;
-            size?: number;
-            assetId?: string;
-            uploadId?: string;
-            path?: string;
-            url?: string;
-            source?: SanityAssetSourceData;
-          } | null;
-        } | null;
+        cv: null;
       }
     | null;
   employers: Array<{
@@ -690,27 +735,58 @@ export type CASE_STUDY_SLUGS_QUERY_RESULT = Array<{
 
 // Source: src/sanity/queries/profile.ts
 // Variable: PROFILE_QUERY
-// Query: *[_id == "profile"][0]{    name,    tagline,    location,    email,    socialLinks,    vatNumber,    copyrightYear,    "cv": cv{      "asset": asset->    }  }
+// Query: *[_id == "profile"][0]{    name,    tagline,    leadHeadline,    leadSubline,    aboutHeadline,    bio,    "portraitUrl": portrait.asset->url,    beyondCode[]{      title,      body    },    location,    email,    socialLinks,    "cvEnUrl": cvEn.asset->url,    "cvNlUrl": cvNl.asset->url,    vatNumber,    copyrightYear  }
 export type PROFILE_QUERY_RESULT =
   | {
       name: null;
       tagline: null;
+      leadHeadline: null;
+      leadSubline: null;
+      aboutHeadline: null;
+      bio: null;
+      portraitUrl: null;
+      beyondCode: null;
       location: null;
       email: null;
       socialLinks: null;
+      cvEnUrl: null;
+      cvNlUrl: null;
       vatNumber: null;
       copyrightYear: null;
-      cv: null;
     }
   | {
       name: string | null;
       tagline: null;
+      leadHeadline: null;
+      leadSubline: null;
+      aboutHeadline: null;
+      bio: null;
+      portraitUrl: null;
+      beyondCode: null;
       location: null;
       email: null;
       socialLinks: null;
+      cvEnUrl: null;
+      cvNlUrl: null;
       vatNumber: null;
       copyrightYear: null;
-      cv: null;
+    }
+  | {
+      name: null;
+      tagline: null;
+      leadHeadline: null;
+      leadSubline: null;
+      aboutHeadline: null;
+      bio: null;
+      portraitUrl: null;
+      beyondCode: null;
+      location: null;
+      email: string | null;
+      socialLinks: null;
+      cvEnUrl: null;
+      cvNlUrl: null;
+      vatNumber: null;
+      copyrightYear: null;
     }
   | {
       name: string | null;
@@ -718,6 +794,67 @@ export type PROFILE_QUERY_RESULT =
         en?: string;
         nl?: string;
       } | null;
+      leadHeadline: {
+        en?: string;
+        nl?: string;
+      } | null;
+      leadSubline: {
+        en?: string;
+        nl?: string;
+      } | null;
+      aboutHeadline: {
+        en?: string;
+        nl?: string;
+      } | null;
+      bio: {
+        en?: Array<{
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: "span";
+            _key: string;
+          }>;
+          style?: "normal";
+          listItem?: never;
+          markDefs?: Array<{
+            href?: string;
+            _type: "link";
+            _key: string;
+          }>;
+          level?: number;
+          _type: "block";
+          _key: string;
+        }>;
+        nl?: Array<{
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: "span";
+            _key: string;
+          }>;
+          style?: "normal";
+          listItem?: never;
+          markDefs?: Array<{
+            href?: string;
+            _type: "link";
+            _key: string;
+          }>;
+          level?: number;
+          _type: "block";
+          _key: string;
+        }>;
+      } | null;
+      portraitUrl: string | null;
+      beyondCode: Array<{
+        title: {
+          en?: string;
+          nl?: string;
+        } | null;
+        body: {
+          en?: string;
+          nl?: string;
+        } | null;
+      }> | null;
       location: string | null;
       email: string | null;
       socialLinks: Array<{
@@ -725,31 +862,10 @@ export type PROFILE_QUERY_RESULT =
         url?: string;
         _key: string;
       }> | null;
+      cvEnUrl: string | null;
+      cvNlUrl: string | null;
       vatNumber: string | null;
       copyrightYear: number | null;
-      cv: {
-        asset: {
-          _id: string;
-          _type: "sanity.fileAsset";
-          _createdAt: string;
-          _updatedAt: string;
-          _rev: string;
-          originalFilename?: string;
-          label?: string;
-          title?: string;
-          description?: string;
-          altText?: string;
-          sha1hash?: string;
-          extension?: string;
-          mimeType?: string;
-          size?: number;
-          assetId?: string;
-          uploadId?: string;
-          path?: string;
-          url?: string;
-          source?: SanityAssetSourceData;
-        } | null;
-      } | null;
     }
   | null;
 
@@ -854,6 +970,43 @@ export type PROJECTS_QUERY_RESULT = Array<{
   }> | null;
 }>;
 
+// Source: src/sanity/queries/site-settings.ts
+// Variable: SITE_SETTINGS_QUERY
+// Query: *[_id == "siteSettings"][0]{    email,    socials[]{      platform,      url,      label    },    metaDescription,    "ogImageUrl": ogImage.asset->url  }
+export type SITE_SETTINGS_QUERY_RESULT =
+  | {
+      email: null;
+      socials: null;
+      metaDescription: null;
+      ogImageUrl: null;
+    }
+  | {
+      email: string | null;
+      socials: null;
+      metaDescription: null;
+      ogImageUrl: null;
+    }
+  | {
+      email: string | null;
+      socials: Array<{
+        platform:
+          | "bluesky"
+          | "github"
+          | "instagram"
+          | "linkedin"
+          | "mastodon"
+          | null;
+        url: string | null;
+        label: string | null;
+      }> | null;
+      metaDescription: {
+        en?: string;
+        nl?: string;
+      } | null;
+      ogImageUrl: string | null;
+    }
+  | null;
+
 // Source: src/sanity/queries/sitemap.ts
 // Variable: SITEMAP_SLUGS_QUERY
 // Query: *[_type == "project" && defined(slug.current)]{    "slug": slug.current,    "lastModified": _updatedAt  }
@@ -870,8 +1023,9 @@ declare module "@sanity/client" {
     '\n  *[_id == "availability"][0]{\n    status,\n    label,\n    detail,\n    nextOpening\n  }\n': AVAILABILITY_QUERY_RESULT;
     '\n  *[_type == "project" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    role,\n    client,\n    deck,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    featured,\n    "employer": employer->{\n      _id,\n      name,\n      "slug": "employer-" + lower(name)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    },\n    "related": *[\n      _type == "project"\n      && slug.current != $slug\n      && references(^.employer._ref)\n    ] | order(featured desc, year desc) [0...3] {\n      _id,\n      name,\n      "slug": slug.current,\n      year,\n      deck\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
-    '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    location,\n    email,\n    socialLinks,\n    vatNumber,\n    copyrightYear,\n    "cv": cv{\n      "asset": asset->\n    }\n  }\n': PROFILE_QUERY_RESULT;
+    '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    leadHeadline,\n    leadSubline,\n    aboutHeadline,\n    bio,\n    "portraitUrl": portrait.asset->url,\n    beyondCode[]{\n      title,\n      body\n    },\n    location,\n    email,\n    socialLinks,\n    "cvEnUrl": cvEn.asset->url,\n    "cvNlUrl": cvNl.asset->url,\n    vatNumber,\n    copyrightYear\n  }\n': PROFILE_QUERY_RESULT;
     '\n  *[_type == "project"] | order(featured desc, year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    featured,\n    role,\n    client,\n    deck,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    "employer": employer->{\n      _id,\n      name\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    }\n  }\n': PROJECTS_QUERY_RESULT;
+    '\n  *[_id == "siteSettings"][0]{\n    email,\n    socials[]{\n      platform,\n      url,\n      label\n    },\n    metaDescription,\n    "ogImageUrl": ogImage.asset->url\n  }\n': SITE_SETTINGS_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': SITEMAP_SLUGS_QUERY_RESULT;
   }
 }

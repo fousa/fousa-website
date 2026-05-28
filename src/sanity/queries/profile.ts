@@ -1,8 +1,9 @@
 /**
  * GROQ query for the Profile singleton.
  *
- * Returns all fields needed by the top bar and the contact footer:
- * name, tagline, location, email, social links, CV, VAT, copyright year.
+ * Returns all fields needed by the homepage lead, about page, contact
+ * footer, and CV download: name, tagline, localized copy, beyond-code
+ * list, per-locale CV asset URLs, social links, and footer metadata.
  */
 import {defineQuery} from 'next-sanity'
 
@@ -10,13 +11,21 @@ export const PROFILE_QUERY = defineQuery(`
   *[_id == "profile"][0]{
     name,
     tagline,
+    leadHeadline,
+    leadSubline,
+    aboutHeadline,
+    bio,
+    "portraitUrl": portrait.asset->url,
+    beyondCode[]{
+      title,
+      body
+    },
     location,
     email,
     socialLinks,
+    "cvEnUrl": cvEn.asset->url,
+    "cvNlUrl": cvNl.asset->url,
     vatNumber,
-    copyrightYear,
-    "cv": cv{
-      "asset": asset->
-    }
+    copyrightYear
   }
 `)

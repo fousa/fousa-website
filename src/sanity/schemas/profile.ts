@@ -26,11 +26,64 @@ export const profile = defineType({
       'Tagline',
       'One-line summary shown under your name (e.g. "Senior iOS · Rails · Edegem, BE").'
     ),
+
+    // ── Homepage lead ──────────────────────────────────────────────────
+    i18nString(
+      'leadHeadline',
+      'Homepage headline',
+      'Bold headline on the homepage (e.g. "Crafting native apps & web platforms").'
+    ),
+    i18nText(
+      'leadSubline',
+      'Homepage subline',
+      'Two-line intro below the headline on the homepage.'
+    ),
+
+    // ── About page ─────────────────────────────────────────────────────
+    i18nString(
+      'aboutHeadline',
+      'About headline',
+      'H1 shown at the top of the about page.'
+    ),
     i18nPortableText(
       'bio',
       'Bio',
       'Two short paragraphs in your voice. Shown on the about page hero.'
     ),
+    defineField({
+      name: 'beyondCode',
+      title: 'Beyond code',
+      type: 'array',
+      description: 'Hobbies and interests shown in the "Beyond code" section of the about page.',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            i18nString('title', 'Title'),
+            i18nText('body', 'Body'),
+          ],
+          preview: {
+            select: {title: 'title.en'},
+          },
+        },
+      ],
+    }),
+
+    // ── CV files ───────────────────────────────────────────────────────
+    defineField({
+      name: 'cvEn',
+      title: 'CV (English)',
+      type: 'file',
+      description: 'English CV as PDF.',
+      options: {accept: 'application/pdf'},
+    }),
+    defineField({
+      name: 'cvNl',
+      title: 'CV (Dutch)',
+      type: 'file',
+      description: 'Dutch CV as PDF. Falls back to the English version if empty.',
+      options: {accept: 'application/pdf'},
+    }),
     defineField({
       name: 'portrait',
       title: 'Portrait',
@@ -80,13 +133,6 @@ export const profile = defineType({
           },
         },
       ],
-    }),
-    defineField({
-      name: 'cv',
-      title: 'CV (PDF)',
-      type: 'file',
-      description: 'Your downloadable CV. PDF only.',
-      options: {accept: 'application/pdf'},
     }),
     defineField({
       name: 'vatNumber',
