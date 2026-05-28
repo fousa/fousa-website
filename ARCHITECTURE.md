@@ -58,7 +58,8 @@ fousa/
     │   ├── layout/
     │   │   ├── TopBar.tsx       ← sticky header (wordmark, nav, hamburger); scroll-revealed hairline + blur
     │   │   ├── use-scrolled.ts  ← IntersectionObserver hook: true once a sentinel leaves the viewport
-    │   │   ├── SiteFooter.tsx   ← copyright, locale switch, theme toggle, privacy note
+    │   │   ├── SiteFooter.tsx   ← copyright + inline privacy info tip, locale switch, theme toggle
+    │   │   ├── InfoTip.tsx      ← hover/focus + tap-toggle popover ("i" affordance)
     │   │   ├── LocaleSwitch.tsx ← responsive EN/NL switch (full names desktop, codes mobile)
     │   │   └── OutboundLink.tsx ← <a> wrapper that fires outbound_click analytics event
     │   ├── work/
