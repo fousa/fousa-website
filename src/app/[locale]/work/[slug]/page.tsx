@@ -1,9 +1,12 @@
 /**
- * Case study page at /<locale>/work/<slug>.
+ * Detail page at /<locale>/work/<slug>.
  *
- * Statically prerendered via generateStaticParams. Fetches a single project
- * by slug from Sanity, renders meta grid + cover image + portable text body
- * + related work. Calls notFound() on slug miss.
+ * Handles three depth levels:
+ *   - "full"    → case study with portable text body + cover image
+ *   - "gallery" → screenshot gallery with device frames
+ *   - "none"    → 404 (no detail page exists)
+ *
+ * Statically prerendered via generateStaticParams (only slugs with depth ≠ "none").
  */
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -18,6 +21,7 @@ import { fetchSanity } from "@/sanity/fetch";
 import { CASE_STUDY_QUERY } from "@/sanity/queries/case-study";
 import { StatusDot } from "@/components/work/StatusDot";
 import { PortableTextRenderer } from "@/components/portable-text";
+import { Frame } from "@/components/work/Frame";
 import type { CASE_STUDY_QUERY_RESULT } from "@/sanity.types";
 
 const SITE_URL = "https://fousa.be";
@@ -36,7 +40,8 @@ export async function generateMetadata({
   if (!isLocale(locale)) return {};
 
   const project = await getProject(slug, locale);
-  if (!project) return { title: t(locale, "notFoundTitle") };
+  if (!project || project.depth === "none")
+    return { title: t(locale, "notFoundTitle") };
 
   const title = `${project.name} ${t(locale, "caseStudyMetaSuffix")}`;
 
@@ -61,7 +66,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function CaseStudyPage({
+export default async function DetailPage({
   params,
 }: {
   params: Promise<{ locale: string; slug: string }>;
@@ -70,24 +75,27 @@ export default async function CaseStudyPage({
   if (!isLocale(locale)) notFound();
 
   const project = await getProject(slug, locale);
-  if (!project) notFound();
+  if (!project || project.depth === "none") notFound();
 
   const raw = await fetchSanity<CASE_STUDY_QUERY_RESULT>(CASE_STUDY_QUERY, {
     slug,
   });
 
-  const body =
-    typeof raw?.body === "object" && raw.body !== null
-      ? (locale === "nl" &&
-          Array.isArray((raw.body as Record<string, unknown>).nl) &&
-          ((raw.body as Record<string, unknown>).nl as unknown[]).length > 0
-          ? (raw.body as Record<string, unknown>).nl
-          : (raw.body as Record<string, unknown>).en) ?? null
-      : null;
-
   const coverUrl = raw?.coverUrl ?? null;
   const coverAlt = raw?.coverAlt ?? project.name;
   const related = raw?.related ?? [];
+
+  const body =
+    project.depth === "full" && typeof raw?.body === "object" && raw.body !== null
+      ? (() => {
+          const b = raw.body as Record<string, unknown>;
+          return locale === "nl" &&
+            Array.isArray(b.nl) &&
+            (b.nl as unknown[]).length > 0
+            ? b.nl
+            : b.en;
+        })() ?? null
+      : null;
 
   return (
     <article id="main">
@@ -122,13 +130,19 @@ export default async function CaseStudyPage({
                   return (
                     <>
                       <span className="text-muted">{f.employer}</span>
-                      <span className="mx-1 text-faint" aria-hidden>→</span>
+                      <span className="mx-1 text-faint" aria-hidden>
+                        →
+                      </span>
                       <span className="text-ink">{f.client}</span>
                     </>
                   );
                 }
                 return (
-                  <span className={f.kind === "personal" ? "text-muted" : "text-ink"}>
+                  <span
+                    className={
+                      f.kind === "personal" ? "text-muted" : "text-ink"
+                    }
+                  >
                     {f.text}
                   </span>
                 );
@@ -162,28 +176,57 @@ export default async function CaseStudyPage({
         </div>
       </header>
 
-      {/* Cover */}
-      {coverUrl ? (
-        <div className="mx-5 md:mx-11">
-          <Image
-            src={coverUrl}
-            alt={coverAlt}
-            width={1200}
-            height={600}
-            className="h-auto w-full rounded object-cover"
-          />
-        </div>
-      ) : (
-        <div className="mx-5 h-[240px] rounded bg-surface md:mx-11 md:h-[360px]" />
+      {/* Full case study: cover + body */}
+      {project.depth === "full" && (
+        <>
+          {coverUrl ? (
+            <div className="mx-5 md:mx-11">
+              <Image
+                src={coverUrl}
+                alt={coverAlt}
+                width={1200}
+                height={600}
+                className="h-auto w-full rounded object-cover"
+              />
+            </div>
+          ) : (
+            <div className="mx-5 h-[240px] rounded bg-surface md:mx-11 md:h-[360px]" />
+          )}
+          {body && (
+            <div className="px-5 py-12 md:px-11">
+              <PortableTextRenderer
+                value={body as any[]}
+                className="max-w-[600px] text-[15px] leading-[1.65] text-text"
+              />
+            </div>
+          )}
+        </>
       )}
 
-      {/* Body */}
-      {body && (
-        <div className="px-5 py-12 md:px-11">
-          <PortableTextRenderer
-            value={body as any[]}
-            className="max-w-[600px] text-[15px] leading-[1.65] text-text"
-          />
+      {/* Gallery: screenshots in device frames */}
+      {project.depth === "gallery" && project.gallery.length > 0 && (
+        <div className="px-5 py-10 md:px-11">
+          <div className="flex flex-wrap items-end justify-center gap-8 md:gap-10">
+            {project.gallery.map((shot) => (
+              <div
+                key={shot.key}
+                className={
+                  shot.frame === "phone"
+                    ? "w-[180px]"
+                    : shot.frame === "tablet"
+                      ? "w-[280px]"
+                      : "w-full max-w-[560px]"
+                }
+              >
+                <Frame shot={shot} />
+                {shot.caption && (
+                  <p className="mt-2 text-center font-mono text-[11px] text-faint">
+                    {shot.caption}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
