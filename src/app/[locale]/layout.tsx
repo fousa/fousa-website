@@ -1,36 +1,33 @@
 /**
- * Locale layout — validates the locale param and wraps every page with
- * the TopBar. The TopBar fetches Profile and Availability once per request;
- * Next.js dedupes the call when the same query is used across this layout
- * and any child page.
+ * Locale layout — validates the locale param, renders the TopBar, and wraps
+ * every page. Keeps i18n routing and SEO metadata from prior phases intact.
  */
-import {notFound} from 'next/navigation'
-import type {Metadata} from 'next'
-import {locales, isLocale} from '@/i18n/config'
-import {t} from '@/i18n/messages'
-import {TopBar} from '@/components/top-bar'
-import {ScrollShadowSentinel} from '@/components/scroll-shadow-sentinel'
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { locales, isLocale } from "@/i18n/config";
+import { t } from "@/i18n/messages";
+import { TopBar } from "@/components/layout/TopBar";
 
-const SITE_URL = 'https://fousa.be'
+const SITE_URL = "https://fousa.be";
 
 export function generateStaticParams() {
-  return locales.map((locale) => ({locale}))
+  return locales.map((locale) => ({ locale }));
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{locale: string}>
+  params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const {locale} = await params
-  if (!isLocale(locale)) return {}
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
 
   return {
     title: {
-      default: 'Jelle Vandebeeck',
-      template: '%s · Jelle Vandebeeck',
+      default: "fousa.be — Freelance iOS & web developer",
+      template: "%s · fousa.be",
     },
-    description: t(locale, 'siteDescription'),
+    description: t(locale, "siteDescription"),
     alternates: {
       canonical: `${SITE_URL}/${locale}`,
       languages: {
@@ -39,33 +36,33 @@ export async function generateMetadata({
       },
     },
     openGraph: {
-      siteName: 'fousa.be',
-      locale: locale === 'nl' ? 'nl_BE' : 'en_US',
-      alternateLocale: locale === 'nl' ? ['en_US'] : ['nl_BE'],
+      siteName: "fousa.be",
+      locale: locale === "nl" ? "nl_BE" : "en_US",
+      alternateLocale: locale === "nl" ? ["en_US"] : ["nl_BE"],
     },
-  }
+  };
 }
 
 export default async function LocaleLayout({
   children,
   params,
 }: {
-  children: React.ReactNode
-  params: Promise<{locale: string}>
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
-  const {locale} = await params
-  if (!isLocale(locale)) notFound()
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+
   return (
     <>
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-page focus:text-ink focus:px-3 focus:py-2 focus:rounded focus:outline focus:outline-2 focus:outline-accent"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-bg focus:text-ink focus:px-3 focus:py-2 focus:rounded focus:outline focus:outline-2 focus:outline-accent"
       >
-        {t(locale, 'skipToContent')}
+        {t(locale, "skipToContent")}
       </a>
       <TopBar locale={locale} />
-      <ScrollShadowSentinel />
       {children}
     </>
-  )
+  );
 }
