@@ -293,6 +293,14 @@ export type Profile = {
     en?: string;
     nl?: string;
   };
+  roleLine?: {
+    en?: string;
+    nl?: string;
+  };
+  filterIntro?: {
+    en?: string;
+    nl?: string;
+  };
   leadHeadline?: {
     en?: string;
     nl?: string;
@@ -857,11 +865,13 @@ export type CASE_STUDY_SLUGS_QUERY_RESULT = Array<{
 
 // Source: src/sanity/queries/profile.ts
 // Variable: PROFILE_QUERY
-// Query: *[_id == "profile"][0]{    name,    tagline,    leadHeadline,    leadSubline,    aboutHeadline,    bio,    "portraitUrl": portrait.asset->url,    beyondCode[]{      title,      body    },    location,    email,    socialLinks,    "cvEnUrl": cvEn.asset->url,    "cvNlUrl": cvNl.asset->url,    vatNumber,    copyrightYear  }
+// Query: *[_id == "profile"][0]{    name,    tagline,    roleLine,    filterIntro,    leadHeadline,    leadSubline,    aboutHeadline,    bio,    "portraitUrl": portrait.asset->url,    beyondCode[]{      title,      body    },    location,    email,    socialLinks,    "cvEnUrl": cvEn.asset->url,    "cvNlUrl": cvNl.asset->url,    vatNumber,    copyrightYear  }
 export type PROFILE_QUERY_RESULT =
   | {
       name: null;
       tagline: null;
+      roleLine: null;
+      filterIntro: null;
       leadHeadline: null;
       leadSubline: null;
       aboutHeadline: null;
@@ -879,6 +889,8 @@ export type PROFILE_QUERY_RESULT =
   | {
       name: string | null;
       tagline: null;
+      roleLine: null;
+      filterIntro: null;
       leadHeadline: null;
       leadSubline: null;
       aboutHeadline: null;
@@ -896,6 +908,8 @@ export type PROFILE_QUERY_RESULT =
   | {
       name: null;
       tagline: null;
+      roleLine: null;
+      filterIntro: null;
       leadHeadline: null;
       leadSubline: null;
       aboutHeadline: null;
@@ -913,6 +927,14 @@ export type PROFILE_QUERY_RESULT =
   | {
       name: string | null;
       tagline: {
+        en?: string;
+        nl?: string;
+      } | null;
+      roleLine: {
+        en?: string;
+        nl?: string;
+      } | null;
+      filterIntro: {
         en?: string;
         nl?: string;
       } | null;
@@ -1152,7 +1174,7 @@ declare module "@sanity/client" {
     '\n  *[_id == "availability"][0]{\n    status,\n    message,\n    nextOpening\n  }\n': AVAILABILITY_QUERY_RESULT;
     '\n  *[_type == "project" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    relation,\n    role,\n    client,\n    deck,\n    summary,\n    description,\n    outcome,\n    body,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    featured,\n    "employer": employer->{\n      _id,\n      name,\n      "slug": "employer-" + lower(name)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "coverUrl": cover.asset->url,\n    "coverAlt": cover.alt,\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    },\n    "gallery": gallery[]{\n      _key,\n      frame,\n      caption,\n      "imageUrl": image.asset->url,\n      "width": image.asset->metadata.dimensions.width,\n      "height": image.asset->metadata.dimensions.height\n    },\n    "related": *[\n      _type == "project"\n      && slug.current != $slug\n      && references(^.employer._ref)\n    ] | order(featured desc, year desc) [0...3] {\n      _id,\n      name,\n      "slug": slug.current,\n      year,\n      deck\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
-    '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    leadHeadline,\n    leadSubline,\n    aboutHeadline,\n    bio,\n    "portraitUrl": portrait.asset->url,\n    beyondCode[]{\n      title,\n      body\n    },\n    location,\n    email,\n    socialLinks,\n    "cvEnUrl": cvEn.asset->url,\n    "cvNlUrl": cvNl.asset->url,\n    vatNumber,\n    copyrightYear\n  }\n': PROFILE_QUERY_RESULT;
+    '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    roleLine,\n    filterIntro,\n    leadHeadline,\n    leadSubline,\n    aboutHeadline,\n    bio,\n    "portraitUrl": portrait.asset->url,\n    beyondCode[]{\n      title,\n      body\n    },\n    location,\n    email,\n    socialLinks,\n    "cvEnUrl": cvEn.asset->url,\n    "cvNlUrl": cvNl.asset->url,\n    vatNumber,\n    copyrightYear\n  }\n': PROFILE_QUERY_RESULT;
     '\n  *[_type == "project"] | order(featured desc, year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    relation,\n    featured,\n    role,\n    client,\n    deck,\n    summary,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    "employer": employer->{\n      _id,\n      name\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    },\n    "hasBody": count(body.en) > 0,\n    "galleryCount": count(gallery)\n  }\n': PROJECTS_QUERY_RESULT;
     '\n  *[_id == "siteSettings"][0]{\n    email,\n    socials[]{\n      platform,\n      url,\n      label\n    },\n    metaDescription,\n    "ogImageUrl": ogImage.asset->url\n  }\n': SITE_SETTINGS_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': SITEMAP_SLUGS_QUERY_RESULT;

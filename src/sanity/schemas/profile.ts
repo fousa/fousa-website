@@ -29,13 +29,23 @@ export const profile = defineType({
 
     // ── Homepage lead ──────────────────────────────────────────────────
     i18nString(
+      'roleLine',
+      'Role line',
+      'One line under the name on the homepage, e.g. "Freelance iOS & web developer · 20 years, 65 projects".'
+    ),
+    i18nText(
+      'filterIntro',
+      'Filter invitation',
+      'Friendly line inviting visitors to filter the log. Shown below the role line on the homepage.'
+    ),
+    i18nString(
       'leadHeadline',
-      'Homepage headline',
+      'Homepage headline (legacy)',
       'Bold headline on the homepage (e.g. "Crafting native apps & web platforms").'
     ),
     i18nText(
       'leadSubline',
-      'Homepage subline',
+      'Homepage subline (legacy)',
       'Two-line intro below the headline on the homepage.'
     ),
 

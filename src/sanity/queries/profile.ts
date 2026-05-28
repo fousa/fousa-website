@@ -11,6 +11,8 @@ export const PROFILE_QUERY = defineQuery(`
   *[_id == "profile"][0]{
     name,
     tagline,
+    roleLine,
+    filterIntro,
     leadHeadline,
     leadSubline,
     aboutHeadline,
