@@ -10,6 +10,7 @@ import { forLabel, type ForLabel } from "@/lib/work-display";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 import { StatusDot } from "./StatusDot";
+import { ToolingChip } from "./ToolingChip";
 
 /** Map filter constants to i18n message keys. */
 const FILTER_KEYS = {
@@ -94,6 +95,7 @@ export function ProjectLog({
                 >
                   {p.name}
                 </span>
+                {p.featureTooling && <ToolingChip label={t(locale, "toolingChip")} />}
                 <StatusDot status={p.status} />
               </div>
               <div className="mt-[5px] text-[12.5px] text-muted">
@@ -142,6 +144,7 @@ function Row({
           >
             {p.name}
           </span>
+          {p.featureTooling && <ToolingChip label={t(locale, "toolingChip")} />}
         </td>
         <td className="px-11 py-5 align-top">
           <ForLabelInline f={forLabel(p, t(locale, "personal"))} />
