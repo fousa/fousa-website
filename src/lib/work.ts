@@ -1,13 +1,14 @@
 /**
  * Typed content layer for the project log and case-study pages.
  *
- * Exports the Project type, filter constants, filter helper, and data-fetching
- * functions. Currently backed by static sample data; swap `getProjects` /
- * `getProject` bodies for GROQ queries against the Sanity Project schema when
- * ready — the component interface stays identical.
+ * Exports the Project type (with two-axis tagging: relation + tech), filter
+ * constants, filter helper, and data-fetching functions. Currently backed by
+ * static sample data; swap `getProjects` / `getProject` bodies for GROQ
+ * queries against the Sanity Project schema when ready.
  */
 
 export type Status = "live" | "done" | "paused" | "cancelled";
+export type Relation = "personal" | "freelance" | "employee";
 
 export type Project = {
   slug: string;
@@ -17,20 +18,26 @@ export type Project = {
   role: string;
   year: number;
   status: Status;
-  tags: string[];
+  relation: Relation;
+  tech: string[];
   summary: string;
 };
 
 export const FILTERS = [
   "All",
-  "Live",
-  "Freelance",
   "Personal",
+  "Freelance",
+  "Employee",
   "iOS",
-  "Web",
+  "Rails",
+  "Other",
 ] as const;
 
 export type Filter = (typeof FILTERS)[number];
+
+/** Tech keys that have their own filter chip; everything else is "Other". */
+const KNOWN_TECH = ["ios", "rails"];
+const RELATIONS: string[] = ["personal", "freelance", "employee"];
 
 /**
  * Test whether a project passes the given filter.
@@ -41,8 +48,10 @@ export type Filter = (typeof FILTERS)[number];
  */
 export function matchesFilter(p: Project, f: Filter): boolean {
   if (f === "All") return true;
-  if (f === "Live") return p.status === "live";
-  return p.tags.includes(f.toLowerCase());
+  const k = f.toLowerCase();
+  if (RELATIONS.includes(k)) return p.relation === (k as Relation);
+  if (k === "other") return !p.tech.some((t) => KNOWN_TECH.includes(t));
+  return p.tech.includes(k);
 }
 
 /**
@@ -74,12 +83,13 @@ const SAMPLE: Project[] = [
   {
     slug: "itsme",
     name: "itsme",
-    client: "Freelance",
+    client: "BOSA",
     stack: "Swift · iOS",
     role: "Freelance iOS Lead",
     year: 2022,
     status: "done",
-    tags: ["freelance", "ios"],
+    relation: "freelance",
+    tech: ["ios"],
     summary:
       "Led iOS feature work for the national digital-identity app.",
   },
@@ -91,7 +101,8 @@ const SAMPLE: Project[] = [
     role: "Owner",
     year: 2024,
     status: "live",
-    tags: ["personal", "web"],
+    relation: "personal",
+    tech: ["web"],
     summary:
       "Self-hosted uptime + log aggregation dashboard; one VPS, ~2M events/day.",
   },
@@ -103,7 +114,8 @@ const SAMPLE: Project[] = [
     role: "Owner",
     year: 2023,
     status: "live",
-    tags: ["personal", "ios"],
+    relation: "personal",
+    tech: ["ios"],
     summary: "A logbook for glider pilots, in SwiftUI.",
   },
   {
@@ -114,7 +126,8 @@ const SAMPLE: Project[] = [
     role: "Developer",
     year: 2020,
     status: "done",
-    tags: ["web"],
+    relation: "employee",
+    tech: ["web"],
     summary: "Data-dense retail-investing interfaces for KBC.",
   },
 ];

@@ -13,11 +13,12 @@ import { StatusDot } from "./StatusDot";
 /** Map filter constants to i18n message keys. */
 const FILTER_KEYS = {
   All: "filterAll",
-  Live: "filterLive",
-  Freelance: "filterFreelance",
   Personal: "filterPersonal",
+  Freelance: "filterFreelance",
+  Employee: "filterEmployee",
   iOS: "filterIos",
-  Web: "filterWeb",
+  Rails: "filterRails",
+  Other: "filterOther",
 } as const;
 
 /** Map table column headers to i18n keys. */
