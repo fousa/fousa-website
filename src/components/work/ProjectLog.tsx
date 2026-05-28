@@ -104,7 +104,7 @@ export function ProjectLog({
                   {p.name}
                 </span>
                 {p.featureTooling && <ToolingChip label={t(locale, "toolingChip")} />}
-                <StatusDot state={p.state} />
+                <StatusDot state={p.state} locale={locale} />
               </div>
               <div className="mt-[5px] text-[12.5px] text-muted">
                 <ForLabelInline f={forLabel(p, t(locale, "personal"))} /> · {p.stack} · {p.year}
@@ -169,7 +169,7 @@ function Row({
           {p.year}
         </td>
         <td className="px-11 py-5 align-top">
-          <StatusDot state={p.state} />
+          <StatusDot state={p.state} locale={locale} />
         </td>
       </tr>
       {open && (

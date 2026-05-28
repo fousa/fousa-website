@@ -165,7 +165,7 @@ export default async function DetailPage({
               {t(locale, "state")}
             </p>
             <div className="mt-1">
-              <StatusDot state={project.state} />
+              <StatusDot state={project.state} locale={locale} />
             </div>
           </div>
         </div>

@@ -13,7 +13,7 @@ import {pickLocale} from '@/i18n/pick-locale'
 import type {Locale} from '@/i18n/config'
 import type {PROJECTS_QUERY_RESULT, CASE_STUDY_QUERY_RESULT, CASE_STUDY_SLUGS_QUERY_RESULT} from '@/sanity.types'
 
-export type State = 'live' | 'cancelled' | 'deprecated'
+export type State = 'active' | 'maintained' | 'archived' | 'cancelled'
 export type Engagement = 'freelance' | 'full-time' | 'internship' | 'student'
 export type Depth = 'none' | 'gallery' | 'full'
 export type Frame = 'phone' | 'tablet' | 'browser' | 'none'
@@ -115,7 +115,7 @@ function toProject(
     stack: stackTags.map((s) => s?.name).filter(Boolean).join(' · ') || '—',
     role: row.role ?? '',
     year: row.year ?? 0,
-    state: (row.state as State) ?? 'live',
+    state: (row.state as State) ?? 'active',
     engagement: (row.engagement as Engagement) ?? 'freelance',
     tech: [...new Set(stackTags.map((s) => normalizeTech(s?.category)))],
     summary:
@@ -177,7 +177,7 @@ export async function getProject(
     stack: stackTags.map((s) => s?.name).filter(Boolean).join(' · ') || '—',
     role: row.role ?? '',
     year: row.year ?? 0,
-    state: (row.state as State) ?? 'live',
+    state: (row.state as State) ?? 'active',
     engagement: (row.engagement as Engagement) ?? 'freelance',
     tech: [...new Set(stackTags.map((s) => normalizeTech(s?.category)))],
     summary:
