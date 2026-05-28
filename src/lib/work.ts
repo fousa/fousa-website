@@ -15,6 +15,17 @@ import type {PROJECTS_QUERY_RESULT, CASE_STUDY_QUERY_RESULT, CASE_STUDY_SLUGS_QU
 
 export type Status = 'live' | 'done' | 'paused' | 'cancelled'
 export type Relation = 'personal' | 'freelance' | 'employee'
+export type Depth = 'none' | 'gallery' | 'full'
+export type Frame = 'phone' | 'tablet' | 'browser' | 'none'
+
+export type GalleryShot = {
+  key: string
+  imageUrl: string
+  width: number
+  height: number
+  frame: Frame
+  caption?: string | null
+}
 
 export type Project = {
   slug: string
@@ -28,6 +39,20 @@ export type Project = {
   relation: Relation
   tech: string[]
   summary: string
+  depth: Depth
+  gallery: GalleryShot[]
+}
+
+/**
+ * Derive a project's depth from its content (no manual field).
+ *
+ * @param p - object with optional body and gallery arrays
+ * @returns the depth level
+ */
+export function projectDepth(p: { hasBody?: boolean | null; galleryCount?: number | null }): Depth {
+  if (p.hasBody) return 'full'
+  if (p.galleryCount && p.galleryCount > 0) return 'gallery'
+  return 'none'
 }
 
 export const FILTERS = [
@@ -95,6 +120,8 @@ function toProject(
       pickLocale(typeof row.summary === 'object' ? row.summary : null, locale) ??
       pickLocale(typeof row.deck === 'object' ? row.deck : null, locale) ??
       '',
+    depth: projectDepth(row),
+    gallery: [],
   }
 }
 
@@ -122,6 +149,22 @@ export async function getProject(
   const row = await fetchSanity<CASE_STUDY_QUERY_RESULT>(CASE_STUDY_QUERY, {slug})
   if (!row) return undefined
   const stackTags = row.stack ?? []
+
+  const bodyObj = typeof row.body === 'object' && row.body !== null ? row.body as Record<string, unknown> : null
+  const hasBody = bodyObj && Array.isArray(bodyObj.en) && bodyObj.en.length > 0
+
+  const rawGallery = row.gallery ?? []
+  const gallery: GalleryShot[] = rawGallery
+    .filter((g) => g.imageUrl)
+    .map((g) => ({
+      key: g._key,
+      imageUrl: g.imageUrl!,
+      width: g.width ?? 1200,
+      height: g.height ?? 800,
+      frame: (g.frame as Frame) ?? 'browser',
+      caption: pickLocale(typeof g.caption === 'object' ? g.caption : null, locale),
+    }))
+
   return {
     slug: row.slug ?? '',
     name: row.name ?? '',
@@ -137,6 +180,8 @@ export async function getProject(
       pickLocale(typeof row.summary === 'object' ? row.summary : null, locale) ??
       pickLocale(typeof row.deck === 'object' ? row.deck : null, locale) ??
       '',
+    depth: hasBody ? 'full' : gallery.length > 0 ? 'gallery' : 'none',
+    gallery,
   }
 }
 

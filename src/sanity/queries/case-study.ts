@@ -50,6 +50,14 @@ export const CASE_STUDY_QUERY = defineQuery(`
       alt,
       "asset": asset->
     },
+    "gallery": gallery[]{
+      _key,
+      frame,
+      caption,
+      "imageUrl": image.asset->url,
+      "width": image.asset->metadata.dimensions.width,
+      "height": image.asset->metadata.dimensions.height
+    },
     "related": *[
       _type == "project"
       && slug.current != $slug
