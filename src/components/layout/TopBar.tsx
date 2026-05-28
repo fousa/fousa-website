@@ -1,13 +1,10 @@
 "use client";
 /**
  * Site header: wordmark, inline nav (md+) and a mobile hamburger menu.
- * Nav labels come from the i18n dictionary; locale switcher uses the
- * existing LocaleSwitcher component for real EN/NL path swapping.
+ * Locale switch and theme toggle now live in the site footer.
  */
 import Link from "next/link";
 import { useState } from "react";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import { LocaleSwitcher } from "@/components/locale-switcher";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 
@@ -39,8 +36,6 @@ export function TopBar({ locale }: { locale: Locale }) {
               {n.label}
             </Link>
           ))}
-          <LocaleSwitcher currentLocale={locale} />
-          <ThemeToggle />
           <Link
             href={`/${locale}/about#contact`}
             className="font-semibold text-ink"
@@ -78,10 +73,6 @@ export function TopBar({ locale }: { locale: Locale }) {
             {t(locale, "hireMe")}
             <span className="text-accent"> →</span>
           </Link>
-          <div className="flex items-center gap-6 pt-1">
-            <LocaleSwitcher currentLocale={locale} />
-            <ThemeToggle />
-          </div>
         </nav>
       )}
     </header>
