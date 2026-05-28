@@ -25,6 +25,7 @@ import type {
   SITE_SETTINGS_QUERY_RESULT,
 } from "@/sanity.types";
 import { formatYearRange } from "@/lib/format-year-range";
+import { OutboundLink } from "@/components/layout/OutboundLink";
 
 const SITE_URL = "https://fousa.be";
 
@@ -132,14 +133,16 @@ export default async function AboutPage({
                   <span className="text-accent"> →</span>
                 </Link>
                 {cvUrl && (
-                  <a
+                  <OutboundLink
+                    kind="cv"
                     href={`${cvUrl}?dl=cv-${locale}.pdf`}
+                    locale={locale}
                     download
                     className="font-display text-sm font-semibold text-ink"
                   >
                     {t(locale, "cv")}
                     <span className="text-accent"> →</span>
-                  </a>
+                  </OutboundLink>
                 )}
               </div>
             </div>
@@ -219,25 +222,31 @@ export default async function AboutPage({
       {/* Contact panel — the one filled block */}
       <section id="contact" className="bg-panel px-5 py-14 md:px-11">
         <AvailabilityBadge status={availStatus} message={availMessage} />
-        <a
+        <OutboundLink
+          kind="email"
           href={`mailto:${email}`}
+          locale={locale}
           className="mt-4 block font-display text-[24px] font-bold tracking-[-0.02em] text-panel-text md:text-[32px]"
         >
           {email}
-        </a>
+        </OutboundLink>
         {socials.length > 0 && (
           <div className="mt-6 flex gap-6 text-sm text-panel-muted">
-            {socials.map((s) => (
-              <a
-                key={s.platform}
-                href={s.url ?? "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-colors hover:text-panel-text"
-              >
-                {s.label ?? s.platform}
-              </a>
-            ))}
+            {socials.map((s) => {
+              const kind = (s.platform?.toLowerCase() ?? "github") as
+                "github" | "linkedin" | "bluesky" | "instagram";
+              return (
+                <OutboundLink
+                  key={s.platform}
+                  kind={kind}
+                  href={s.url ?? "#"}
+                  locale={locale}
+                  className="transition-colors hover:text-panel-text"
+                >
+                  {s.label ?? s.platform}
+                </OutboundLink>
+              );
+            })}
           </div>
         )}
       </section>
