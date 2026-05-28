@@ -8,11 +8,13 @@
   --bg:#ffffff; --surface:#f4f4f5; --ink:#0c0c0d; --text:#3f3f46;
   --muted:#71717a; --faint:#a1a1aa; --line:#ececec; --hover:#fafafa;
   --accent:#ff4d1c; --panel:#0c0c0d; --panel-text:#ffffff; --panel-muted:#8a8a92;
+  --status-ok:#34c27a; --status-warn:#e0a83a; --status-full:#e5484d;
 }
 .dark {
   --bg:#0a0a0b; --surface:#141417; --ink:#f2f2f3; --text:#c2c2c8;
   --muted:#8a8a92; --faint:#5e5e66; --line:#1e1e22; --hover:#131316;
   --accent:#ff5a36; --panel:#141417; --panel-text:#f2f2f3; --panel-muted:#8a8a92;
+  --status-ok:#3ad08a; --status-warn:#edb24a; --status-full:#ff5d62;
 }
 
 @theme inline {
@@ -36,3 +38,11 @@
   label[for],
   summary { cursor:pointer; }
 }
+
+@keyframes avail-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 55%, transparent); }
+  70%  { box-shadow: 0 0 0 6px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.avail-pulse { animation: avail-pulse 2.4s infinite; }
+@media (prefers-reduced-motion: reduce) { .avail-pulse { animation: none; } }
