@@ -98,9 +98,14 @@ export default async function AboutPage({
                   {t(locale, "hireMe")}
                   <span className="text-accent"> →</span>
                 </Link>
-                <span className="font-display text-sm font-semibold text-muted">
-                  {t(locale, "downloadCv")}
-                </span>
+                <a
+                  href={`/cv-${locale}.pdf`}
+                  download
+                  className="font-display text-sm font-semibold text-ink"
+                >
+                  {t(locale, "cv")}
+                  <span className="text-accent"> →</span>
+                </a>
               </div>
             </div>
             {/* Portrait placeholder */}
