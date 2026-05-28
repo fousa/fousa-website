@@ -2,14 +2,13 @@
  * Hero — portrait + introduction text. Photo on the left at md+; stacks
  * to single column on mobile.
  *
- * Portrait: real image if Profile.portrait is set in Sanity, otherwise
+ * Portrait: real image if Profile.portraitUrl is set in Sanity, otherwise
  * the glider illustration placeholder.
  *
  * Text: small uppercase sepia label, large bold greeting, two paragraphs
  * of bio. Bio is Portable Text from Sanity.
  */
 import Image from 'next/image'
-import {urlFor} from '@/sanity/client'
 import {pickLocale} from '@/i18n/pick-locale'
 import {t} from '@/i18n/messages'
 import {PortableTextRenderer} from '@/components/portable-text'
@@ -28,15 +27,14 @@ export function HeroSection({profile, locale}: {profile: Profile; locale: Locale
       : null,
     locale
   )
-  const portraitAsset = profile.portrait?.asset
 
   return (
     <section className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6 md:gap-8 items-start">
       <div className="aspect-square rounded-lg overflow-hidden">
-        {portraitAsset ? (
+        {profile.portraitUrl ? (
           <Image
-            src={urlFor(portraitAsset).width(440).height(440).url()}
-            alt={profile.portrait?.alt ?? profile.name ?? 'Portrait'}
+            src={profile.portraitUrl}
+            alt={profile.name ?? 'Portrait'}
             width={440}
             height={440}
             className="size-full object-cover"

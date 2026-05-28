@@ -488,48 +488,75 @@ export type AllSanitySchemaTypes =
 
 // Source: src/sanity/queries/about.ts
 // Variable: ABOUT_QUERY
-// Query: {    "profile": *[_id == "profile"][0]{      name,      tagline,      bio,      location,      email,      socialLinks,      vatNumber,      copyrightYear,      "portrait": portrait{        alt,        "asset": asset->      },      "cv": cv{        "asset": asset->      }    },    "employers": *[_type == "employer"] | order(startYear desc, order desc) {      _id,      name,      role,      startYear,      endYear,      engagement,      "slug": "employer-" + lower(name)    },    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {      _id,      name,      "slug": slug.current,      deck,      year,      state,      liveUrl    }  }
+// Query: {    "profile": *[_id == "profile"][0]{      name,      tagline,      leadHeadline,      leadSubline,      aboutHeadline,      bio,      beyondCode[]{ title, body },      location,      email,      socialLinks,      "cvEnUrl": cvEn.asset->url,      "cvNlUrl": cvNl.asset->url,      vatNumber,      copyrightYear,      "portraitUrl": portrait.asset->url    },    "employers": *[_type == "employer"] | order(startYear desc, order desc) {      _id,      name,      role,      startYear,      endYear,      engagement,      "slug": "employer-" + lower(name)    },    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {      _id,      name,      "slug": slug.current,      deck,      year,      state,      liveUrl    }  }
 export type ABOUT_QUERY_RESULT = {
   profile:
     | {
         name: null;
         tagline: null;
+        leadHeadline: null;
+        leadSubline: null;
+        aboutHeadline: null;
         bio: null;
+        beyondCode: null;
         location: null;
         email: null;
         socialLinks: null;
+        cvEnUrl: null;
+        cvNlUrl: null;
         vatNumber: null;
         copyrightYear: null;
-        portrait: null;
-        cv: null;
+        portraitUrl: null;
       }
     | {
         name: string | null;
         tagline: null;
+        leadHeadline: null;
+        leadSubline: null;
+        aboutHeadline: null;
         bio: null;
+        beyondCode: null;
         location: null;
         email: null;
         socialLinks: null;
+        cvEnUrl: null;
+        cvNlUrl: null;
         vatNumber: null;
         copyrightYear: null;
-        portrait: null;
-        cv: null;
+        portraitUrl: null;
       }
     | {
         name: null;
         tagline: null;
+        leadHeadline: null;
+        leadSubline: null;
+        aboutHeadline: null;
         bio: null;
+        beyondCode: null;
         location: null;
         email: string | null;
         socialLinks: null;
+        cvEnUrl: null;
+        cvNlUrl: null;
         vatNumber: null;
         copyrightYear: null;
-        portrait: null;
-        cv: null;
+        portraitUrl: null;
       }
     | {
         name: string | null;
         tagline: {
+          en?: string;
+          nl?: string;
+        } | null;
+        leadHeadline: {
+          en?: string;
+          nl?: string;
+        } | null;
+        leadSubline: {
+          en?: string;
+          nl?: string;
+        } | null;
+        aboutHeadline: {
           en?: string;
           nl?: string;
         } | null;
@@ -571,6 +598,16 @@ export type ABOUT_QUERY_RESULT = {
             _key: string;
           }>;
         } | null;
+        beyondCode: Array<{
+          title: {
+            en?: string;
+            nl?: string;
+          } | null;
+          body: {
+            en?: string;
+            nl?: string;
+          } | null;
+        }> | null;
         location: string | null;
         email: string | null;
         socialLinks: Array<{
@@ -578,34 +615,11 @@ export type ABOUT_QUERY_RESULT = {
           url?: string;
           _key: string;
         }> | null;
+        cvEnUrl: string | null;
+        cvNlUrl: string | null;
         vatNumber: string | null;
         copyrightYear: number | null;
-        portrait: {
-          alt: null;
-          asset: {
-            _id: string;
-            _type: "sanity.imageAsset";
-            _createdAt: string;
-            _updatedAt: string;
-            _rev: string;
-            originalFilename?: string;
-            label?: string;
-            title?: string;
-            description?: string;
-            altText?: string;
-            sha1hash?: string;
-            extension?: string;
-            mimeType?: string;
-            size?: number;
-            assetId?: string;
-            uploadId?: string;
-            path?: string;
-            url?: string;
-            metadata?: SanityImageMetadata;
-            source?: SanityAssetSourceData;
-          } | null;
-        } | null;
-        cv: null;
+        portraitUrl: string | null;
       }
     | null;
   employers: Array<{
@@ -1105,7 +1119,7 @@ export type SITEMAP_SLUGS_QUERY_RESULT = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  {\n    "profile": *[_id == "profile"][0]{\n      name,\n      tagline,\n      bio,\n      location,\n      email,\n      socialLinks,\n      vatNumber,\n      copyrightYear,\n      "portrait": portrait{\n        alt,\n        "asset": asset->\n      },\n      "cv": cv{\n        "asset": asset->\n      }\n    },\n    "employers": *[_type == "employer"] | order(startYear desc, order desc) {\n      _id,\n      name,\n      role,\n      startYear,\n      endYear,\n      engagement,\n      "slug": "employer-" + lower(name)\n    },\n    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {\n      _id,\n      name,\n      "slug": slug.current,\n      deck,\n      year,\n      state,\n      liveUrl\n    }\n  }\n': ABOUT_QUERY_RESULT;
+    '\n  {\n    "profile": *[_id == "profile"][0]{\n      name,\n      tagline,\n      leadHeadline,\n      leadSubline,\n      aboutHeadline,\n      bio,\n      beyondCode[]{ title, body },\n      location,\n      email,\n      socialLinks,\n      "cvEnUrl": cvEn.asset->url,\n      "cvNlUrl": cvNl.asset->url,\n      vatNumber,\n      copyrightYear,\n      "portraitUrl": portrait.asset->url\n    },\n    "employers": *[_type == "employer"] | order(startYear desc, order desc) {\n      _id,\n      name,\n      role,\n      startYear,\n      endYear,\n      engagement,\n      "slug": "employer-" + lower(name)\n    },\n    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {\n      _id,\n      name,\n      "slug": slug.current,\n      deck,\n      year,\n      state,\n      liveUrl\n    }\n  }\n': ABOUT_QUERY_RESULT;
     '\n  *[_id == "availability"][0]{\n    status,\n    message,\n    nextOpening\n  }\n': AVAILABILITY_QUERY_RESULT;
     '\n  *[_type == "project" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    relation,\n    role,\n    client,\n    deck,\n    summary,\n    description,\n    outcome,\n    body,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    featured,\n    "employer": employer->{\n      _id,\n      name,\n      "slug": "employer-" + lower(name)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "coverUrl": cover.asset->url,\n    "coverAlt": cover.alt,\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    },\n    "related": *[\n      _type == "project"\n      && slug.current != $slug\n      && references(^.employer._ref)\n    ] | order(featured desc, year desc) [0...3] {\n      _id,\n      name,\n      "slug": slug.current,\n      year,\n      deck\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;

@@ -21,10 +21,10 @@ export function AvailabilityPill({
 }) {
   if (!availability) return null
 
-  const rawLabel = availability.label
-  const label = typeof rawLabel === 'string'
-    ? rawLabel
-    : pickLocale(rawLabel, locale) ?? ''
+  const rawMessage = availability.message
+  const label = typeof rawMessage === 'string'
+    ? rawMessage
+    : pickLocale(rawMessage, locale) ?? ''
   const status = availability.status
 
   const dotColor =

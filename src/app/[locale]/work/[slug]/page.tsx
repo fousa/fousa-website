@@ -2,22 +2,28 @@
  * Case study page at /<locale>/work/<slug>.
  *
  * Statically prerendered via generateStaticParams. Fetches a single project
- * by slug, renders meta grid + cover placeholder + body sections + related
- * work. Calls notFound() on slug miss.
+ * by slug from Sanity, renders meta grid + cover image + portable text body
+ * + related work. Calls notFound() on slug miss.
  */
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
-import { getProject, getProjects } from "@/lib/work";
+import { pickLocale } from "@/i18n/pick-locale";
+import { getProject, getProjectSlugs } from "@/lib/work";
+import { fetchSanity } from "@/sanity/fetch";
+import { CASE_STUDY_QUERY } from "@/sanity/queries/case-study";
 import { StatusDot } from "@/components/work/StatusDot";
+import { PortableTextRenderer } from "@/components/portable-text";
+import type { CASE_STUDY_QUERY_RESULT } from "@/sanity.types";
 
 const SITE_URL = "https://fousa.be";
 
 export async function generateStaticParams() {
-  const projects = await getProjects();
-  return projects.map((p) => ({ slug: p.slug }));
+  const slugs = await getProjectSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -65,8 +71,22 @@ export default async function CaseStudyPage({
   const project = await getProject(slug, locale);
   if (!project) notFound();
 
-  const allProjects = await getProjects(locale);
-  const related = allProjects.filter((p) => p.slug !== slug).slice(0, 3);
+  const raw = await fetchSanity<CASE_STUDY_QUERY_RESULT>(CASE_STUDY_QUERY, {
+    slug,
+  });
+
+  const body =
+    typeof raw?.body === "object" && raw.body !== null
+      ? (locale === "nl" &&
+          Array.isArray((raw.body as Record<string, unknown>).nl) &&
+          ((raw.body as Record<string, unknown>).nl as unknown[]).length > 0
+          ? (raw.body as Record<string, unknown>).nl
+          : (raw.body as Record<string, unknown>).en) ?? null
+      : null;
+
+  const coverUrl = raw?.coverUrl ?? null;
+  const coverAlt = raw?.coverAlt ?? project.name;
+  const related = raw?.related ?? [];
 
   return (
     <article id="main">
@@ -118,23 +138,30 @@ export default async function CaseStudyPage({
         </div>
       </header>
 
-      {/* Cover placeholder */}
-      <div className="mx-5 h-[240px] rounded bg-surface md:mx-11 md:h-[360px]" />
+      {/* Cover */}
+      {coverUrl ? (
+        <div className="mx-5 md:mx-11">
+          <Image
+            src={coverUrl}
+            alt={coverAlt}
+            width={1200}
+            height={600}
+            className="h-auto w-full rounded object-cover"
+          />
+        </div>
+      ) : (
+        <div className="mx-5 h-[240px] rounded bg-surface md:mx-11 md:h-[360px]" />
+      )}
 
-      {/* Body sections */}
-      <div className="space-y-10 px-5 py-12 md:px-11">
-        {(["context", "approach", "outcome"] as const).map((section) => (
-          <section key={section}>
-            <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
-              {t(locale, section)}
-            </h2>
-            <p className="mt-4 max-w-[600px] text-[15px] leading-[1.65] text-text">
-              Case study content will be loaded from Sanity once the project
-              schema is connected. This placeholder demonstrates the layout.
-            </p>
-          </section>
-        ))}
-      </div>
+      {/* Body */}
+      {body && (
+        <div className="px-5 py-12 md:px-11">
+          <PortableTextRenderer
+            value={body as any[]}
+            className="max-w-[600px] text-[15px] leading-[1.65] text-text"
+          />
+        </div>
+      )}
 
       {/* Related work */}
       {related.length > 0 && (
@@ -153,7 +180,7 @@ export default async function CaseStudyPage({
                   {r.name}
                 </span>
                 <span className="mt-1 block text-[13px] text-muted">
-                  {r.client} · {r.year}
+                  {r.year}
                 </span>
               </Link>
             ))}

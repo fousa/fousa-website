@@ -15,19 +15,19 @@ export const ABOUT_QUERY = defineQuery(`
     "profile": *[_id == "profile"][0]{
       name,
       tagline,
+      leadHeadline,
+      leadSubline,
+      aboutHeadline,
       bio,
+      beyondCode[]{ title, body },
       location,
       email,
       socialLinks,
+      "cvEnUrl": cvEn.asset->url,
+      "cvNlUrl": cvNl.asset->url,
       vatNumber,
       copyrightYear,
-      "portrait": portrait{
-        alt,
-        "asset": asset->
-      },
-      "cv": cv{
-        "asset": asset->
-      }
+      "portraitUrl": portrait.asset->url
     },
     "employers": *[_type == "employer"] | order(startYear desc, order desc) {
       _id,
