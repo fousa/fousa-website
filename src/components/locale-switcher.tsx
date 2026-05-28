@@ -1,11 +1,7 @@
 'use client'
-// Client component: needs usePathname + useRouter to swap the locale prefix
-// without forcing a full page reload.
-
 /**
- * EN / NL toggle in the top bar. Reads the current path, swaps the locale
- * segment, and pushes the new URL. The middleware persists the choice in a
- * cookie automatically on the next request.
+ * EN / NL toggle. Reads the current path, swaps the locale segment,
+ * and pushes the new URL. The middleware persists the choice via cookie.
  */
 import {usePathname, useRouter} from 'next/navigation'
 import {clsx} from 'clsx'
@@ -22,16 +18,16 @@ export function LocaleSwitcher({currentLocale}: {currentLocale: Locale}) {
   }
 
   return (
-    <div className="flex gap-0.5 font-mono text-[11px] uppercase tracking-wider">
+    <div className="flex gap-0.5 font-mono text-xs uppercase tracking-wider">
       {locales.map((locale, i) => (
         <span key={locale} className="flex items-center">
-          {i > 0 && <span className="mx-1 text-ink-faint" aria-hidden>/</span>}
+          {i > 0 && <span className="mx-1 text-faint" aria-hidden>/</span>}
           <button
             type="button"
             onClick={() => switchTo(locale)}
             className={clsx(
               'cursor-pointer transition-colors',
-              locale === currentLocale ? 'text-ink font-medium' : 'text-ink-muted hover:text-ink'
+              locale === currentLocale ? 'text-ink font-medium' : 'text-faint hover:text-ink'
             )}
             aria-current={locale === currentLocale ? 'true' : undefined}
             aria-label={`Switch to ${locale === 'en' ? 'English' : 'Dutch'}`}

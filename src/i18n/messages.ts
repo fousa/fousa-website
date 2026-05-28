@@ -72,6 +72,7 @@ export const messages = {
     viewProject: 'View project',
     viewSource: 'View source',
     viewWriteup: 'View writeup',
+    work: 'Work',
     year: 'Year',
   },
   nl: {
@@ -136,6 +137,7 @@ export const messages = {
     viewProject: 'Project bekijken',
     viewSource: 'Bron bekijken',
     viewWriteup: 'Artikel bekijken',
+    work: 'Werk',
     year: 'Jaar',
   },
 } as const satisfies Record<Locale, Record<string, string>>
