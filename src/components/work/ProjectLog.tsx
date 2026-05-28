@@ -40,12 +40,12 @@ export function ProjectLog({
   return (
     <section>
       {/* Filter bar */}
-      <div className="flex gap-6 overflow-x-auto border-b border-line px-5 md:px-11">
+      <div className="flex flex-wrap gap-x-6 gap-y-3 border-b border-line px-5 pt-1 md:flex-nowrap md:gap-y-0 md:px-11 md:pt-0">
         {FILTERS.map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`-mb-px shrink-0 border-b-[1.5px] pb-[14px] text-[13.5px] font-medium transition-colors ${
+            className={`-mb-px shrink-0 whitespace-nowrap border-b-[1.5px] pb-3 text-[13.5px] font-medium transition-colors cursor-pointer md:pb-[14px] ${
               filter === f
                 ? "border-accent text-ink"
                 : "border-transparent text-faint hover:text-muted"
