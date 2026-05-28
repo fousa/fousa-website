@@ -1,7 +1,7 @@
 'use client'
 /**
  * EN / NL toggle. Reads the current path, swaps the locale segment,
- * and pushes the new URL. The middleware persists the choice via cookie.
+ * and pushes the new URL. The proxy persists the choice via cookie.
  */
 import {usePathname, useRouter} from 'next/navigation'
 import {clsx} from 'clsx'

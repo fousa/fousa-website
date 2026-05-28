@@ -1,3 +1,11 @@
+/**
+ * Edge proxy — locale detection and redirect.
+ *
+ * Reads the preferred locale from a cookie or Accept-Language header,
+ * then redirects bare paths (e.g. `/`) to the locale-prefixed version.
+ * Paths that already have a locale segment pass through with an
+ * `x-pathname` header so the root layout can read the current locale.
+ */
 import {NextResponse, type NextRequest} from 'next/server'
 import {defaultLocale, isLocale} from '@/i18n/config'
 
@@ -17,7 +25,7 @@ function detectLocale(req: NextRequest): string {
   return defaultLocale
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const {pathname} = req.nextUrl
 
   if (

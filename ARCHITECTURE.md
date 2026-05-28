@@ -12,7 +12,7 @@ fousa/
 ├── scripts/                  ← one-shot maintenance scripts
 │   └── seed-stack-tags.ts    ← seed initial Stack tag documents
 └── src/
-    ├── middleware.ts         ← locale detection + redirect
+    ├── proxy.ts             ← locale detection + redirect (edge proxy)
     ├── app/
     │   ├── layout.tsx        ← root layout (fonts, metadata, no-flash script)
     │   ├── globals.css       ← design tokens + base layer (minimal-modern)
@@ -112,7 +112,7 @@ At render time, missing Dutch fields fall back to English. The Next.js side read
 
 ## Routing
 
-- `/` → middleware redirects to `/en` or `/nl` based on cookie / `Accept-Language`
+- `/` → proxy redirects to `/en` or `/nl` based on cookie / `Accept-Language`
 - `/en`, `/nl` → the log (homepage)
 - `/en/about`, `/nl/about` → about page
 - `/en/work/<slug>`, `/nl/work/<slug>` → case study page (minimal-modern)
