@@ -58,8 +58,9 @@ fousa/
     │   ├── layout/
     │   │   ├── TopBar.tsx       ← sticky header (wordmark, nav, hamburger); scroll-revealed hairline + blur
     │   │   ├── use-scrolled.ts  ← IntersectionObserver hook: true once a sentinel leaves the viewport
-    │   │   ├── SiteFooter.tsx   ← copyright, locale switch, theme toggle
-    │   │   └── LocaleSwitch.tsx ← responsive EN/NL switch (full names desktop, codes mobile)
+    │   │   ├── SiteFooter.tsx   ← copyright, locale switch, theme toggle, privacy note
+    │   │   ├── LocaleSwitch.tsx ← responsive EN/NL switch (full names desktop, codes mobile)
+    │   │   └── OutboundLink.tsx ← <a> wrapper that fires outbound_click analytics event
     │   ├── work/
     │   │   ├── ProjectLog.tsx   ← filterable project table/cards with expand
     │   │   ├── ToolingChip.tsx  ← outline "AI-assisted" pill, shown when featureTooling is true
@@ -72,6 +73,7 @@ fousa/
     │   └── case-study/          ← legacy Sanity-connected case study components
     ├── lib/
     │   ├── work.ts              ← Project type, filters, getProjects/getProject
+    │   ├── analytics.ts         ← typed track() wrapper over @vercel/analytics
     │   ├── filter-projects.ts   ← stack category + engagement filtering (Sanity)
     │   ├── employer-filters.ts  ← derive dominant stack per employer
     │   ├── format-year-range.ts ← format year or year range
@@ -133,6 +135,19 @@ At render time, missing Dutch fields fall back to English. The Next.js side read
 ## Rendering
 
 SSG with on-demand ISR. Pages build at deploy time; Sanity webhook hits `/api/revalidate` whenever content changes, which calls `revalidatePath` for the affected routes. Visitors always get a CDN-cached HTML response.
+
+## Analytics
+
+Vercel Analytics (cookie-less, no consent banner). Mounted once in the locale layout via `<Analytics />`. Custom events emitted through the typed `track()` wrapper in `lib/analytics.ts`:
+
+| Event | Source | Properties |
+|---|---|---|
+| `project_expand` | ProjectLog | slug, depth, locale |
+| `project_open` | ProjectLog (DepthLink) | slug, depth, target, locale |
+| `filter_select` | ProjectLog | filter, locale |
+| `locale_switch` | LocaleSwitch | from, to, path |
+| `theme_toggle` | ThemeToggle | to |
+| `outbound_click` | OutboundLink | kind, href, locale |
 
 ## Conventions
 
