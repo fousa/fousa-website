@@ -83,10 +83,10 @@ export function ProjectLog({
       {/* Mobile cards */}
       <ul className="md:hidden">
         {rows.map((p) => (
-          <li key={p.slug} className="border-t border-line first:border-t-0">
+          <li key={p.slug} className={`border-t border-line first:border-t-0 ${open === p.slug ? "bg-hover" : ""}`}>
             <button
               onClick={() => toggle(p.slug)}
-              className={`w-full px-5 py-[17px] text-left ${open === p.slug ? "bg-hover" : ""}`}
+              className="w-full px-5 py-[17px] text-left cursor-pointer"
             >
               <div className="flex items-center justify-between gap-3">
                 <span
