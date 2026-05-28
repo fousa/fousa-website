@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
+import { Wordmark } from "@/components/brand/Wordmark";
 import { useScrolled } from "./use-scrolled";
 
 export function TopBar({ locale }: { locale: Locale }) {
@@ -35,7 +36,7 @@ export function TopBar({ locale }: { locale: Locale }) {
           href={`/${locale}`}
           className="font-display text-[19px] font-bold tracking-[-0.02em]"
         >
-          fousa<span className="text-accent">.</span>be
+          <Wordmark />
         </Link>
 
         {/* Desktop nav */}

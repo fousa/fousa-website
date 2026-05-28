@@ -4,6 +4,7 @@
 import { LocaleSwitch } from "./LocaleSwitch";
 import { InfoTip } from "./InfoTip";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { Wordmark } from "@/components/brand/Wordmark";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 
@@ -13,7 +14,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
     <footer className="border-t border-line">
       <div className="flex items-center justify-between gap-4 px-5 py-6 text-[13px] text-faint md:px-11 md:py-7">
         <span className="inline-flex items-center gap-2">
-          © {year} fousa<span className="text-accent">.</span>be
+          © {year} <Wordmark />
           <InfoTip label={t(locale, "privacyLabel")}>
             {t(locale, "privacyBody")}
           </InfoTip>
