@@ -46,6 +46,8 @@ export const PROJECTS_QUERY = defineQuery(`
       alt,
       "asset": asset->
     },
+    tooling,
+    featureTooling,
     "hasBody": count(body.en) > 0,
     "galleryCount": count(gallery)
   }
