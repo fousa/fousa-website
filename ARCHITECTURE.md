@@ -61,9 +61,11 @@ fousa/
     │   ├── work/
     │   │   ├── ProjectLog.tsx   ← filterable project table/cards with expand
     │   │   └── StatusDot.tsx    ← dot + word status indicator
+    │   ├── about/
+    │   │   ├── AvailabilityBadge.tsx ← coloured dot + label for contact panel
+    │   │   └── …                ← legacy Sanity-connected about components
     │   ├── locale-switcher.tsx  ← EN/NL path-swap toggle
     │   ├── log/                 ← legacy Sanity-connected log components
-    │   ├── about/               ← legacy Sanity-connected about components
     │   └── case-study/          ← legacy Sanity-connected case study components
     ├── lib/
     │   ├── work.ts              ← Project type, filters, getProjects/getProject
@@ -93,7 +95,7 @@ Five document types. Two singletons (Profile, Availability) edited in place from
 
 ### Singletons
 - **Profile**: bio, photo, contact links, CV file, VAT number. Rendered on the about page hero and the site footer.
-- **Availability**: status pill driven by an enum (`available` / `booked` / `next-opening`) plus a label string. Rendered in the top bar on every page.
+- **Availability**: status driven by an enum (`available` / `after-hours` / `unavailable`) plus a localized label and optional detail line. Rendered as a coloured dot + label in the contact panel (green = available, amber = after-hours, red = full).
 
 ### Collections
 - **Employer**: every job and freelance entity. Drives the career timeline on the about page. Projects reference an Employer so the timeline can show what was built where.
@@ -102,7 +104,7 @@ Five document types. Two singletons (Profile, Availability) edited in place from
 
 ## Content layer (`lib/work.ts`)
 
-Typed `Project` interface and filter helpers. Currently backed by static sample data; swap `getProjects`/`getProject` bodies for GROQ queries when ready — the component interface stays identical.
+Typed `Project` interface with two-axis tagging (`relation`: personal/freelance/employee; `tech`: ios/rails/web/…) and filter helpers. Filters: All, Personal, Freelance, Employee, iOS, Rails, Other. Currently backed by static sample data; swap `getProjects`/`getProject` bodies for GROQ queries when ready — the component interface stays identical.
 
 ## i18n
 
