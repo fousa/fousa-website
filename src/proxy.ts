@@ -1,33 +1,23 @@
 /**
- * Edge proxy — locale detection and redirect.
+ * Edge proxy — locale routing with unprefixed default.
  *
- * Reads the preferred locale from a cookie or Accept-Language header,
- * then redirects bare paths (e.g. `/`) to the locale-prefixed version.
- * Paths that already have a locale segment pass through with an
- * `x-pathname` header so the root layout can read the current locale.
+ * English is the default locale and never appears in the URL:
+ *   /           → en
+ *   /about      → en
+ *   /nl         → nl
+ *   /nl/about   → nl
+ *   /en/about   → 308 → /about   (canonical redirect)
+ *
+ * No browser-locale detection, no cookies, no redirect flicker —
+ * the URL alone determines the language.
  */
 import {NextResponse, type NextRequest} from 'next/server'
 import {defaultLocale, isLocale} from '@/i18n/config'
 
-const LOCALE_COOKIE = 'NEXT_LOCALE'
-
-function detectLocale(req: NextRequest): string {
-  const cookieLocale = req.cookies.get(LOCALE_COOKIE)?.value
-  if (cookieLocale && isLocale(cookieLocale)) return cookieLocale
-
-  const acceptLanguage = req.headers.get('accept-language') || ''
-  const preferred = acceptLanguage
-    .split(',')
-    .map((l) => l.split(';')[0].trim().toLowerCase().slice(0, 2))
-  for (const lang of preferred) {
-    if (isLocale(lang)) return lang
-  }
-  return defaultLocale
-}
-
 export function proxy(req: NextRequest) {
   const {pathname} = req.nextUrl
 
+  // Skip non-page paths
   if (
     pathname.startsWith('/studio') ||
     pathname.startsWith('/api') ||
@@ -38,24 +28,29 @@ export function proxy(req: NextRequest) {
     return NextResponse.next()
   }
 
-  const localeInPath = pathname.split('/')[1]
+  const seg1 = pathname.split('/')[1]
 
-  if (isLocale(localeInPath)) {
+  // /en/... → redirect to unprefixed (canonical English form)
+  if (seg1 === defaultLocale) {
+    const url = req.nextUrl.clone()
+    const rest = pathname.slice(`/${defaultLocale}`.length) || '/'
+    url.pathname = rest
+    return NextResponse.redirect(url, 308)
+  }
+
+  // /nl/... → pass through, rewrite to [locale]=nl
+  if (isLocale(seg1)) {
     const res = NextResponse.next()
     res.headers.set('x-pathname', pathname)
-    res.cookies.set(LOCALE_COOKIE, localeInPath, {
-      maxAge: 60 * 60 * 24 * 365,
-      path: '/',
-    })
     return res
   }
 
-  const locale = detectLocale(req)
+  // Unprefixed path → rewrite to /en/... internally (no redirect)
   const url = req.nextUrl.clone()
-  url.pathname = `/${locale}${pathname === '/' ? '' : pathname}`
-  return NextResponse.redirect(url)
+  url.pathname = `/${defaultLocale}${pathname === '/' ? '' : pathname}`
+  return NextResponse.rewrite(url)
 }
 
 export const config = {
-  matcher: ['/', '/en/:path*', '/nl/:path*'],
+  matcher: ['/((?!_next|studio|api|og).*)'],
 }
