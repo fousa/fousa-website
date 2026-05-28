@@ -12,7 +12,7 @@ export function HomeLead({
   filterIntro: string;
 }) {
   return (
-    <div className="px-5 pb-[34px] pt-12 md:px-11 md:pt-16">
+    <div className="px-5 pb-10 pt-10 md:px-11 md:pb-16 md:pt-16">
       <h1 className="font-display text-[40px] font-bold leading-[1] tracking-[-0.035em] text-ink sm:text-[52px] md:text-[56px]">
         {name}
         <span className="text-accent">.</span>
