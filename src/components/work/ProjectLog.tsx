@@ -134,7 +134,7 @@ function Row({
       <tr
         role="button"
         onClick={onToggle}
-        className={`group text-[14.5px] text-text [&>td]:border-t [&>td]:border-line ${open ? "" : "hover:[&>td]:bg-hover"}`}
+        className={`group cursor-pointer text-[14.5px] text-text [&>td]:border-t [&>td]:border-line ${open ? "[&>td]:bg-hover" : "hover:[&>td]:bg-hover"}`}
       >
         <td className="px-11 py-5 align-top">
           <span
@@ -156,7 +156,7 @@ function Row({
         </td>
       </tr>
       {open && (
-        <tr>
+        <tr className="[&>td]:bg-hover">
           <td colSpan={6} className="px-11 pb-7">
             <div className="max-w-[580px] border-l-2 border-accent pl-5">
               <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
