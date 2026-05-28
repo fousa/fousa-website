@@ -1,52 +1,26 @@
 /**
- * About page — hero, career, beyond code, contact footer.
- *
- * Fetches three things server-side: the about-page data (profile, employers,
- * own apps), the full project list (so we can derive employer stack categories
- * for the timeline filter links), and availability (for the footer pill).
- *
- * The TopBar in the parent locale layout already fetches profile + availability
- * for its own rendering; Next dedupes the same query, so total round-trips stay
- * minimal.
+ * About page — hero, career timeline, beyond code columns, and the dark
+ * contact panel. Uses new minimal-modern tokens while preserving locale
+ * metadata from prior phases.
  */
-import {notFound} from 'next/navigation'
-import type {Metadata} from 'next'
-import {isLocale} from '@/i18n/config'
-import {t} from '@/i18n/messages'
-import {fetchSanity} from '@/sanity/fetch'
-import {ABOUT_QUERY} from '@/sanity/queries/about'
-import {PROJECTS_QUERY} from '@/sanity/queries/projects'
-import {AVAILABILITY_QUERY} from '@/sanity/queries/availability'
-import {deriveEmployerStackCategories} from '@/lib/employer-filters'
-import {HeroSection} from '@/components/about/hero-section'
-import {CareerSection} from '@/components/about/career-section'
-import {BeyondCodeSection} from '@/components/about/beyond-code-section'
-import {ContactFooter} from '@/components/about/contact-footer'
-import type {
-  ABOUT_QUERY_RESULT,
-  PROJECTS_QUERY_RESULT,
-  AVAILABILITY_QUERY_RESULT,
-} from '@/sanity.types'
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { isLocale } from "@/i18n/config";
+import { t } from "@/i18n/messages";
 
-const SITE_URL = 'https://fousa.be'
+const SITE_URL = "https://fousa.be";
 
-/**
- * Per-locale metadata for the about page.
- *
- * Main reason: an explicit `alternates.canonical` so we override the
- * inherited homepage canonical from [locale]/layout.tsx. Without this,
- * Google treats /en/about as a duplicate of /en and skips indexing it.
- */
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{locale: string}>
+  params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const {locale} = await params
-  if (!isLocale(locale)) return {}
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
 
-  const title = t(locale, 'aboutTitle')
-  const description = t(locale, 'aboutDescription')
+  const title = t(locale, "aboutTitle");
+  const description = t(locale, "aboutDescription");
 
   return {
     title,
@@ -62,90 +36,158 @@ export async function generateMetadata({
       title,
       description,
       url: `${SITE_URL}/${locale}/about`,
-      siteName: 'fousa.be',
-      locale: locale === 'nl' ? 'nl_BE' : 'en_US',
-      type: 'profile',
+      siteName: "fousa.be",
+      locale: locale === "nl" ? "nl_BE" : "en_US",
+      type: "profile",
     },
-    twitter: {
-      card: 'summary',
-      title,
-      description,
-    },
-  }
+    twitter: { card: "summary", title, description },
+  };
 }
+
+/** Placeholder career rows until Employer data comes from Sanity. */
+const CAREER = [
+  { year: "2022 – now", role: "Freelance iOS Lead", company: "fousa" },
+  { year: "2018 – 2022", role: "Senior iOS Engineer", company: "iCapps" },
+  { year: "2014 – 2018", role: "iOS Developer", company: "Appwise" },
+  { year: "2008 – 2014", role: "Web Developer", company: "Various" },
+];
+
+/** Placeholder beyond-code items. */
+const BEYOND = [
+  {
+    title: "Gliding",
+    text: "Reading thermals over the Belgian heath since the early days. Both flying gliders and writing software require reading the conditions carefully.",
+  },
+  {
+    title: "Open source",
+    text: "Maintainer of several Swift and Ruby libraries. Building tools I actually use, then sharing them.",
+  },
+  {
+    title: "Photography",
+    text: "Documenting flights, landscapes, and the occasional street scene. Always with a light travel kit.",
+  },
+];
 
 export default async function AboutPage({
   params,
 }: {
-  params: Promise<{locale: string}>
+  params: Promise<{ locale: string }>;
 }) {
-  const {locale} = await params
-  if (!isLocale(locale)) notFound()
-
-  const [aboutData, projects, availability] = await Promise.all([
-    fetchSanity<ABOUT_QUERY_RESULT>(ABOUT_QUERY),
-    fetchSanity<PROJECTS_QUERY_RESULT>(PROJECTS_QUERY),
-    fetchSanity<AVAILABILITY_QUERY_RESULT>(AVAILABILITY_QUERY),
-  ])
-
-  if (!aboutData?.profile) {
-    return (
-      <main id="main" className="mx-auto max-w-6xl px-6 py-10">
-        <p className="font-mono text-[12px] text-ink-muted">
-          Profile not set — create the Profile singleton in /studio.
-        </p>
-      </main>
-    )
-  }
-
-  const profile = aboutData.profile
-  const employerStackCategories = deriveEmployerStackCategories(projects)
-  const employers = aboutData.employers ?? []
-  const ownApps = aboutData.ownApps ?? []
-
-  const personJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: profile.name ?? 'Jelle Vandebeeck',
-    url: `https://fousa.be/${locale}/about`,
-    email: profile.email ?? undefined,
-    jobTitle: locale === 'nl' ? 'iOS- en Rails-ontwikkelaar' : 'iOS and Rails developer',
-    worksFor: {
-      '@type': 'Organization',
-      name: 'fousa',
-    },
-    sameAs: (profile.socialLinks ?? [])
-      .map((link) => link.url)
-      .filter(Boolean),
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Edegem',
-      addressCountry: 'BE',
-    },
-  }
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{__html: JSON.stringify(personJsonLd)}}
-      />
-      <main id="main" className="mx-auto max-w-6xl px-6 py-10 space-y-12">
-        <HeroSection profile={profile} locale={locale} />
-        <hr className="border-t border-ink/10" />
-        <CareerSection
-          employers={employers}
-          employerStackCategories={employerStackCategories}
-          locale={locale}
-        />
-        <hr className="border-t border-ink/10" />
-        <BeyondCodeSection ownApps={ownApps} locale={locale} />
+      <main id="main">
+        {/* Hero */}
+        <section className="px-5 pt-12 pb-10 md:px-11">
+          <div className="flex flex-col gap-10 md:flex-row md:gap-16">
+            <div className="flex-1">
+              <h1 className="font-display text-[28px] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[34px] md:leading-[1.1]">
+                Jelle Vandebeeck
+              </h1>
+              <p className="mt-4 max-w-[480px] text-[15px] leading-[1.65] text-text">
+                iOS developer and Rails engineer from Edegem, Belgium. Building
+                products since 2008, gliding the Belgian skies in between.
+              </p>
+              <div className="mt-6 flex gap-5">
+                <Link
+                  href={`/${locale}/about#contact`}
+                  className="font-display text-sm font-semibold text-ink"
+                >
+                  {t(locale, "hireMe")}
+                  <span className="text-accent"> →</span>
+                </Link>
+                <span className="font-display text-sm font-semibold text-muted">
+                  {t(locale, "downloadCv")}
+                </span>
+              </div>
+            </div>
+            {/* Portrait placeholder */}
+            <div className="h-[280px] w-[220px] shrink-0 rounded bg-surface md:h-[320px] md:w-[260px]" />
+          </div>
+        </section>
+
+        {/* Career */}
+        <section className="border-t border-line px-5 py-10 md:px-11">
+          <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
+            {t(locale, "career")}
+          </h2>
+          <div className="mt-6">
+            {CAREER.map((c) => (
+              <div
+                key={c.year}
+                className="flex gap-6 border-t border-line py-4 first:border-t-0"
+              >
+                <span className="w-[120px] shrink-0 font-mono text-[13px] text-muted">
+                  {c.year}
+                </span>
+                <div className="text-[14.5px]">
+                  <span className="font-display font-semibold text-ink">
+                    {c.role}
+                  </span>
+                  <span className="text-muted"> · {c.company}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Beyond code */}
+        <section className="border-t border-line px-5 py-10 md:px-11">
+          <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
+            {t(locale, "beyondCode")}
+          </h2>
+          <div className="mt-6 grid gap-8 md:grid-cols-3">
+            {BEYOND.map((b) => (
+              <div key={b.title}>
+                <h3 className="font-display text-base font-semibold text-ink">
+                  {b.title}
+                </h3>
+                <p className="mt-2 text-[14px] leading-[1.65] text-text">
+                  {b.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
       </main>
-      <ContactFooter
-        profile={profile}
-        availability={availability}
-        locale={locale}
-      />
+
+      {/* Contact panel — the one filled block */}
+      <section
+        id="contact"
+        className="mt-6 bg-panel px-5 py-14 md:px-11"
+      >
+        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-panel-muted">
+          {t(locale, "available")}
+        </p>
+        <a
+          href="mailto:jelle@fousa.be"
+          className="mt-4 block font-display text-[24px] font-bold tracking-[-0.02em] text-panel-text md:text-[32px]"
+        >
+          jelle@fousa.be
+        </a>
+        <div className="mt-6 flex gap-6 text-sm text-panel-muted">
+          <a
+            href="https://github.com/fousa"
+            className="transition-colors hover:text-panel-text"
+          >
+            GitHub
+          </a>
+          <a
+            href="https://linkedin.com/in/jellevandebeeck"
+            className="transition-colors hover:text-panel-text"
+          >
+            LinkedIn
+          </a>
+          <a
+            href="https://twitter.com/fousa"
+            className="transition-colors hover:text-panel-text"
+          >
+            Twitter
+          </a>
+        </div>
+      </section>
     </>
-  )
+  );
 }
