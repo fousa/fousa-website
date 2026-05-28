@@ -174,8 +174,12 @@ export type Availability = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  status?: "available" | "booked" | "next-opening";
+  status?: "available" | "after-hours" | "unavailable";
   label?: {
+    en?: string;
+    nl?: string;
+  };
+  detail?: {
     en?: string;
     nl?: string;
   };
@@ -537,25 +541,31 @@ export type ABOUT_QUERY_RESULT = {
 
 // Source: src/sanity/queries/availability.ts
 // Variable: AVAILABILITY_QUERY
-// Query: *[_id == "availability"][0]{    status,    label,    nextOpening  }
+// Query: *[_id == "availability"][0]{    status,    label,    detail,    nextOpening  }
 export type AVAILABILITY_QUERY_RESULT =
   | {
       status: null;
       label: null;
+      detail: null;
       nextOpening: null;
-    }
-  | {
-      status: "available" | "booked" | "next-opening" | null;
-      label: {
-        en?: string;
-        nl?: string;
-      } | null;
-      nextOpening: string | null;
     }
   | {
       status: null;
       label: string | null;
+      detail: null;
       nextOpening: null;
+    }
+  | {
+      status: "after-hours" | "available" | "unavailable" | null;
+      label: {
+        en?: string;
+        nl?: string;
+      } | null;
+      detail: {
+        en?: string;
+        nl?: string;
+      } | null;
+      nextOpening: string | null;
     }
   | null;
 
@@ -857,7 +867,7 @@ import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
     '\n  {\n    "profile": *[_id == "profile"][0]{\n      name,\n      tagline,\n      bio,\n      location,\n      email,\n      socialLinks,\n      vatNumber,\n      copyrightYear,\n      "portrait": portrait{\n        alt,\n        "asset": asset->\n      },\n      "cv": cv{\n        "asset": asset->\n      }\n    },\n    "employers": *[_type == "employer"] | order(startYear desc, order desc) {\n      _id,\n      name,\n      role,\n      startYear,\n      endYear,\n      engagement,\n      "slug": "employer-" + lower(name)\n    },\n    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {\n      _id,\n      name,\n      "slug": slug.current,\n      deck,\n      year,\n      state,\n      liveUrl\n    }\n  }\n': ABOUT_QUERY_RESULT;
-    '\n  *[_id == "availability"][0]{\n    status,\n    label,\n    nextOpening\n  }\n': AVAILABILITY_QUERY_RESULT;
+    '\n  *[_id == "availability"][0]{\n    status,\n    label,\n    detail,\n    nextOpening\n  }\n': AVAILABILITY_QUERY_RESULT;
     '\n  *[_type == "project" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    role,\n    client,\n    deck,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    featured,\n    "employer": employer->{\n      _id,\n      name,\n      "slug": "employer-" + lower(name)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    },\n    "related": *[\n      _type == "project"\n      && slug.current != $slug\n      && references(^.employer._ref)\n    ] | order(featured desc, year desc) [0...3] {\n      _id,\n      name,\n      "slug": slug.current,\n      year,\n      deck\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
     '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    location,\n    email,\n    socialLinks,\n    vatNumber,\n    copyrightYear,\n    "cv": cv{\n      "asset": asset->\n    }\n  }\n': PROFILE_QUERY_RESULT;
