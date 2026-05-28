@@ -93,7 +93,7 @@ Class-based dark mode (`.dark` on `<html>`). Tokens in `globals.css` via CSS cus
 - **One accent** (coral): links + arrows, live dot, active filter underline, brand period
 - **Hairlines, not boxes**: 1px `border-line` + whitespace, no shadows or filled cards (except the About contact panel `bg-panel`)
 - **Type roles**: Space Grotesk (display/headings/nav), Inter (body), Space Mono (data/eyebrow labels)
-- **Status = dot + word**, never a pill
+- **State = dot + word**, never a pill. Coral dot only for `active`; faint grey for all others
 
 Theme toggle persists to `localStorage`; an inline script in the root layout prevents flash on reload.
 
@@ -109,11 +109,11 @@ Six document types. Three singletons (Profile, Availability, Site Settings) edit
 ### Collections
 - **Employer**: every job and freelance entity. Drives the career timeline on the about page. Also referenced by Project via the `employer` field — shared document so career and project data stay in sync.
 - **Stack tag**: technology labels (Swift, Rails, etc.). Referenced by Project; pre-seeded via `pnpm seed:stack-tags`.
-- **Project**: the workhorse. Each Project is a row in the homepage log AND a detail page. Two ownership fields: `employer` (reference, shown only when engagement = full-time or internship) and `client` (string, the end customer). `engagement` (freelance/full-time/internship/student) drives homepage filters. `state` (live/cancelled/deprecated) drives the colored status dot. Three depth levels derived automatically from content: `full` (has body → case study), `gallery` (has gallery images → screenshot page with device frames), or `none` (no detail page). Gallery images each pick a frame (phone/tablet/browser/none). Optional `tooling` (i18nString) describes how the project was built — shown as a mono meta-line in the expanded zone. `featureTooling` (boolean) opts in for a subtle "AI-assisted" chip next to the name in the log. Also includes summary, body, cover, and grouped into Basics / Case study / Links tabs.
+- **Project**: the workhorse. Each Project is a row in the homepage log AND a detail page. Two ownership fields: `employer` (reference, shown only when engagement = full-time or internship) and `client` (string, the end customer). `engagement` (freelance/full-time/internship/student) drives homepage filters. `state` (active/maintained/archived/cancelled) drives the colored status dot — only `active` shows the coral accent. Three depth levels derived automatically from content: `full` (has body → case study), `gallery` (has gallery images → screenshot page with device frames), or `none` (no detail page). Gallery images each pick a frame (phone/tablet/browser/none). Optional `tooling` (i18nString) describes how the project was built — shown as a mono meta-line in the expanded zone. `featureTooling` (boolean) opts in for a subtle "AI-assisted" chip next to the name in the log. Also includes summary, body, cover, and grouped into Basics / Case study / Links tabs.
 
 ## Content layer (`lib/work.ts` + `lib/work-display.ts`)
 
-Typed `Project` interface with two-axis tagging (`engagement`: freelance/full-time/internship/student; `tech`: ios/rails/web/…) and filter helpers. Filters: All, Freelance, Full-time, Internship, iOS, Rails, Other. Project `state`: live/cancelled/deprecated. Backed by Sanity GROQ queries — `getProjects` / `getProject` / `getProjectSlugs` fetch and normalize Sanity data into the flat `Project` shape the components expect.
+Typed `Project` interface with two-axis tagging (`engagement`: freelance/full-time/internship/student; `tech`: ios/rails/web/…) and filter helpers. Filters: All, Freelance, Full-time, Internship, iOS, Rails, Other. Project `state`: active/maintained/archived/cancelled — only `active` gets the coral accent dot. Backed by Sanity GROQ queries — `getProjects` / `getProject` / `getProjectSlugs` fetch and normalize Sanity data into the flat `Project` shape the components expect.
 
 `forLabel()` in `work-display.ts` derives the "For" column from employer + client: "employer → client" when both exist, a single name when one, or "Personal" as fallback. `projectDepth()` derives `full` / `gallery` / `none` from content — no manual field. The `Frame` component (`components/work/Frame.tsx`) renders minimal hairline device frames (phone/tablet/browser) around gallery screenshots.
 
