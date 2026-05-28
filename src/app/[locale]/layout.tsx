@@ -1,12 +1,14 @@
 /**
- * Locale layout — validates the locale param, renders the TopBar, and wraps
- * every page. Keeps i18n routing and SEO metadata from prior phases intact.
+ * Locale layout — validates the locale param, renders the TopBar + SiteFooter,
+ * and wraps every page. Children fill the remaining height so the footer sits
+ * at the viewport bottom on short pages.
  */
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { locales, isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
 import { TopBar } from "@/components/layout/TopBar";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 
 const SITE_URL = "https://fousa.be";
 
@@ -54,7 +56,7 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) notFound();
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-bg focus:text-ink focus:px-3 focus:py-2 focus:rounded focus:outline focus:outline-2 focus:outline-accent"
@@ -62,7 +64,8 @@ export default async function LocaleLayout({
         {t(locale, "skipToContent")}
       </a>
       <TopBar locale={locale} />
-      {children}
-    </>
+      <div className="flex-1">{children}</div>
+      <SiteFooter />
+    </div>
   );
 }
