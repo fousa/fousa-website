@@ -102,13 +102,13 @@ Six document types. Three singletons (Profile, Availability, Site Settings) edit
 ### Collections
 - **Employer**: every job and freelance entity. Drives the career timeline on the about page. Also referenced by Project via the `employer` field — shared document so career and project data stay in sync.
 - **Stack tag**: technology labels (Swift, Rails, etc.). Referenced by Project; pre-seeded via `pnpm seed:stack-tags`.
-- **Project**: the workhorse. Each Project is a row in the homepage log AND a case study page. Two ownership fields: `employer` (reference, shown only when relation = employee) and `client` (string, the end customer). Fields also include relation (personal/freelance/employee), summary (i18n text), body (i18n portable text for the full case study), and cover image. Grouped into Basics / Case study / Links tabs.
+- **Project**: the workhorse. Each Project is a row in the homepage log AND a detail page. Two ownership fields: `employer` (reference, shown only when relation = employee) and `client` (string, the end customer). Three depth levels derived automatically from content: `full` (has body → case study), `gallery` (has gallery images → screenshot page with device frames), or `none` (no detail page). Gallery images each pick a frame (phone/tablet/browser/none). Also includes relation, summary, body, cover, and grouped into Basics / Case study / Links tabs.
 
 ## Content layer (`lib/work.ts` + `lib/work-display.ts`)
 
 Typed `Project` interface with two-axis tagging (`relation`: personal/freelance/employee; `tech`: ios/rails/web/…) and filter helpers. Filters: All, Personal, Freelance, Employee, iOS, Rails, Other. Backed by Sanity GROQ queries — `getProjects` / `getProject` / `getProjectSlugs` fetch and normalize Sanity data into the flat `Project` shape the components expect.
 
-`forLabel()` in `work-display.ts` derives the "For" column from employer + client: "employer → client" when both exist, a single name when one, or "Personal" as fallback.
+`forLabel()` in `work-display.ts` derives the "For" column from employer + client: "employer → client" when both exist, a single name when one, or "Personal" as fallback. `projectDepth()` derives `full` / `gallery` / `none` from content — no manual field. The `Frame` component (`components/work/Frame.tsx`) renders minimal hairline device frames (phone/tablet/browser) around gallery screenshots.
 
 ## i18n
 
