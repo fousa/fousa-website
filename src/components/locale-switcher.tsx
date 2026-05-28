@@ -26,7 +26,7 @@ export function LocaleSwitcher({currentLocale}: {currentLocale: Locale}) {
             type="button"
             onClick={() => switchTo(locale)}
             className={clsx(
-              'cursor-pointer transition-colors',
+              'transition-colors',
               locale === currentLocale ? 'text-ink font-medium' : 'text-faint hover:text-ink'
             )}
             aria-current={locale === currentLocale ? 'true' : undefined}

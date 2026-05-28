@@ -136,8 +136,9 @@ function Row({
   return (
     <>
       <tr
+        role="button"
         onClick={onToggle}
-        className={`group cursor-pointer text-[14.5px] text-text [&>td]:border-t [&>td]:border-line ${open ? "" : "hover:[&>td]:bg-hover"}`}
+        className={`group text-[14.5px] text-text [&>td]:border-t [&>td]:border-line ${open ? "" : "hover:[&>td]:bg-hover"}`}
       >
         <td className="px-11 py-5">
           <span
