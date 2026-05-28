@@ -6,9 +6,30 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FILTERS, matchesFilter, type Filter, type Project } from "@/lib/work";
+import { t } from "@/i18n/messages";
+import type { Locale } from "@/i18n/config";
 import { StatusDot } from "./StatusDot";
 
-export function ProjectLog({ projects }: { projects: Project[] }) {
+/** Map filter constants to i18n message keys. */
+const FILTER_KEYS = {
+  All: "filterAll",
+  Live: "filterLive",
+  Freelance: "filterFreelance",
+  Personal: "filterPersonal",
+  iOS: "filterIos",
+  Web: "filterWeb",
+} as const;
+
+/** Map table column headers to i18n keys. */
+const COLUMNS = ["project", "client", "stack", "role", "year", "status"] as const;
+
+export function ProjectLog({
+  projects,
+  locale,
+}: {
+  projects: Project[];
+  locale: Locale;
+}) {
   const [filter, setFilter] = useState<Filter>("All");
   const [open, setOpen] = useState<string | null>(null);
   const rows = projects.filter((p) => matchesFilter(p, filter));
@@ -28,7 +49,7 @@ export function ProjectLog({ projects }: { projects: Project[] }) {
                 : "border-transparent text-faint hover:text-muted"
             }`}
           >
-            {f}
+            {t(locale, FILTER_KEYS[f])}
           </button>
         ))}
       </div>
@@ -37,13 +58,11 @@ export function ProjectLog({ projects }: { projects: Project[] }) {
       <table className="hidden w-full border-collapse md:table">
         <thead>
           <tr className="text-left font-mono text-[11px] uppercase tracking-[0.09em] text-faint">
-            {["Project", "Client", "Stack", "Role", "Year", "Status"].map(
-              (h) => (
-                <th key={h} className="px-11 py-[18px] font-semibold">
-                  {h}
-                </th>
-              ),
-            )}
+            {COLUMNS.map((h) => (
+              <th key={h} className="px-11 py-[18px] font-semibold">
+                {t(locale, h)}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -51,6 +70,7 @@ export function ProjectLog({ projects }: { projects: Project[] }) {
             <Row
               key={p.slug}
               p={p}
+              locale={locale}
               open={open === p.slug}
               onToggle={() => toggle(p.slug)}
             />
@@ -85,10 +105,10 @@ export function ProjectLog({ projects }: { projects: Project[] }) {
                     {p.summary}
                   </p>
                   <Link
-                    href={`/work/${p.slug}`}
+                    href={`/${locale}/work/${p.slug}`}
                     className="font-display text-[13px] font-semibold text-ink"
                   >
-                    Read case study
+                    {t(locale, "readCaseStudy")}
                     <span className="text-accent"> →</span>
                   </Link>
                 </div>
@@ -104,10 +124,12 @@ export function ProjectLog({ projects }: { projects: Project[] }) {
 /** Single row in the desktop project table. */
 function Row({
   p,
+  locale,
   open,
   onToggle,
 }: {
   p: Project;
+  locale: Locale;
   open: boolean;
   onToggle: () => void;
 }) {
@@ -142,10 +164,10 @@ function Row({
                 {p.summary}
               </p>
               <Link
-                href={`/work/${p.slug}`}
+                href={`/${locale}/work/${p.slug}`}
                 className="font-display text-sm font-semibold text-ink"
               >
-                Read case study
+                {t(locale, "readCaseStudy")}
                 <span className="text-accent"> →</span>
               </Link>
             </div>

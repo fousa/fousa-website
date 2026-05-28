@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { isLocale } from "@/i18n/config";
+import { t } from "@/i18n/messages";
 import { getProject, getProjects } from "@/lib/work";
 import { StatusDot } from "@/components/work/StatusDot";
 
@@ -28,10 +29,12 @@ export async function generateMetadata({
   if (!isLocale(locale)) return {};
 
   const project = await getProject(slug, locale);
-  if (!project) return { title: "Not found" };
+  if (!project) return { title: t(locale, "notFoundTitle") };
+
+  const title = `${project.name} ${t(locale, "caseStudyMetaSuffix")}`;
 
   return {
-    title: `${project.name} — case study`,
+    title,
     description: project.summary,
     alternates: {
       canonical: `${SITE_URL}/${locale}/work/${slug}`,
@@ -41,7 +44,7 @@ export async function generateMetadata({
       },
     },
     openGraph: {
-      title: `${project.name} — case study`,
+      title,
       description: project.summary,
       url: `${SITE_URL}/${locale}/work/${slug}`,
       siteName: "fousa.be",
@@ -63,9 +66,7 @@ export default async function CaseStudyPage({
   if (!project) notFound();
 
   const allProjects = await getProjects(locale);
-  const related = allProjects
-    .filter((p) => p.slug !== slug)
-    .slice(0, 3);
+  const related = allProjects.filter((p) => p.slug !== slug).slice(0, 3);
 
   return (
     <article id="main">
@@ -75,7 +76,7 @@ export default async function CaseStudyPage({
           href={`/${locale}`}
           className="font-display text-sm font-semibold text-muted transition-colors hover:text-ink"
         >
-          ← Back to the log
+          ← {t(locale, "backToTheLog")}
         </Link>
       </div>
 
@@ -90,17 +91,17 @@ export default async function CaseStudyPage({
 
         <div className="mt-8 grid grid-cols-2 gap-6 md:flex md:gap-12">
           {[
-            { label: "Client", value: project.client },
-            { label: "Stack", value: project.stack },
-            { label: "Role", value: project.role },
-            { label: "Year", value: String(project.year) },
+            { label: t(locale, "client"), value: project.client },
+            { label: t(locale, "stack"), value: project.stack },
+            { label: t(locale, "role"), value: project.role },
+            { label: t(locale, "year"), value: String(project.year) },
           ].map((m) => (
             <div key={m.label}>
               <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
                 {m.label}
               </p>
               <p
-                className={`mt-1 text-[14.5px] ${m.label === "Year" ? "font-mono text-[13px] text-muted" : "text-text"}`}
+                className={`mt-1 text-[14.5px] ${m.label === t(locale, "year") ? "font-mono text-[13px] text-muted" : "text-text"}`}
               >
                 {m.value}
               </p>
@@ -108,7 +109,7 @@ export default async function CaseStudyPage({
           ))}
           <div>
             <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
-              Status
+              {t(locale, "status")}
             </p>
             <div className="mt-1">
               <StatusDot status={project.status} />
@@ -122,10 +123,10 @@ export default async function CaseStudyPage({
 
       {/* Body sections */}
       <div className="space-y-10 px-5 py-12 md:px-11">
-        {["Context", "Approach", "Outcome"].map((section) => (
+        {(["context", "approach", "outcome"] as const).map((section) => (
           <section key={section}>
             <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
-              {section}
+              {t(locale, section)}
             </h2>
             <p className="mt-4 max-w-[600px] text-[15px] leading-[1.65] text-text">
               Case study content will be loaded from Sanity once the project
@@ -139,7 +140,7 @@ export default async function CaseStudyPage({
       {related.length > 0 && (
         <section className="border-t border-line px-5 py-10 md:px-11">
           <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
-            Related work
+            {t(locale, "relatedWork")}
           </h2>
           <div className="mt-6 grid gap-6 md:grid-cols-3">
             {related.map((r) => (

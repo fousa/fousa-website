@@ -5,6 +5,7 @@
  */
 import Link from "next/link";
 import { headers } from "next/headers";
+import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 
 async function detectLocaleFromPath(): Promise<Locale> {
@@ -23,13 +24,13 @@ export default async function NotFound() {
     >
       <p className="font-mono text-[13px] font-semibold text-faint">404</p>
       <h1 className="mt-4 font-display text-[24px] font-bold tracking-[-0.02em] text-ink md:text-[28px]">
-        This page drifted off the map.
+        {t(locale, "notFoundHeadline")}
       </h1>
       <Link
         href={`/${locale}`}
         className="mt-8 font-display text-sm font-semibold text-ink"
       >
-        Back to the log
+        {t(locale, "backToTheLog")}
         <span className="text-accent"> →</span>
       </Link>
     </main>

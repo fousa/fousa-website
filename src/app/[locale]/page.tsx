@@ -4,6 +4,7 @@
  */
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
+import { t } from "@/i18n/messages";
 import { ProjectLog } from "@/components/work/ProjectLog";
 import { getProjects } from "@/lib/work";
 
@@ -21,14 +22,13 @@ export default async function Home({
     <main id="main">
       <div className="px-5 pb-[34px] pt-12 md:px-11">
         <h1 className="max-w-[560px] font-display text-[28px] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[34px] md:leading-[1.1]">
-          Freelance iOS &amp; web developer.
+          {t(locale, "homeHeadline")}
         </h1>
         <p className="mt-[14px] max-w-[480px] text-[15px] leading-[1.6] text-muted">
-          Twenty years and sixty-five projects, logged. Filter by what
-          you&rsquo;re looking for.
+          {t(locale, "homeSubline")}
         </p>
       </div>
-      <ProjectLog projects={projects} />
+      <ProjectLog projects={projects} locale={locale} />
     </main>
   );
 }
