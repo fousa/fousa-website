@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { locales, isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
+import { Analytics } from "@vercel/analytics/next";
 import { TopBar } from "@/components/layout/TopBar";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 
@@ -66,6 +67,7 @@ export default async function LocaleLayout({
       <TopBar locale={locale} />
       <div className="flex-1">{children}</div>
       <SiteFooter />
+      <Analytics />
     </div>
   );
 }
