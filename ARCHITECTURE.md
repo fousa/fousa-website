@@ -100,13 +100,15 @@ Six document types. Three singletons (Profile, Availability, Site Settings) edit
 - **Site Settings**: global email, ordered social links (platform + URL + label), localized meta description, OG image override. Social links render in the about page contact panel.
 
 ### Collections
-- **Employer**: every job and freelance entity. Drives the career timeline on the about page. Projects reference an Employer so the timeline can show what was built where.
+- **Employer**: every job and freelance entity. Drives the career timeline on the about page. Also referenced by Project via the `employer` field — shared document so career and project data stay in sync.
 - **Stack tag**: technology labels (Swift, Rails, etc.). Referenced by Project; pre-seeded via `pnpm seed:stack-tags`.
-- **Project**: the workhorse. Each Project is a row in the homepage log AND a case study page. Fields include relation (personal/freelance/employee), summary (i18n text), body (i18n portable text for the full case study), and cover image. Fields are grouped into Basics / Case study / Links tabs.
+- **Project**: the workhorse. Each Project is a row in the homepage log AND a case study page. Two ownership fields: `employer` (reference, shown only when relation = employee) and `client` (string, the end customer). Fields also include relation (personal/freelance/employee), summary (i18n text), body (i18n portable text for the full case study), and cover image. Grouped into Basics / Case study / Links tabs.
 
-## Content layer (`lib/work.ts`)
+## Content layer (`lib/work.ts` + `lib/work-display.ts`)
 
 Typed `Project` interface with two-axis tagging (`relation`: personal/freelance/employee; `tech`: ios/rails/web/…) and filter helpers. Filters: All, Personal, Freelance, Employee, iOS, Rails, Other. Backed by Sanity GROQ queries — `getProjects` / `getProject` / `getProjectSlugs` fetch and normalize Sanity data into the flat `Project` shape the components expect.
+
+`forLabel()` in `work-display.ts` derives the "For" column from employer + client: "employer → client" when both exist, a single name when one, or "Personal" as fallback.
 
 ## i18n
 
