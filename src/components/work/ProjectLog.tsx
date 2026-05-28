@@ -108,6 +108,12 @@ export function ProjectLog({
                   <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
                     {p.summary}
                   </p>
+                  {p.tooling && (
+                    <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.06em] text-faint">
+                      {t(locale, "toolingPrefix")} ·{" "}
+                      <span className="normal-case tracking-normal text-muted">{p.tooling}</span>
+                    </div>
+                  )}
                   <DepthLink depth={p.depth} slug={p.slug} locale={locale} size="sm" />
                 </div>
               </div>
@@ -165,6 +171,12 @@ function Row({
               <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
                 {p.summary}
               </p>
+              {p.tooling && (
+                <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.06em] text-faint">
+                  {t(locale, "toolingPrefix")} ·{" "}
+                  <span className="normal-case tracking-normal text-muted">{p.tooling}</span>
+                </div>
+              )}
               <DepthLink depth={p.depth} slug={p.slug} locale={locale} size="base" />
             </div>
           </td>
