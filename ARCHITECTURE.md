@@ -44,7 +44,8 @@ fousa/
     │   ├── schemas/
     │   │   ├── index.ts      ← barrel; add new schemas here
     │   │   ├── profile.ts    ← singleton: bio, contact, CV
-    │   │   ├── availability.ts ← singleton: status pill
+    │   │   ├── availability.ts ← singleton: status + message
+    │   │   ├── site-settings.ts ← singleton: email, socials, SEO
     │   │   ├── employer.ts   ← career timeline rows
     │   │   ├── stack-tag.ts  ← Swift, Rails, etc.
     │   │   └── project.ts    ← the workhorse — log row + case study
@@ -91,26 +92,27 @@ Theme toggle persists to `localStorage`; an inline script in the root layout pre
 
 ## Content model
 
-Five document types. Two singletons (Profile, Availability) edited in place from the pinned top of the Studio nav. Three collections (Employer, Stack tag, Project) — Project references Employer and Stack tag.
+Six document types. Three singletons (Profile, Availability, Site Settings) edited in place from the pinned top of the Studio nav. Three collections (Employer, Stack tag, Project) — Project references Employer and Stack tag.
 
 ### Singletons
-- **Profile**: bio, photo, contact links, CV file, VAT number. Rendered on the about page hero and the site footer.
-- **Availability**: status driven by an enum (`available` / `after-hours` / `unavailable`) plus a localized label and optional detail line. Rendered as a coloured dot + label in the contact panel (green = available, amber = after-hours, red = full).
+- **Profile**: name, tagline, homepage lead headline/subline, about headline, bio (portable text), portrait, beyond-code list, per-locale CV files (EN + NL), location, email, social links, VAT, copyright year. Drives the homepage lead, about page hero/bio/beyond-code, and CV download.
+- **Availability**: status enum (`available` / `after-hours` / `unavailable`) plus a localized `message` shown next to the coloured dot. Rendered in the about page contact panel (green = available, amber = after-hours, red = full).
+- **Site Settings**: global email, ordered social links (platform + URL + label), localized meta description, OG image override. Social links render in the about page contact panel.
 
 ### Collections
 - **Employer**: every job and freelance entity. Drives the career timeline on the about page. Projects reference an Employer so the timeline can show what was built where.
 - **Stack tag**: technology labels (Swift, Rails, etc.). Referenced by Project; pre-seeded via `pnpm seed:stack-tags`.
-- **Project**: the workhorse. Each Project is a row in the homepage log AND a case study panel that expands inline. Fields are grouped into Basics / Case study / Links tabs. Most case-study fields are optional — thin projects render as rows-only.
+- **Project**: the workhorse. Each Project is a row in the homepage log AND a case study page. Fields include relation (personal/freelance/employee), summary (i18n text), body (i18n portable text for the full case study), and cover image. Fields are grouped into Basics / Case study / Links tabs.
 
 ## Content layer (`lib/work.ts`)
 
-Typed `Project` interface with two-axis tagging (`relation`: personal/freelance/employee; `tech`: ios/rails/web/…) and filter helpers. Filters: All, Personal, Freelance, Employee, iOS, Rails, Other. Currently backed by static sample data; swap `getProjects`/`getProject` bodies for GROQ queries when ready — the component interface stays identical.
+Typed `Project` interface with two-axis tagging (`relation`: personal/freelance/employee; `tech`: ios/rails/web/…) and filter helpers. Filters: All, Personal, Freelance, Employee, iOS, Rails, Other. Backed by Sanity GROQ queries — `getProjects` / `getProject` / `getProjectSlugs` fetch and normalize Sanity data into the flat `Project` shape the components expect.
 
 ## i18n
 
 Field-level translations, not document-level. Translatable fields (deck, description, outcome, etc.) are objects with `en` and `nl` sub-fields, built via the helpers in `src/sanity/fields/i18n.ts`. Both locales live in the same document so editors can compare them side by side.
 
-Static UI strings live in `src/i18n/messages.ts` with EN and NL translations for all nav labels, filter names, page copy, and component text. The `t(locale, key)` helper provides typed lookups.
+Static UI strings live in `src/i18n/messages.ts` with EN and NL translations for nav labels, filter names, and component chrome. Content copy (headlines, bios, beyond-code items) lives in Sanity. The `t(locale, key)` helper provides typed lookups; Sanity fields fall back to `t()` values when empty.
 
 At render time, missing Dutch fields fall back to English. The Next.js side reads `locale` from the URL (`/en` or `/nl`) and picks the right sub-field.
 
