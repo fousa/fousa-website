@@ -12,7 +12,7 @@
 }
 .dark {
   --bg:#0a0a0b; --surface:#141417; --ink:#f2f2f3; --text:#c2c2c8;
-  --muted:#8a8a92; --faint:#5e5e66; --line:#1e1e22; --hover:#131316;
+  --muted:#8a8a92; --faint:#5e5e66; --line:#1e1e22; --hover:#17171b;
   --accent:#ff5a36; --panel:#141417; --panel-text:#f2f2f3; --panel-muted:#8a8a92;
   --status-ok:#3ad08a; --status-warn:#edb24a; --status-full:#ff5d62;
 }
