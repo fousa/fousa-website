@@ -19,7 +19,8 @@ export type Relation = 'personal' | 'freelance' | 'employee'
 export type Project = {
   slug: string
   name: string
-  client: string
+  employer?: { name: string } | null
+  client?: string | null
   stack: string
   role: string
   year: number
@@ -82,7 +83,8 @@ function toProject(
   return {
     slug: row.slug ?? '',
     name: row.name ?? '',
-    client: row.client ?? row.employer?.name ?? '',
+    employer: row.employer?.name ? { name: row.employer.name } : null,
+    client: row.client ?? null,
     stack: stackTags.map((s) => s?.name).filter(Boolean).join(' · ') || '—',
     role: row.role ?? '',
     year: row.year ?? 0,
@@ -123,7 +125,8 @@ export async function getProject(
   return {
     slug: row.slug ?? '',
     name: row.name ?? '',
-    client: row.client ?? row.employer?.name ?? '',
+    employer: row.employer?.name ? { name: row.employer.name } : null,
+    client: row.client ?? null,
     stack: stackTags.map((s) => s?.name).filter(Boolean).join(' · ') || '—',
     role: row.role ?? '',
     year: row.year ?? 0,
