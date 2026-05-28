@@ -8,6 +8,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
+import { pickLocale } from "@/i18n/pick-locale";
+import { fetchSanity } from "@/sanity/fetch";
+import { AVAILABILITY_QUERY } from "@/sanity/queries/availability";
+import {
+  AvailabilityBadge,
+  type AvailabilityStatus,
+} from "@/components/about/AvailabilityBadge";
+import type { AVAILABILITY_QUERY_RESULT } from "@/sanity.types";
 
 const SITE_URL = "https://fousa.be";
 
@@ -75,6 +83,17 @@ export default async function AboutPage({
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
+
+  const availability = await fetchSanity<AVAILABILITY_QUERY_RESULT>(
+    AVAILABILITY_QUERY,
+  );
+
+  const availStatus = (availability?.status ?? "available") as AvailabilityStatus;
+  const availLabel = t(locale, `availability_${availStatus.replace("-", "_")}` as any);
+  const availDetail = pickLocale(
+    typeof availability?.detail === "object" ? availability.detail : null,
+    locale,
+  ) ?? undefined;
 
   return (
     <>
@@ -163,9 +182,11 @@ export default async function AboutPage({
         id="contact"
         className="bg-panel px-5 py-14 md:px-11"
       >
-        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-panel-muted">
-          {t(locale, "available")}
-        </p>
+        <AvailabilityBadge
+          status={availStatus}
+          label={availLabel}
+          detail={availDetail}
+        />
         <a
           href="mailto:jelle@fousa.be"
           className="mt-4 block font-display text-[24px] font-bold tracking-[-0.02em] text-panel-text md:text-[32px]"
