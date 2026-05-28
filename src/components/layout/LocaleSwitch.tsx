@@ -4,9 +4,11 @@
  * mobile (EN / NL) via responsive label spans — one control, one active state, no JS
  * branching. Swaps the leading locale segment of the current path. Each label span has
  * an explicit display at both breakpoints so a global reset can't blank it out.
+ *
+ * Uses `router.push` with `scroll: false` and a double-rAF scroll restore so switching
+ * language keeps the user at the same scroll position instead of jumping to the top.
  */
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const LOCALES = [
   { code: "en", short: "EN", name: "English" },
@@ -15,6 +17,7 @@ const LOCALES = [
 
 export function LocaleSwitch() {
   const pathname = usePathname() || "/";
+  const router = useRouter();
   const seg = pathname.split("/")[1];
   const current = LOCALES.some((l) => l.code === seg) ? seg : "en";
 
@@ -24,6 +27,24 @@ export function LocaleSwitch() {
     if (LOCALES.some((l) => l.code === p[1])) p[1] = loc;
     else p.splice(1, 0, loc);
     return p.join("/") || "/";
+  }
+
+  /** Navigate to the target locale, preserving scroll position. */
+  function switchTo(loc: string) {
+    const y = window.scrollY;
+    router.push(hrefFor(loc), { scroll: false });
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        const max = Math.max(
+          0,
+          document.documentElement.scrollHeight - window.innerHeight,
+        );
+        window.scrollTo({
+          top: Math.min(y, max),
+          behavior: "instant" as ScrollBehavior,
+        });
+      }),
+    );
   }
 
   return (
@@ -37,14 +58,14 @@ export function LocaleSwitch() {
                 /
               </span>
             )}
-            <Link
-              href={hrefFor(l.code)}
+            <button
+              onClick={() => switchTo(l.code)}
               aria-label={l.name}
               aria-current={active ? "true" : undefined}
               className={
                 active
-                  ? "text-ink"
-                  : "text-faint transition-colors hover:text-muted"
+                  ? "cursor-default text-ink"
+                  : "cursor-pointer text-faint transition-colors hover:text-muted"
               }
             >
               {/* mobile: code */}
@@ -53,7 +74,7 @@ export function LocaleSwitch() {
               </span>
               {/* desktop: full name */}
               <span className="hidden text-[12.5px] md:inline">{l.name}</span>
-            </Link>
+            </button>
           </span>
         );
       })}
