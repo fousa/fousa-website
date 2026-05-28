@@ -13,6 +13,7 @@ import { isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
 import { pickLocale } from "@/i18n/pick-locale";
 import { getProject, getProjectSlugs } from "@/lib/work";
+import { forLabel } from "@/lib/work-display";
 import { fetchSanity } from "@/sanity/fetch";
 import { CASE_STUDY_QUERY } from "@/sanity/queries/case-study";
 import { StatusDot } from "@/components/work/StatusDot";
@@ -110,8 +111,31 @@ export default async function CaseStudyPage({
         </p>
 
         <div className="mt-8 grid grid-cols-2 gap-6 md:flex md:gap-12">
+          <div>
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
+              {t(locale, "for")}
+            </p>
+            <p className="mt-1 text-[14.5px]">
+              {(() => {
+                const f = forLabel(project, t(locale, "personal"));
+                if (f.kind === "via") {
+                  return (
+                    <>
+                      <span className="text-muted">{f.employer}</span>
+                      <span className="mx-1 text-faint" aria-hidden>→</span>
+                      <span className="text-ink">{f.client}</span>
+                    </>
+                  );
+                }
+                return (
+                  <span className={f.kind === "personal" ? "text-muted" : "text-ink"}>
+                    {f.text}
+                  </span>
+                );
+              })()}
+            </p>
+          </div>
           {[
-            { label: t(locale, "client"), value: project.client },
             { label: t(locale, "stack"), value: project.stack },
             { label: t(locale, "role"), value: project.role },
             { label: t(locale, "year"), value: String(project.year) },

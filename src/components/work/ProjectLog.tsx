@@ -6,6 +6,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FILTERS, matchesFilter, type Filter, type Project } from "@/lib/work";
+import { forLabel, type ForLabel } from "@/lib/work-display";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 import { StatusDot } from "./StatusDot";
@@ -22,7 +23,7 @@ const FILTER_KEYS = {
 } as const;
 
 /** Map table column headers to i18n keys. */
-const COLUMNS = ["project", "client", "stack", "role", "year", "status"] as const;
+const COLUMNS = ["project", "for", "stack", "role", "year", "status"] as const;
 
 export function ProjectLog({
   projects,
@@ -96,7 +97,7 @@ export function ProjectLog({
                 <StatusDot status={p.status} />
               </div>
               <div className="mt-[5px] text-[12.5px] text-muted">
-                {p.client} · {p.stack} · {p.year}
+                <ForLabelInline f={forLabel(p, t(locale, "personal"))} /> · {p.stack} · {p.year}
               </div>
             </button>
             {open === p.slug && (
@@ -148,7 +149,9 @@ function Row({
             {p.name}
           </span>
         </td>
-        <td className="px-11 py-5">{p.client}</td>
+        <td className="px-11 py-5">
+          <ForLabelInline f={forLabel(p, t(locale, "personal"))} />
+        </td>
         <td className="px-11 py-5">{p.stack}</td>
         <td className="px-11 py-5">{p.role}</td>
         <td className="px-11 py-5 font-mono text-[13px] text-muted">
@@ -177,5 +180,23 @@ function Row({
         </tr>
       )}
     </>
+  );
+}
+
+/** Inline renderer for the structured for-label. */
+function ForLabelInline({ f }: { f: ForLabel }) {
+  if (f.kind === "via") {
+    return (
+      <>
+        <span className="text-muted">{f.employer}</span>
+        <span className="mx-1 text-faint" aria-hidden>→</span>
+        <span className="text-ink">{f.client}</span>
+      </>
+    );
+  }
+  return (
+    <span className={f.kind === "personal" ? "text-muted" : "text-ink"}>
+      {f.text}
+    </span>
   );
 }
