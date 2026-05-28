@@ -95,7 +95,7 @@ Theme toggle persists to `localStorage`; an inline script in the root layout pre
 Six document types. Three singletons (Profile, Availability, Site Settings) edited in place from the pinned top of the Studio nav. Three collections (Employer, Stack tag, Project) — Project references Employer and Stack tag.
 
 ### Singletons
-- **Profile**: name, tagline, homepage lead headline/subline, about headline, bio (portable text), portrait, beyond-code list, per-locale CV files (EN + NL), location, email, social links, VAT, copyright year. Drives the homepage lead, about page hero/bio/beyond-code, and CV download.
+- **Profile**: name (plain string, shown large on the homepage with the coral brand period), roleLine (i18n — one-line subtitle), filterIntro (i18n — invitation to explore the log), plus tagline, about headline, bio (portable text), portrait, beyond-code list, per-locale CV files (EN + NL), location, email, social links, VAT, copyright year. The `HomeLead` component (`components/home/HomeLead.tsx`) renders name/role/filterIntro on the homepage; about page uses bio/portrait/beyond-code.
 - **Availability**: status enum (`available` / `after-hours` / `unavailable`) plus a localized `message` shown next to the coloured dot. Rendered in the about page contact panel (green = available, amber = after-hours, red = full).
 - **Site Settings**: global email, ordered social links (platform + URL + label), localized meta description, OG image override. Social links render in the about page contact panel.
 
