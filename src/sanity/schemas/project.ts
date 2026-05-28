@@ -95,7 +95,7 @@ export const project = defineType({
       description: 'How you were involved — drives homepage filters and the "For" column.',
       options: {
         list: [
-          {title: 'Freelancer', value: 'freelancer'},
+          {title: 'Freelance', value: 'freelance'},
           {title: 'Full-time', value: 'full-time'},
           {title: 'Internship', value: 'internship'},
           {title: 'Student', value: 'student'},

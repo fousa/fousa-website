@@ -14,7 +14,7 @@ import type {Locale} from '@/i18n/config'
 import type {PROJECTS_QUERY_RESULT, CASE_STUDY_QUERY_RESULT, CASE_STUDY_SLUGS_QUERY_RESULT} from '@/sanity.types'
 
 export type State = 'live' | 'cancelled' | 'deprecated'
-export type Engagement = 'freelancer' | 'full-time' | 'internship' | 'student'
+export type Engagement = 'freelance' | 'full-time' | 'internship' | 'student'
 export type Depth = 'none' | 'gallery' | 'full'
 export type Frame = 'phone' | 'tablet' | 'browser' | 'none'
 
@@ -59,7 +59,7 @@ export function projectDepth(p: { hasBody?: boolean | null; galleryCount?: numbe
 
 export const FILTERS = [
   'All',
-  'Freelancer',
+  'Freelance',
   'Full-time',
   'Internship',
   'iOS',
@@ -71,7 +71,7 @@ export type Filter = (typeof FILTERS)[number]
 
 /** Tech keys that have their own filter chip; everything else is "Other". */
 const KNOWN_TECH = ['ios', 'rails']
-const ENGAGEMENTS: string[] = ['freelancer', 'full-time', 'internship']
+const ENGAGEMENTS: string[] = ['freelance', 'full-time', 'internship']
 
 /**
  * Test whether a project passes the given filter.
@@ -116,7 +116,7 @@ function toProject(
     role: row.role ?? '',
     year: row.year ?? 0,
     state: (row.state as State) ?? 'live',
-    engagement: (row.engagement as Engagement) ?? 'freelancer',
+    engagement: (row.engagement as Engagement) ?? 'freelance',
     tech: [...new Set(stackTags.map((s) => normalizeTech(s?.category)))],
     summary:
       pickLocale(typeof row.summary === 'object' ? row.summary : null, locale) ??
@@ -178,7 +178,7 @@ export async function getProject(
     role: row.role ?? '',
     year: row.year ?? 0,
     state: (row.state as State) ?? 'live',
-    engagement: (row.engagement as Engagement) ?? 'freelancer',
+    engagement: (row.engagement as Engagement) ?? 'freelance',
     tech: [...new Set(stackTags.map((s) => normalizeTech(s?.category)))],
     summary:
       pickLocale(typeof row.summary === 'object' ? row.summary : null, locale) ??

@@ -49,7 +49,7 @@ export type Project = {
   role?: string;
   year?: number;
   endYear?: number;
-  engagement?: "freelancer" | "full-time" | "internship" | "student";
+  engagement?: "freelance" | "full-time" | "internship" | "student";
   state?: "live" | "cancelled" | "deprecated";
   stack?: Array<
     {
@@ -691,7 +691,7 @@ export type CASE_STUDY_QUERY_RESULT = {
   year: number | null;
   endYear: number | null;
   state: "cancelled" | "deprecated" | "live" | null;
-  engagement: "freelancer" | "full-time" | "internship" | "student" | null;
+  engagement: "freelance" | "full-time" | "internship" | "student" | null;
   role: string | null;
   client: string | null;
   deck: {
@@ -1015,7 +1015,7 @@ export type PROJECTS_QUERY_RESULT = Array<{
   year: number | null;
   endYear: number | null;
   state: "cancelled" | "deprecated" | "live" | null;
-  engagement: "freelancer" | "full-time" | "internship" | "student" | null;
+  engagement: "freelance" | "full-time" | "internship" | "student" | null;
   featured: boolean | null;
   role: string | null;
   client: string | null;

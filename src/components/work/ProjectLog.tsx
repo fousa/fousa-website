@@ -17,7 +17,7 @@ import { ToolingChip } from "./ToolingChip";
 /** Map filter constants to i18n message keys. */
 const FILTER_KEYS = {
   All: "filterAll",
-  Freelancer: "filterFreelancer",
+  Freelance: "filterFreelance",
   "Full-time": "filterFullTime",
   Internship: "filterInternship",
   iOS: "filterIos",
