@@ -162,10 +162,10 @@ export default async function DetailPage({
           ))}
           <div>
             <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
-              {t(locale, "status")}
+              {t(locale, "state")}
             </p>
             <div className="mt-1">
-              <StatusDot status={project.status} />
+              <StatusDot state={project.state} />
             </div>
           </div>
         </div>

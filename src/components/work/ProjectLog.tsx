@@ -17,16 +17,16 @@ import { ToolingChip } from "./ToolingChip";
 /** Map filter constants to i18n message keys. */
 const FILTER_KEYS = {
   All: "filterAll",
-  Personal: "filterPersonal",
-  Freelance: "filterFreelance",
-  Employee: "filterEmployee",
+  Freelancer: "filterFreelancer",
+  "Full-time": "filterFullTime",
+  Internship: "filterInternship",
   iOS: "filterIos",
   Rails: "filterRails",
   Other: "filterOther",
 } as const;
 
 /** Map table column headers to i18n keys. */
-const COLUMNS = ["project", "for", "stack", "role", "year", "status"] as const;
+const COLUMNS = ["project", "for", "stack", "role", "year", "state"] as const;
 
 export function ProjectLog({
   projects,
@@ -104,7 +104,7 @@ export function ProjectLog({
                   {p.name}
                 </span>
                 {p.featureTooling && <ToolingChip label={t(locale, "toolingChip")} />}
-                <StatusDot status={p.status} />
+                <StatusDot state={p.state} />
               </div>
               <div className="mt-[5px] text-[12.5px] text-muted">
                 <ForLabelInline f={forLabel(p, t(locale, "personal"))} /> · {p.stack} · {p.year}
@@ -169,7 +169,7 @@ function Row({
           {p.year}
         </td>
         <td className="px-11 py-5 align-top">
-          <StatusDot status={p.status} />
+          <StatusDot state={p.state} />
         </td>
       </tr>
       {open && (

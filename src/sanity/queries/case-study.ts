@@ -20,7 +20,6 @@ export const CASE_STUDY_QUERY = defineQuery(`
     endYear,
     state,
     engagement,
-    relation,
     role,
     client,
     deck,

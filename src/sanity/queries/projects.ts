@@ -20,7 +20,6 @@ export const PROJECTS_QUERY = defineQuery(`
     endYear,
     state,
     engagement,
-    relation,
     featured,
     role,
     client,

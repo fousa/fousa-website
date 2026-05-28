@@ -1,18 +1,17 @@
 /**
- * Project status as a dot + word (never a pill).
+ * Project state as a dot + word (never a pill).
  * live = accent color, everything else = muted.
  */
-import type { Status } from "@/lib/work";
+import type { State } from "@/lib/work";
 
-const LABEL: Record<Status, string> = {
+const LABEL: Record<State, string> = {
   live: "Live",
-  done: "Done",
-  paused: "Paused",
   cancelled: "Cancelled",
+  deprecated: "Deprecated",
 };
 
-export function StatusDot({ status }: { status: Status }) {
-  const isLive = status === "live";
+export function StatusDot({ state }: { state: State }) {
+  const isLive = state === "live";
   return (
     <span
       className={`inline-flex items-center gap-2 text-[13.5px] ${isLive ? "text-ink" : "text-muted"}`}
@@ -20,7 +19,7 @@ export function StatusDot({ status }: { status: Status }) {
       <span
         className={`h-[7px] w-[7px] rounded-full ${isLive ? "bg-accent" : "bg-faint"}`}
       />
-      {LABEL[status]}
+      {LABEL[state]}
     </span>
   );
 }

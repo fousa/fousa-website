@@ -47,7 +47,7 @@ export const project = defineType({
       group: 'basics',
       to: [{type: 'employer'}],
       description: 'Who you were employed by (icapps, KBC). Leave empty for freelance/personal.',
-      hidden: ({parent}) => parent?.relation !== 'employee',
+      hidden: ({parent}) => parent?.engagement !== 'full-time' && parent?.engagement !== 'internship',
     }),
     defineField({
       name: 'client',
@@ -92,12 +92,13 @@ export const project = defineType({
       title: 'Engagement type',
       type: 'string',
       group: 'basics',
+      description: 'How you were involved — drives homepage filters and the "For" column.',
       options: {
         list: [
-          {title: 'Freelance', value: 'freelance'},
+          {title: 'Freelancer', value: 'freelancer'},
           {title: 'Full-time', value: 'full-time'},
-          {title: 'Owner', value: 'owner'},
           {title: 'Internship', value: 'internship'},
+          {title: 'Student', value: 'student'},
         ],
         layout: 'radio',
       },
@@ -112,14 +113,13 @@ export const project = defineType({
       options: {
         list: [
           {title: 'Live', value: 'live'},
-          {title: 'Done', value: 'done'},
-          {title: 'Paused', value: 'paused'},
           {title: 'Cancelled', value: 'cancelled'},
+          {title: 'Deprecated', value: 'deprecated'},
         ],
         layout: 'radio',
       },
       validation: (Rule) => Rule.required(),
-      initialValue: 'done',
+      initialValue: 'live',
     }),
     defineField({
       name: 'stack',
@@ -129,22 +129,6 @@ export const project = defineType({
       description: 'Technologies used. First tag determines the primary chip shown in the table row.',
       of: [{type: 'reference', to: [{type: 'stackTag'}]}],
       validation: (Rule) => Rule.required().min(1),
-    }),
-    defineField({
-      name: 'relation',
-      title: 'Relation',
-      type: 'string',
-      group: 'basics',
-      description: 'How this project relates to you — drives homepage filters.',
-      options: {
-        layout: 'radio',
-        list: [
-          {title: 'Personal', value: 'personal'},
-          {title: 'Freelance', value: 'freelance'},
-          {title: 'Employee', value: 'employee'},
-        ],
-      },
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'featured',

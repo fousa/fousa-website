@@ -13,8 +13,8 @@ import {pickLocale} from '@/i18n/pick-locale'
 import type {Locale} from '@/i18n/config'
 import type {PROJECTS_QUERY_RESULT, CASE_STUDY_QUERY_RESULT, CASE_STUDY_SLUGS_QUERY_RESULT} from '@/sanity.types'
 
-export type Status = 'live' | 'done' | 'paused' | 'cancelled'
-export type Relation = 'personal' | 'freelance' | 'employee'
+export type State = 'live' | 'cancelled' | 'deprecated'
+export type Engagement = 'freelancer' | 'full-time' | 'internship' | 'student'
 export type Depth = 'none' | 'gallery' | 'full'
 export type Frame = 'phone' | 'tablet' | 'browser' | 'none'
 
@@ -35,8 +35,8 @@ export type Project = {
   stack: string
   role: string
   year: number
-  status: Status
-  relation: Relation
+  state: State
+  engagement: Engagement
   tech: string[]
   summary: string
   depth: Depth
@@ -59,9 +59,9 @@ export function projectDepth(p: { hasBody?: boolean | null; galleryCount?: numbe
 
 export const FILTERS = [
   'All',
-  'Personal',
-  'Freelance',
-  'Employee',
+  'Freelancer',
+  'Full-time',
+  'Internship',
   'iOS',
   'Rails',
   'Other',
@@ -71,7 +71,7 @@ export type Filter = (typeof FILTERS)[number]
 
 /** Tech keys that have their own filter chip; everything else is "Other". */
 const KNOWN_TECH = ['ios', 'rails']
-const RELATIONS: string[] = ['personal', 'freelance', 'employee']
+const ENGAGEMENTS: string[] = ['freelancer', 'full-time', 'internship']
 
 /**
  * Test whether a project passes the given filter.
@@ -83,7 +83,7 @@ const RELATIONS: string[] = ['personal', 'freelance', 'employee']
 export function matchesFilter(p: Project, f: Filter): boolean {
   if (f === 'All') return true
   const k = f.toLowerCase()
-  if (RELATIONS.includes(k)) return p.relation === (k as Relation)
+  if (ENGAGEMENTS.includes(k)) return p.engagement === (k as Engagement)
   if (k === 'other') return !p.tech.some((t) => KNOWN_TECH.includes(t))
   return p.tech.includes(k)
 }
@@ -115,8 +115,8 @@ function toProject(
     stack: stackTags.map((s) => s?.name).filter(Boolean).join(' · ') || '—',
     role: row.role ?? '',
     year: row.year ?? 0,
-    status: (row.state as Status) ?? 'done',
-    relation: (row.relation as Relation) ?? 'employee',
+    state: (row.state as State) ?? 'live',
+    engagement: (row.engagement as Engagement) ?? 'freelancer',
     tech: [...new Set(stackTags.map((s) => normalizeTech(s?.category)))],
     summary:
       pickLocale(typeof row.summary === 'object' ? row.summary : null, locale) ??
@@ -177,8 +177,8 @@ export async function getProject(
     stack: stackTags.map((s) => s?.name).filter(Boolean).join(' · ') || '—',
     role: row.role ?? '',
     year: row.year ?? 0,
-    status: (row.state as Status) ?? 'done',
-    relation: (row.relation as Relation) ?? 'employee',
+    state: (row.state as State) ?? 'live',
+    engagement: (row.engagement as Engagement) ?? 'freelancer',
     tech: [...new Set(stackTags.map((s) => normalizeTech(s?.category)))],
     summary:
       pickLocale(typeof row.summary === 'object' ? row.summary : null, locale) ??
