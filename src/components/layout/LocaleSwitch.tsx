@@ -9,6 +9,7 @@
  * language keeps the user at the same scroll position instead of jumping to the top.
  */
 import { usePathname, useRouter } from "next/navigation";
+import { track } from "@/lib/analytics";
 
 const LOCALES = [
   { code: "en", short: "EN", name: "English" },
@@ -31,6 +32,7 @@ export function LocaleSwitch() {
 
   /** Navigate to the target locale, preserving scroll position. */
   function switchTo(loc: string) {
+    track("locale_switch", { from: current, to: loc, path: pathname });
     const y = window.scrollY;
     router.push(hrefFor(loc), { scroll: false });
     requestAnimationFrame(() =>
