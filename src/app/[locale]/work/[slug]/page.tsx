@@ -20,12 +20,11 @@ import { forLabel } from "@/lib/work-display";
 import { fetchSanity } from "@/sanity/fetch";
 import { CASE_STUDY_QUERY } from "@/sanity/queries/case-study";
 import { localizedHref } from "@/lib/href";
+import { altMetadata } from "@/lib/seo";
 import { StatusDot } from "@/components/work/StatusDot";
 import { PortableTextRenderer } from "@/components/portable-text";
 import { Frame } from "@/components/work/Frame";
 import type { CASE_STUDY_QUERY_RESULT } from "@/sanity.types";
-
-const SITE_URL = "https://fousa.be";
 
 export async function generateStaticParams() {
   const slugs = await getProjectSlugs();
@@ -45,21 +44,16 @@ export async function generateMetadata({
     return { title: t(locale, "notFoundTitle") };
 
   const title = `${project.name} ${t(locale, "caseStudyMetaSuffix")}`;
+  const path = `/work/${slug}`;
 
   return {
     title,
     description: project.summary,
-    alternates: {
-      canonical: `${SITE_URL}/${locale}/work/${slug}`,
-      languages: {
-        en: `${SITE_URL}/en/work/${slug}`,
-        nl: `${SITE_URL}/nl/work/${slug}`,
-      },
-    },
+    ...altMetadata(locale, path),
     openGraph: {
       title,
       description: project.summary,
-      url: `${SITE_URL}/${locale}/work/${slug}`,
+      url: altMetadata(locale, path).alternates?.canonical as string,
       siteName: "fousa.be",
       locale: locale === "nl" ? "nl_BE" : "en_US",
       type: "article",

@@ -26,9 +26,8 @@ import type {
 } from "@/sanity.types";
 import { formatYearRange } from "@/lib/format-year-range";
 import { localizedHref } from "@/lib/href";
+import { altMetadata } from "@/lib/seo";
 import { OutboundLink } from "@/components/layout/OutboundLink";
-
-const SITE_URL = "https://fousa.be";
 
 export async function generateMetadata({
   params,
@@ -44,17 +43,11 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: {
-      canonical: `${SITE_URL}/${locale}/about`,
-      languages: {
-        en: `${SITE_URL}/en/about`,
-        nl: `${SITE_URL}/nl/about`,
-      },
-    },
+    ...altMetadata(locale, "/about"),
     openGraph: {
       title,
       description,
-      url: `${SITE_URL}/${locale}/about`,
+      url: altMetadata(locale, "/about").alternates?.canonical as string,
       siteName: "fousa.be",
       locale: locale === "nl" ? "nl_BE" : "en_US",
       type: "profile",

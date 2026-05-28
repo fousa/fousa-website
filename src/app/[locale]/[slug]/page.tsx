@@ -22,6 +22,7 @@ import {AVAILABILITY_QUERY} from '@/sanity/queries/availability'
 import {t} from '@/i18n/messages'
 import {pickLocale} from '@/i18n/pick-locale'
 import {buildProjectJsonLd} from '@/lib/json-ld'
+import {altMetadata} from '@/lib/seo'
 import {CaseStudyHero} from '@/components/case-study/case-study-hero'
 import {CaseStudyBody} from '@/components/case-study/case-study-body'
 import {RelatedWork} from '@/components/case-study/related-work'
@@ -33,7 +34,7 @@ import type {
   AVAILABILITY_QUERY_RESULT,
 } from '@/sanity.types'
 
-const SITE_URL = 'https://fousa.be'
+const SITE_URL = 'https://fousa.be' // kept for OG image URL
 
 /**
  * Statically build a page for every (locale, slug) pair at build time.
@@ -70,10 +71,11 @@ export async function generateMetadata({
   return {
     title,
     description,
+    ...altMetadata(locale, `/${slug}`),
     openGraph: {
       title,
       description,
-      url: `${SITE_URL}/${locale}/${slug}`,
+      url: altMetadata(locale, `/${slug}`).alternates?.canonical as string,
       siteName: 'fousa.be',
       images: [{url: ogImage, width: 1200, height: 630}],
       locale: locale === 'nl' ? 'nl_BE' : 'en_US',
@@ -84,13 +86,6 @@ export async function generateMetadata({
       title,
       description,
       images: [ogImage],
-    },
-    alternates: {
-      canonical: `${SITE_URL}/${locale}/${slug}`,
-      languages: {
-        en: `${SITE_URL}/en/${slug}`,
-        nl: `${SITE_URL}/nl/${slug}`,
-      },
     },
   }
 }

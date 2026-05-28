@@ -7,11 +7,10 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { locales, isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
+import { altMetadata } from "@/lib/seo";
 import { Analytics } from "@vercel/analytics/next";
 import { TopBar } from "@/components/layout/TopBar";
 import { SiteFooter } from "@/components/layout/SiteFooter";
-
-const SITE_URL = "https://fousa.be";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -31,13 +30,7 @@ export async function generateMetadata({
       template: "%s · fousa.be",
     },
     description: t(locale, "siteDescription"),
-    alternates: {
-      canonical: `${SITE_URL}/${locale}`,
-      languages: {
-        en: `${SITE_URL}/en`,
-        nl: `${SITE_URL}/nl`,
-      },
-    },
+    ...altMetadata(locale, "/"),
     openGraph: {
       siteName: "fousa.be",
       locale: locale === "nl" ? "nl_BE" : "en_US",
