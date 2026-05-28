@@ -62,6 +62,7 @@ fousa/
     │   │   └── LocaleSwitch.tsx ← responsive EN/NL switch (full names desktop, codes mobile)
     │   ├── work/
     │   │   ├── ProjectLog.tsx   ← filterable project table/cards with expand
+    │   │   ├── ToolingChip.tsx  ← outline "AI-assisted" pill, shown when featureTooling is true
     │   │   └── StatusDot.tsx    ← dot + word status indicator
     │   ├── about/
     │   │   ├── AvailabilityBadge.tsx ← coloured dot + label for contact panel
@@ -103,7 +104,7 @@ Six document types. Three singletons (Profile, Availability, Site Settings) edit
 ### Collections
 - **Employer**: every job and freelance entity. Drives the career timeline on the about page. Also referenced by Project via the `employer` field — shared document so career and project data stay in sync.
 - **Stack tag**: technology labels (Swift, Rails, etc.). Referenced by Project; pre-seeded via `pnpm seed:stack-tags`.
-- **Project**: the workhorse. Each Project is a row in the homepage log AND a detail page. Two ownership fields: `employer` (reference, shown only when relation = employee) and `client` (string, the end customer). Three depth levels derived automatically from content: `full` (has body → case study), `gallery` (has gallery images → screenshot page with device frames), or `none` (no detail page). Gallery images each pick a frame (phone/tablet/browser/none). Also includes relation, summary, body, cover, and grouped into Basics / Case study / Links tabs.
+- **Project**: the workhorse. Each Project is a row in the homepage log AND a detail page. Two ownership fields: `employer` (reference, shown only when relation = employee) and `client` (string, the end customer). Three depth levels derived automatically from content: `full` (has body → case study), `gallery` (has gallery images → screenshot page with device frames), or `none` (no detail page). Gallery images each pick a frame (phone/tablet/browser/none). Optional `tooling` (i18nString) describes how the project was built — shown as a mono meta-line in the expanded zone. `featureTooling` (boolean) opts in for a subtle "AI-assisted" chip next to the name in the log. Also includes relation, summary, body, cover, and grouped into Basics / Case study / Links tabs.
 
 ## Content layer (`lib/work.ts` + `lib/work-display.ts`)
 
