@@ -156,7 +156,7 @@ export default async function AboutPage({
       {/* Contact panel — the one filled block */}
       <section
         id="contact"
-        className="mt-6 bg-panel px-5 py-14 md:px-11"
+        className="bg-panel px-5 py-14 md:px-11"
       >
         <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-panel-muted">
           {t(locale, "available")}
