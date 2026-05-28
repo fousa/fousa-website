@@ -41,6 +41,8 @@ export type Project = {
   summary: string
   depth: Depth
   gallery: GalleryShot[]
+  tooling?: string | null
+  featureTooling?: boolean | null
 }
 
 /**
@@ -122,6 +124,8 @@ function toProject(
       '',
     depth: projectDepth(row),
     gallery: [],
+    tooling: pickLocale(typeof row.tooling === 'object' ? row.tooling : null, locale),
+    featureTooling: row.featureTooling ?? false,
   }
 }
 
