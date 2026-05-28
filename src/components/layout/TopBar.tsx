@@ -24,7 +24,7 @@ export function TopBar({ locale }: { locale: Locale }) {
       <div ref={sentinel} aria-hidden="true" className="absolute top-0 h-px w-full" />
       <header
         className={[
-          "sticky top-0 z-50 transition-[background-color,border-color] duration-200",
+          "sticky top-0 z-50 transition-[background-color,border-color] duration-200 motion-reduce:transition-none",
           scrolled
             ? "border-b border-line bg-bg/80 backdrop-blur-md"
             : "border-b border-transparent bg-transparent",

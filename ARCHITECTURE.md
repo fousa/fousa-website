@@ -56,7 +56,8 @@ fousa/
     │   ├── theme/
     │   │   └── ThemeToggle.tsx  ← dark-mode toggle (localStorage + .dark class)
     │   ├── layout/
-    │   │   ├── TopBar.tsx       ← site header (wordmark, nav, hamburger)
+    │   │   ├── TopBar.tsx       ← sticky header (wordmark, nav, hamburger); scroll-revealed hairline + blur
+    │   │   ├── use-scrolled.ts  ← IntersectionObserver hook: true once a sentinel leaves the viewport
     │   │   ├── SiteFooter.tsx   ← copyright, locale switch, theme toggle
     │   │   └── LocaleSwitch.tsx ← responsive EN/NL switch (full names desktop, codes mobile)
     │   ├── work/
