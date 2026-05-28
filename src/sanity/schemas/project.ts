@@ -109,17 +109,18 @@ export const project = defineType({
       title: 'State',
       type: 'string',
       group: 'basics',
-      description: 'Where this project stands today. Drives the colored status dot.',
+      description: 'What your relationship with this project is today.',
       options: {
-        list: [
-          {title: 'Live', value: 'live'},
-          {title: 'Cancelled', value: 'cancelled'},
-          {title: 'Deprecated', value: 'deprecated'},
-        ],
         layout: 'radio',
+        list: [
+          {title: 'Active — actively developed', value: 'active'},
+          {title: 'Maintained — up, no new features', value: 'maintained'},
+          {title: 'Archived — closed chapter', value: 'archived'},
+          {title: 'Cancelled — never shipped', value: 'cancelled'},
+        ],
       },
+      initialValue: 'active',
       validation: (Rule) => Rule.required(),
-      initialValue: 'live',
     }),
     defineField({
       name: 'stack',

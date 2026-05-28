@@ -50,7 +50,7 @@ export type Project = {
   year?: number;
   endYear?: number;
   engagement?: "freelance" | "full-time" | "internship" | "student";
-  state?: "live" | "cancelled" | "deprecated";
+  state?: "active" | "maintained" | "archived" | "cancelled";
   stack?: Array<
     {
       _key: string;
@@ -690,7 +690,7 @@ export type CASE_STUDY_QUERY_RESULT = {
   slug: string | null;
   year: number | null;
   endYear: number | null;
-  state: "cancelled" | "deprecated" | "live" | null;
+  state: "active" | "archived" | "cancelled" | "maintained" | null;
   engagement: "freelance" | "full-time" | "internship" | "student" | null;
   role: string | null;
   client: string | null;
@@ -1014,7 +1014,7 @@ export type PROJECTS_QUERY_RESULT = Array<{
   slug: string | null;
   year: number | null;
   endYear: number | null;
-  state: "cancelled" | "deprecated" | "live" | null;
+  state: "active" | "archived" | "cancelled" | "maintained" | null;
   engagement: "freelance" | "full-time" | "internship" | "student" | null;
   featured: boolean | null;
   role: string | null;
