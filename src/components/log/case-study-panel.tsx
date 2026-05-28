@@ -153,8 +153,6 @@ function Screenshots({project}: {project: Project}) {
  * URL (each optional), plus the "ESC to close" affordance.
  */
 function PanelLinks({project, locale}: {project: Project; locale: Locale}) {
-  const hasAny = project.liveUrl || project.githubUrl || project.writeupUrl || project.slug
-
   return (
     <div className="mt-5 pt-4 border-t border-ink/10 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px]">
       {project.slug && (

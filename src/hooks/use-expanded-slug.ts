@@ -15,16 +15,19 @@
  */
 import {useCallback, useEffect, useState} from 'react'
 
-export function useExpandedSlug() {
-  const [slug, setSlug] = useState<string | null>(null)
+/** Read the URL hash once at module-load time (client only). */
+const INITIAL_HASH =
+  typeof window !== 'undefined'
+    ? window.location.hash.slice(1) || null
+    : null
 
-  // 1. Initial hash read on mount — plus scroll into view
+export function useExpandedSlug() {
+  const [slug, setSlug] = useState<string | null>(INITIAL_HASH)
+
+  // 1. Scroll to the initially-expanded row after first paint
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    const hash = window.location.hash.slice(1)
+    const hash = INITIAL_HASH
     if (!hash) return
-    setSlug(hash)
-    // Wait a frame for the panel to render before scrolling to it
     requestAnimationFrame(() => {
       document
         .getElementById(`project-${hash}`)

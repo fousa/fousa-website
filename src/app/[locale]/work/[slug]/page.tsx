@@ -14,7 +14,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
-import { pickLocale } from "@/i18n/pick-locale";
 import { getProject, getProjectSlugs } from "@/lib/work";
 import { forLabel } from "@/lib/work-display";
 import { fetchSanity } from "@/sanity/fetch";
@@ -190,7 +189,7 @@ export default async function DetailPage({
           {body && (
             <div className="px-5 py-12 md:px-11">
               <PortableTextRenderer
-                value={body as any[]}
+                value={body as unknown[]}
                 className="max-w-[600px] text-[15px] leading-[1.65] text-text"
               />
             </div>

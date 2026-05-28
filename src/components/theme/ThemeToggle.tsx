@@ -3,26 +3,37 @@
  * Dark-mode toggle. Flips `.dark` on <html> and persists to localStorage.
  * Initial class is set pre-paint by the inline script in the layout.
  */
-import { useEffect, useState } from "react";
+import { useSyncExternalStore, useCallback } from "react";
 import { track } from "@/lib/analytics";
 
+function subscribe(cb: () => void) {
+  const observer = new MutationObserver(cb);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+  return () => observer.disconnect();
+}
+
+function getSnapshot() {
+  return document.documentElement.classList.contains("dark");
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
 export function ThemeToggle() {
-  const [dark, setDark] = useState(false);
+  const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  useEffect(
-    () => setDark(document.documentElement.classList.contains("dark")),
-    [],
-  );
-
-  function toggle() {
-    const next = !dark;
-    setDark(next);
+  const toggle = useCallback(() => {
+    const next = !document.documentElement.classList.contains("dark");
     document.documentElement.classList.toggle("dark", next);
     track("theme_toggle", { to: next ? "dark" : "light" });
     try {
       localStorage.setItem("theme", next ? "dark" : "light");
-    } catch {}
-  }
+    } catch { /* quota / SSR */ }
+  }, []);
 
   return (
     <button

@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { isLocale } from "@/i18n/config";
-import { t } from "@/i18n/messages";
+import { t, type MessageKey } from "@/i18n/messages";
 import { pickLocale } from "@/i18n/pick-locale";
 import { fetchSanity } from "@/sanity/fetch";
 import { ABOUT_QUERY } from "@/sanity/queries/about";
@@ -79,7 +79,7 @@ export default async function AboutPage({
     pickLocale(
       typeof availability?.message === "object" ? availability.message : null,
       locale,
-    ) ?? t(locale, `availability_${availStatus.replace("-", "_")}` as any);
+    ) ?? t(locale, `availability_${availStatus.replace("-", "_")}` as MessageKey);
 
   const headline =
     pickLocale(
