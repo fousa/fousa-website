@@ -5,7 +5,7 @@
  */
 import Link from "next/link";
 import { useState } from "react";
-import { FILTERS, matchesFilter, type Filter, type Project } from "@/lib/work";
+import { FILTERS, matchesFilter, type Filter, type Project, type Depth } from "@/lib/work";
 import { forLabel, type ForLabel } from "@/lib/work-display";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
@@ -106,13 +106,7 @@ export function ProjectLog({
                   <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
                     {p.summary}
                   </p>
-                  <Link
-                    href={`/${locale}/work/${p.slug}`}
-                    className="font-display text-[13px] font-semibold text-ink"
-                  >
-                    {t(locale, "readCaseStudy")}
-                    <span className="text-accent"> →</span>
-                  </Link>
+                  <DepthLink depth={p.depth} slug={p.slug} locale={locale} size="sm" />
                 </div>
               </div>
             )}
@@ -168,18 +162,38 @@ function Row({
               <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
                 {p.summary}
               </p>
-              <Link
-                href={`/${locale}/work/${p.slug}`}
-                className="font-display text-sm font-semibold text-ink"
-              >
-                {t(locale, "readCaseStudy")}
-                <span className="text-accent"> →</span>
-              </Link>
+              <DepthLink depth={p.depth} slug={p.slug} locale={locale} size="base" />
             </div>
           </td>
         </tr>
       )}
     </>
+  );
+}
+
+/** Link that adapts label + visibility based on project depth. */
+function DepthLink({
+  depth,
+  slug,
+  locale,
+  size,
+}: {
+  depth: Depth;
+  slug: string;
+  locale: Locale;
+  size: "sm" | "base";
+}) {
+  if (depth === "none") return null;
+  const label =
+    depth === "full" ? t(locale, "readCaseStudy") : t(locale, "viewScreenshots");
+  return (
+    <Link
+      href={`/${locale}/work/${slug}`}
+      className={`font-display font-semibold text-ink ${size === "sm" ? "text-[13px]" : "text-sm"}`}
+    >
+      {label}
+      <span className="text-accent"> →</span>
+    </Link>
   );
 }
 
