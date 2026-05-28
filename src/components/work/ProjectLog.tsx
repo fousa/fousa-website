@@ -9,6 +9,7 @@ import { FILTERS, matchesFilter, type Filter, type Project, type Depth } from "@
 import { forLabel, type ForLabel } from "@/lib/work-display";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
+import { track } from "@/lib/analytics";
 import { StatusDot } from "./StatusDot";
 import { ToolingChip } from "./ToolingChip";
 
@@ -36,7 +37,13 @@ export function ProjectLog({
   const [filter, setFilter] = useState<Filter>("All");
   const [open, setOpen] = useState<string | null>(null);
   const rows = projects.filter((p) => matchesFilter(p, filter));
-  const toggle = (s: string) => setOpen((c) => (c === s ? null : s));
+  const toggle = (slug: string) => {
+    setOpen((c) => (c === slug ? null : slug));
+    if (open !== slug) {
+      const p = projects.find((pr) => pr.slug === slug);
+      if (p) track("project_expand", { slug, depth: p.depth, locale });
+    }
+  };
 
   return (
     <section>
@@ -45,7 +52,7 @@ export function ProjectLog({
         {FILTERS.map((f) => (
           <button
             key={f}
-            onClick={() => setFilter(f)}
+            onClick={() => { setFilter(f); track("filter_select", { filter: f, locale }); }}
             className={`-mb-px shrink-0 whitespace-nowrap border-b-[1.5px] pb-3 text-[13.5px] font-medium transition-colors cursor-pointer md:pb-[14px] ${
               filter === f
                 ? "border-accent text-ink"
@@ -201,9 +208,11 @@ function DepthLink({
   if (depth === "none") return null;
   const label =
     depth === "full" ? t(locale, "readCaseStudy") : t(locale, "viewScreenshots");
+  const target = depth === "full" ? "case_study" : "gallery";
   return (
     <Link
       href={`/${locale}/work/${slug}`}
+      onClick={() => track("project_open", { slug, depth: depth as "full" | "gallery", target, locale })}
       className={`font-display font-semibold text-ink ${size === "sm" ? "text-[13px]" : "text-sm"}`}
     >
       {label}
