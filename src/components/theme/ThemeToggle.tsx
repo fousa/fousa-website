@@ -4,6 +4,7 @@
  * Initial class is set pre-paint by the inline script in the layout.
  */
 import { useEffect, useState } from "react";
+import { track } from "@/lib/analytics";
 
 export function ThemeToggle() {
   const [dark, setDark] = useState(false);
@@ -17,6 +18,7 @@ export function ThemeToggle() {
     const next = !dark;
     setDark(next);
     document.documentElement.classList.toggle("dark", next);
+    track("theme_toggle", { to: next ? "dark" : "light" });
     try {
       localStorage.setItem("theme", next ? "dark" : "light");
     } catch {}
