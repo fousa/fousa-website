@@ -20,11 +20,14 @@ export const CASE_STUDY_QUERY = defineQuery(`
     endYear,
     state,
     engagement,
+    relation,
     role,
     client,
     deck,
+    summary,
     description,
     outcome,
+    body,
     liveUrl,
     githubUrl,
     writeupUrl,
@@ -40,6 +43,8 @@ export const CASE_STUDY_QUERY = defineQuery(`
       "slug": slug.current,
       category
     },
+    "coverUrl": cover.asset->url,
+    "coverAlt": cover.alt,
     "screenshots": screenshots[]{
       _key,
       alt,

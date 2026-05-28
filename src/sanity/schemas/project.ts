@@ -131,6 +131,22 @@ export const project = defineType({
       validation: (Rule) => Rule.required().min(1),
     }),
     defineField({
+      name: 'relation',
+      title: 'Relation',
+      type: 'string',
+      group: 'basics',
+      description: 'How this project relates to you — drives homepage filters.',
+      options: {
+        layout: 'radio',
+        list: [
+          {title: 'Personal', value: 'personal'},
+          {title: 'Freelance', value: 'freelance'},
+          {title: 'Employee', value: 'employee'},
+        ],
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'featured',
       title: 'Featured?',
       type: 'boolean',
@@ -140,6 +156,11 @@ export const project = defineType({
     }),
 
     // — Case study tab
+    i18nText(
+      'summary',
+      'Summary',
+      'Two-sentence teaser shown in the expanded log row. Plain text, no formatting.'
+    ),
     i18nString(
       'deck',
       'Deck',
@@ -178,6 +199,28 @@ export const project = defineType({
       'Outcome',
       'Optional metric or sentence (e.g. "Several million daily users"). Shown in bold in the panel.'
     ),
+    i18nPortableText(
+      'body',
+      'Case study body',
+      'Full case study narrative — context, approach, outcome. Shown on the dedicated /work/<slug> page.'
+    ),
+    defineField({
+      name: 'cover',
+      title: 'Cover image',
+      type: 'image',
+      group: 'caseStudy',
+      description: 'Hero image for the case study page. Landscape ratio works best.',
+      options: {hotspot: true},
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt text',
+          type: 'string',
+          description: 'Required for accessibility.',
+          validation: (Rule) => Rule.required(),
+        }),
+      ],
+    }),
 
     // — Links tab
     defineField({
@@ -220,7 +263,7 @@ export const project = defineType({
       year: 'year',
       employerName: 'employer.name',
       state: 'state',
-      cover: 'screenshots.0',
+      cover: 'cover',
     },
     prepare: ({name, year, employerName, state, cover}) => ({
       title: name,

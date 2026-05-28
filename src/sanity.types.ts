@@ -56,7 +56,12 @@ export type Project = {
       _key: string;
     } & StackTagReference
   >;
+  relation?: "personal" | "freelance" | "employee";
   featured?: boolean;
+  summary?: {
+    en?: string;
+    nl?: string;
+  };
   deck?: {
     en?: string;
     nl?: string;
@@ -111,6 +116,52 @@ export type Project = {
   outcome?: {
     en?: string;
     nl?: string;
+  };
+  body?: {
+    en?: Array<{
+      children?: Array<{
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "normal";
+      listItem?: never;
+      markDefs?: Array<{
+        href?: string;
+        _type: "link";
+        _key: string;
+      }>;
+      level?: number;
+      _type: "block";
+      _key: string;
+    }>;
+    nl?: Array<{
+      children?: Array<{
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "normal";
+      listItem?: never;
+      markDefs?: Array<{
+        href?: string;
+        _type: "link";
+        _key: string;
+      }>;
+      level?: number;
+      _type: "block";
+      _key: string;
+    }>;
+  };
+  cover?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
   };
   liveUrl?: string;
   githubUrl?: string;
@@ -601,7 +652,7 @@ export type AVAILABILITY_QUERY_RESULT =
 
 // Source: src/sanity/queries/case-study.ts
 // Variable: CASE_STUDY_QUERY
-// Query: *[_type == "project" && slug.current == $slug][0]{    _id,    name,    "slug": slug.current,    year,    endYear,    state,    engagement,    role,    client,    deck,    description,    outcome,    liveUrl,    githubUrl,    writeupUrl,    featured,    "employer": employer->{      _id,      name,      "slug": "employer-" + lower(name)    },    "stack": stack[]->{      _id,      name,      "slug": slug.current,      category    },    "screenshots": screenshots[]{      _key,      alt,      "asset": asset->    },    "related": *[      _type == "project"      && slug.current != $slug      && references(^.employer._ref)    ] | order(featured desc, year desc) [0...3] {      _id,      name,      "slug": slug.current,      year,      deck    }  }
+// Query: *[_type == "project" && slug.current == $slug][0]{    _id,    name,    "slug": slug.current,    year,    endYear,    state,    engagement,    relation,    role,    client,    deck,    summary,    description,    outcome,    body,    liveUrl,    githubUrl,    writeupUrl,    featured,    "employer": employer->{      _id,      name,      "slug": "employer-" + lower(name)    },    "stack": stack[]->{      _id,      name,      "slug": slug.current,      category    },    "coverUrl": cover.asset->url,    "coverAlt": cover.alt,    "screenshots": screenshots[]{      _key,      alt,      "asset": asset->    },    "related": *[      _type == "project"      && slug.current != $slug      && references(^.employer._ref)    ] | order(featured desc, year desc) [0...3] {      _id,      name,      "slug": slug.current,      year,      deck    }  }
 export type CASE_STUDY_QUERY_RESULT = {
   _id: string;
   name: string | null;
@@ -610,9 +661,14 @@ export type CASE_STUDY_QUERY_RESULT = {
   endYear: number | null;
   state: "cancelled" | "done" | "live" | "paused" | null;
   engagement: "freelance" | "full-time" | "internship" | "owner" | null;
+  relation: "employee" | "freelance" | "personal" | null;
   role: string | null;
   client: string | null;
   deck: {
+    en?: string;
+    nl?: string;
+  } | null;
+  summary: {
     en?: string;
     nl?: string;
   } | null;
@@ -658,6 +714,44 @@ export type CASE_STUDY_QUERY_RESULT = {
     en?: string;
     nl?: string;
   } | null;
+  body: {
+    en?: Array<{
+      children?: Array<{
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "normal";
+      listItem?: never;
+      markDefs?: Array<{
+        href?: string;
+        _type: "link";
+        _key: string;
+      }>;
+      level?: number;
+      _type: "block";
+      _key: string;
+    }>;
+    nl?: Array<{
+      children?: Array<{
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "normal";
+      listItem?: never;
+      markDefs?: Array<{
+        href?: string;
+        _type: "link";
+        _key: string;
+      }>;
+      level?: number;
+      _type: "block";
+      _key: string;
+    }>;
+  } | null;
   liveUrl: string | null;
   githubUrl: string | null;
   writeupUrl: string | null;
@@ -673,6 +767,8 @@ export type CASE_STUDY_QUERY_RESULT = {
     slug: string | null;
     category: "frontend" | "ios" | "other" | "rails" | "tooling" | null;
   }> | null;
+  coverUrl: string | null;
+  coverAlt: string | null;
   screenshots: Array<{
     _key: string;
     alt: string | null;
@@ -856,7 +952,7 @@ export type PROFILE_QUERY_RESULT =
 
 // Source: src/sanity/queries/projects.ts
 // Variable: PROJECTS_QUERY
-// Query: *[_type == "project"] | order(featured desc, year desc, name asc) {    _id,    name,    "slug": slug.current,    year,    endYear,    state,    engagement,    featured,    role,    client,    deck,    description,    outcome,    liveUrl,    githubUrl,    writeupUrl,    "employer": employer->{      _id,      name    },    "stack": stack[]->{      _id,      name,      "slug": slug.current,      category    },    "screenshots": screenshots[]{      _key,      alt,      "asset": asset->    }  }
+// Query: *[_type == "project"] | order(featured desc, year desc, name asc) {    _id,    name,    "slug": slug.current,    year,    endYear,    state,    engagement,    relation,    featured,    role,    client,    deck,    summary,    description,    outcome,    liveUrl,    githubUrl,    writeupUrl,    "employer": employer->{      _id,      name    },    "stack": stack[]->{      _id,      name,      "slug": slug.current,      category    },    "screenshots": screenshots[]{      _key,      alt,      "asset": asset->    }  }
 export type PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   name: string | null;
@@ -865,10 +961,15 @@ export type PROJECTS_QUERY_RESULT = Array<{
   endYear: number | null;
   state: "cancelled" | "done" | "live" | "paused" | null;
   engagement: "freelance" | "full-time" | "internship" | "owner" | null;
+  relation: "employee" | "freelance" | "personal" | null;
   featured: boolean | null;
   role: string | null;
   client: string | null;
   deck: {
+    en?: string;
+    nl?: string;
+  } | null;
+  summary: {
     en?: string;
     nl?: string;
   } | null;
@@ -1006,10 +1107,10 @@ declare module "@sanity/client" {
   interface SanityQueries {
     '\n  {\n    "profile": *[_id == "profile"][0]{\n      name,\n      tagline,\n      bio,\n      location,\n      email,\n      socialLinks,\n      vatNumber,\n      copyrightYear,\n      "portrait": portrait{\n        alt,\n        "asset": asset->\n      },\n      "cv": cv{\n        "asset": asset->\n      }\n    },\n    "employers": *[_type == "employer"] | order(startYear desc, order desc) {\n      _id,\n      name,\n      role,\n      startYear,\n      endYear,\n      engagement,\n      "slug": "employer-" + lower(name)\n    },\n    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {\n      _id,\n      name,\n      "slug": slug.current,\n      deck,\n      year,\n      state,\n      liveUrl\n    }\n  }\n': ABOUT_QUERY_RESULT;
     '\n  *[_id == "availability"][0]{\n    status,\n    message,\n    nextOpening\n  }\n': AVAILABILITY_QUERY_RESULT;
-    '\n  *[_type == "project" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    role,\n    client,\n    deck,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    featured,\n    "employer": employer->{\n      _id,\n      name,\n      "slug": "employer-" + lower(name)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    },\n    "related": *[\n      _type == "project"\n      && slug.current != $slug\n      && references(^.employer._ref)\n    ] | order(featured desc, year desc) [0...3] {\n      _id,\n      name,\n      "slug": slug.current,\n      year,\n      deck\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
+    '\n  *[_type == "project" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    relation,\n    role,\n    client,\n    deck,\n    summary,\n    description,\n    outcome,\n    body,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    featured,\n    "employer": employer->{\n      _id,\n      name,\n      "slug": "employer-" + lower(name)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "coverUrl": cover.asset->url,\n    "coverAlt": cover.alt,\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    },\n    "related": *[\n      _type == "project"\n      && slug.current != $slug\n      && references(^.employer._ref)\n    ] | order(featured desc, year desc) [0...3] {\n      _id,\n      name,\n      "slug": slug.current,\n      year,\n      deck\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
     '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    leadHeadline,\n    leadSubline,\n    aboutHeadline,\n    bio,\n    "portraitUrl": portrait.asset->url,\n    beyondCode[]{\n      title,\n      body\n    },\n    location,\n    email,\n    socialLinks,\n    "cvEnUrl": cvEn.asset->url,\n    "cvNlUrl": cvNl.asset->url,\n    vatNumber,\n    copyrightYear\n  }\n': PROFILE_QUERY_RESULT;
-    '\n  *[_type == "project"] | order(featured desc, year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    featured,\n    role,\n    client,\n    deck,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    "employer": employer->{\n      _id,\n      name\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    }\n  }\n': PROJECTS_QUERY_RESULT;
+    '\n  *[_type == "project"] | order(featured desc, year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    relation,\n    featured,\n    role,\n    client,\n    deck,\n    summary,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    "employer": employer->{\n      _id,\n      name\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    }\n  }\n': PROJECTS_QUERY_RESULT;
     '\n  *[_id == "siteSettings"][0]{\n    email,\n    socials[]{\n      platform,\n      url,\n      label\n    },\n    metaDescription,\n    "ogImageUrl": ogImage.asset->url\n  }\n': SITE_SETTINGS_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': SITEMAP_SLUGS_QUERY_RESULT;
   }
