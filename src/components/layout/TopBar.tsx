@@ -1,22 +1,35 @@
 "use client";
 /**
  * Site header: wordmark, inline nav (md+) and a mobile hamburger menu.
- * Locale switch and theme toggle now live in the site footer.
+ * Sticky at the top — transparent when at the very top of the page, gains a
+ * hairline border + translucent backdrop-blur once the user scrolls.
  */
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
+import { useScrolled } from "./use-scrolled";
 
 export function TopBar({ locale }: { locale: Locale }) {
+  const sentinel = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
+  const scrolled = useScrolled(sentinel);
   const NAV = [
     { href: `/${locale}`, label: t(locale, "work") },
     { href: `/${locale}/about`, label: t(locale, "about") },
   ];
 
   return (
-    <header className="border-b border-line">
+    <>
+      <div ref={sentinel} aria-hidden="true" className="absolute top-0 h-px w-full" />
+      <header
+        className={[
+          "sticky top-0 z-50 transition-[background-color,border-color] duration-200",
+          scrolled
+            ? "border-b border-line bg-bg/80 backdrop-blur-md"
+            : "border-b border-transparent bg-transparent",
+        ].join(" ")}
+      >
       <div className="flex items-center justify-between px-5 py-5 md:px-11">
         <Link
           href={`/${locale}`}
@@ -60,7 +73,7 @@ export function TopBar({ locale }: { locale: Locale }) {
 
       {/* Mobile menu */}
       {open && (
-        <nav className="flex flex-col gap-4 border-t border-line px-5 py-5 text-base font-medium md:hidden">
+        <nav className="flex flex-col gap-4 border-t border-line bg-bg px-5 py-5 text-base font-medium md:hidden">
           {NAV.map((n) => (
             <Link key={n.href} href={n.href} onClick={() => setOpen(false)}>
               {n.label}
@@ -75,6 +88,7 @@ export function TopBar({ locale }: { locale: Locale }) {
           </Link>
         </nav>
       )}
-    </header>
+      </header>
+    </>
   );
 }
