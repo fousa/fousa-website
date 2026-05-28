@@ -66,7 +66,7 @@ export default async function LocaleLayout({
       </a>
       <TopBar locale={locale} />
       <div className="flex-1">{children}</div>
-      <SiteFooter />
+      <SiteFooter locale={locale} />
       <Analytics />
     </div>
   );
