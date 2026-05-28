@@ -14,6 +14,7 @@ import Link from 'next/link'
 import {pickLocale} from '@/i18n/pick-locale'
 import {t} from '@/i18n/messages'
 import type {Locale} from '@/i18n/config'
+import {localizedHref} from '@/lib/href'
 import type {CASE_STUDY_QUERY_RESULT} from '@/sanity.types'
 
 type Related = NonNullable<CASE_STUDY_QUERY_RESULT>['related'][number]
@@ -41,7 +42,7 @@ export function RelatedWork({
               return (
                 <li key={r._id}>
                   <Link
-                    href={`/${locale}/${r.slug}`}
+                    href={localizedHref(locale, `/${r.slug}`)}
                     className="block bg-surface p-4 rounded-lg border border-ink/10 hover:border-ink/20 transition-colors h-full"
                   >
                     <p className="font-sans text-[14px] font-medium text-ink mb-1">
@@ -61,7 +62,7 @@ export function RelatedWork({
         </>
       )}
       <Link
-        href={`/${locale}`}
+        href={localizedHref(locale, '/')}
         className="font-mono text-[11px] font-medium uppercase tracking-wider text-ios hover:underline"
       >
         ← {t(locale, 'backToLog')}
