@@ -25,6 +25,7 @@ import type {
   SITE_SETTINGS_QUERY_RESULT,
 } from "@/sanity.types";
 import { formatYearRange } from "@/lib/format-year-range";
+import { localizedHref } from "@/lib/href";
 import { OutboundLink } from "@/components/layout/OutboundLink";
 
 const SITE_URL = "https://fousa.be";
@@ -126,7 +127,7 @@ export default async function AboutPage({
               )}
               <div className="mt-6 flex gap-5">
                 <Link
-                  href={`/${locale}/about#contact`}
+                  href={`${localizedHref(locale, "/about")}#contact`}
                   className="font-display text-sm font-semibold text-ink"
                 >
                   {t(locale, "hireMe")}

@@ -9,6 +9,7 @@ import Link from 'next/link'
 import {headers} from 'next/headers'
 import {t} from '@/i18n/messages'
 import type {Locale} from '@/i18n/config'
+import {localizedHref} from '@/lib/href'
 
 async function detectLocaleFromPath(): Promise<Locale> {
   const h = await headers()
@@ -30,7 +31,7 @@ export default async function NotFound() {
         {t(locale, 'notFoundDescription')}
       </p>
       <Link
-        href={`/${locale}`}
+        href={localizedHref(locale, '/')}
         className="font-mono text-[11px] font-medium uppercase tracking-wider text-ios hover:underline"
       >
         ← {t(locale, 'backToLog')}

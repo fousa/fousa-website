@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
+import { localizedHref } from "@/lib/href";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { useScrolled } from "./use-scrolled";
 
@@ -16,8 +17,8 @@ export function TopBar({ locale }: { locale: Locale }) {
   const [open, setOpen] = useState(false);
   const scrolled = useScrolled(sentinel);
   const NAV = [
-    { href: `/${locale}`, label: t(locale, "work") },
-    { href: `/${locale}/about`, label: t(locale, "about") },
+    { href: localizedHref(locale, "/"), label: t(locale, "work") },
+    { href: localizedHref(locale, "/about"), label: t(locale, "about") },
   ];
 
   return (
@@ -33,7 +34,7 @@ export function TopBar({ locale }: { locale: Locale }) {
       >
       <div className="flex items-center justify-between px-5 py-5 md:px-11">
         <Link
-          href={`/${locale}`}
+          href={localizedHref(locale, "/")}
           className="font-display text-[19px] font-bold tracking-[-0.02em]"
         >
           <Wordmark />
@@ -51,7 +52,7 @@ export function TopBar({ locale }: { locale: Locale }) {
             </Link>
           ))}
           <Link
-            href={`/${locale}/about#contact`}
+            href={`${localizedHref(locale, "/about")}#contact`}
             className="font-semibold text-ink"
           >
             {t(locale, "hireMe")}
@@ -81,7 +82,7 @@ export function TopBar({ locale }: { locale: Locale }) {
             </Link>
           ))}
           <Link
-            href={`/${locale}/about#contact`}
+            href={`${localizedHref(locale, "/about")}#contact`}
             onClick={() => setOpen(false)}
           >
             {t(locale, "hireMe")}

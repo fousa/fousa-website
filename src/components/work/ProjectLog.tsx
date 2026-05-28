@@ -10,6 +10,7 @@ import { forLabel, type ForLabel } from "@/lib/work-display";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 import { track } from "@/lib/analytics";
+import { localizedHref } from "@/lib/href";
 import { StatusDot } from "./StatusDot";
 import { ToolingChip } from "./ToolingChip";
 
@@ -211,7 +212,7 @@ function DepthLink({
   const target = depth === "full" ? "case_study" : "gallery";
   return (
     <Link
-      href={`/${locale}/work/${slug}`}
+      href={localizedHref(locale, `/work/${slug}`)}
       onClick={() => track("project_open", { slug, depth: depth as "full" | "gallery", target, locale })}
       className={`font-display font-semibold text-ink ${size === "sm" ? "text-[13px]" : "text-sm"}`}
     >

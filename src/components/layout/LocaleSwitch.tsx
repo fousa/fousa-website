@@ -2,8 +2,8 @@
 /**
  * Footer language switch. Full names on desktop (English / Nederlands), codes on
  * mobile (EN / NL) via responsive label spans — one control, one active state, no JS
- * branching. Swaps the leading locale segment of the current path. Each label span has
- * an explicit display at both breakpoints so a global reset can't blank it out.
+ * branching. Swaps the locale segment of the current path, aware that English is
+ * unprefixed.
  *
  * Uses `router.push` with `scroll: false` and a double-rAF scroll restore so switching
  * language keeps the user at the same scroll position instead of jumping to the top.
@@ -15,26 +15,38 @@ const LOCALES = [
   { code: "en", short: "EN", name: "English" },
   { code: "nl", short: "NL", name: "Nederlands" },
 ] as const;
+const DEFAULT = "en";
+
+/** Parse the pathname into locale + rest parts. */
+function pathParts(pathname: string) {
+  const parts = pathname.split("/").filter(Boolean);
+  const hasPrefix = (LOCALES as readonly { code: string }[]).some(
+    (l) => l.code === parts[0],
+  );
+  const locale = hasPrefix ? parts[0] : DEFAULT;
+  const rest = hasPrefix ? parts.slice(1) : parts;
+  return { locale, rest };
+}
+
+/** Build a localized href for the target locale. */
+function hrefFor(pathname: string, target: string) {
+  const { rest } = pathParts(pathname);
+  const body = "/" + rest.join("/");
+  return target === DEFAULT
+    ? body || "/"
+    : `/${target}${body === "/" ? "" : body}`;
+}
 
 export function LocaleSwitch() {
   const pathname = usePathname() || "/";
   const router = useRouter();
-  const seg = pathname.split("/")[1];
-  const current = LOCALES.some((l) => l.code === seg) ? seg : "en";
-
-  /** Build the path with `loc` as the leading locale segment. */
-  function hrefFor(loc: string) {
-    const p = pathname.split("/");
-    if (LOCALES.some((l) => l.code === p[1])) p[1] = loc;
-    else p.splice(1, 0, loc);
-    return p.join("/") || "/";
-  }
+  const { locale: current } = pathParts(pathname);
 
   /** Navigate to the target locale, preserving scroll position. */
   function switchTo(loc: string) {
     track("locale_switch", { from: current, to: loc, path: pathname });
     const y = window.scrollY;
-    router.push(hrefFor(loc), { scroll: false });
+    router.push(hrefFor(pathname, loc), { scroll: false });
     requestAnimationFrame(() =>
       requestAnimationFrame(() => {
         const max = Math.max(

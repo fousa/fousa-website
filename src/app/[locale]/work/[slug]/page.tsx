@@ -19,6 +19,7 @@ import { getProject, getProjectSlugs } from "@/lib/work";
 import { forLabel } from "@/lib/work-display";
 import { fetchSanity } from "@/sanity/fetch";
 import { CASE_STUDY_QUERY } from "@/sanity/queries/case-study";
+import { localizedHref } from "@/lib/href";
 import { StatusDot } from "@/components/work/StatusDot";
 import { PortableTextRenderer } from "@/components/portable-text";
 import { Frame } from "@/components/work/Frame";
@@ -102,7 +103,7 @@ export default async function DetailPage({
       {/* Back link */}
       <div className="px-5 pt-8 md:px-11">
         <Link
-          href={`/${locale}`}
+          href={localizedHref(locale, "/")}
           className="font-display text-sm font-semibold text-muted transition-colors hover:text-ink"
         >
           ← {t(locale, "backToTheLog")}
@@ -240,7 +241,7 @@ export default async function DetailPage({
             {related.map((r) => (
               <Link
                 key={r.slug}
-                href={`/${locale}/work/${r.slug}`}
+                href={localizedHref(locale, `/work/${r.slug}`)}
                 className="group border-t border-line pt-5"
               >
                 <span className="font-display text-base font-semibold text-ink transition-colors group-hover:text-accent">
