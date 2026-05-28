@@ -9,6 +9,7 @@ import type {SchemaTypeDefinition} from 'sanity'
 
 import {profile} from './profile'
 import {availability} from './availability'
+import {siteSettings} from './site-settings'
 import {employer} from './employer'
 import {stackTag} from './stack-tag'
 import {project} from './project'
@@ -17,6 +18,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   // Singletons (one document each, edited in place)
   profile,
   availability,
+  siteSettings,
   // Collections (many documents, listed in the Studio sidebar)
   employer,
   stackTag,

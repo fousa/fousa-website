@@ -15,7 +15,7 @@ import type {StructureResolver} from 'sanity/structure'
  * Document creation for these types is also blocked in sanity.config.ts via
  * the `actions` resolver (set up at the end of this file's accompanying changes).
  */
-const SINGLETONS = ['profile', 'availability'] as const
+const SINGLETONS = ['profile', 'availability', 'siteSettings'] as const
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -39,6 +39,15 @@ export const structure: StructureResolver = (S) =>
             .id('availability')
             .schemaType('availability')
             .documentId('availability')
+        ),
+      S.listItem()
+        .title('Site settings')
+        .id('siteSettings')
+        .child(
+          S.editor()
+            .id('siteSettings')
+            .schemaType('siteSettings')
+            .documentId('siteSettings')
         ),
       S.divider(),
       // Collections — Sanity's default list views
