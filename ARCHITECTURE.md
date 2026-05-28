@@ -75,6 +75,8 @@ fousa/
     ├── lib/
     │   ├── work.ts              ← Project type, filters, getProjects/getProject
     │   ├── analytics.ts         ← typed track() wrapper over @vercel/analytics
+    │   ├── href.ts              ← localizedHref() — unprefixed en, /nl for Dutch
+    │   ├── seo.ts               ← altMetadata() — canonical + hreflang alternates
     │   ├── filter-projects.ts   ← stack category + engagement filtering (Sanity)
     │   ├── employer-filters.ts  ← derive dominant stack per employer
     │   ├── format-year-range.ts ← format year or year range
@@ -121,17 +123,20 @@ Field-level translations, not document-level. Translatable fields (deck, descrip
 
 Static UI strings live in `src/i18n/messages.ts` with EN and NL translations for nav labels, filter names, and component chrome. Content copy (headlines, bios, beyond-code items) lives in Sanity. The `t(locale, key)` helper provides typed lookups; Sanity fields fall back to `t()` values when empty.
 
-At render time, missing Dutch fields fall back to English. The Next.js side reads `locale` from the URL (`/en` or `/nl`) and picks the right sub-field.
+At render time, missing Dutch fields fall back to English. The Next.js side reads `locale` from the URL and picks the right sub-field.
 
 ## Routing
 
-- `/` → proxy redirects to `/en` or `/nl` based on cookie / `Accept-Language`
-- `/en`, `/nl` → the log (homepage)
-- `/en/about`, `/nl/about` → about page
-- `/en/work/<slug>`, `/nl/work/<slug>` → case study page (minimal-modern)
-- `/en/<slug>`, `/nl/<slug>` → legacy case study route (Sanity-connected)
+English is the unprefixed default locale; Dutch lives under `/nl`. No browser-locale detection, no cookies — the URL alone determines the language. The proxy rewrites unprefixed paths to `[locale]=en` internally and 308-redirects `/en/...` to the unprefixed canonical form.
+
+- `/`, `/about`, `/work/<slug>` → English (canonical)
+- `/nl`, `/nl/about`, `/nl/work/<slug>` → Dutch
+- `/<slug>`, `/nl/<slug>` → legacy case study route (Sanity-connected)
+- `/en/...` → 308 redirect to unprefixed equivalent
 - `/studio` → Sanity Studio (no locale prefix — admin only)
 - `/api/revalidate` → webhook endpoint, requires `?secret=` query param
+
+All internal links use `localizedHref(locale, path)` from `lib/href.ts`. SEO metadata uses `altMetadata(locale, path)` from `lib/seo.ts` for canonical + hreflang (`x-default` points at English).
 
 ## Rendering
 
