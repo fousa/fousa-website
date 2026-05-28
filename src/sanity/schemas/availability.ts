@@ -2,8 +2,8 @@
  * Availability — singleton document.
  *
  * Drives the availability indicator in the contact panel. Three states:
- * available, after-hours, or unavailable. The `detail` field is a localized
- * one-liner (e.g. "from Q3 2026") that renders next to the status label.
+ * available, after-hours, or unavailable. The `message` field is a localized
+ * one-liner shown next to the coloured dot.
  */
 import {defineField, defineType} from 'sanity'
 import {i18nString} from '@/sanity/fields/i18n'
@@ -31,14 +31,9 @@ export const availability = defineType({
       validation: (Rule) => Rule.required(),
     }),
     i18nString(
-      'label',
-      'Pill label',
-      'The text inside the green pill. Examples: "Available · Oct 2026", "Booked through Q1 2027", "Next opening: March".'
-    ),
-    i18nString(
-      'detail',
-      'Detail line',
-      'Optional localized one-liner shown after the status label, e.g. "from Q3 2026" / "vanaf Q3 2026".'
+      'message',
+      'Status message',
+      'Short localized text shown next to the dot, e.g. "Available for projects" / "Beschikbaar voor projecten".'
     ),
     defineField({
       name: 'nextOpening',
@@ -49,10 +44,10 @@ export const availability = defineType({
     }),
   ],
   preview: {
-    select: {status: 'status', label: 'label.en'},
-    prepare: ({status, label}) => ({
+    select: {status: 'status', message: 'message.en'},
+    prepare: ({status, message}) => ({
       title: 'Availability',
-      subtitle: `${status ?? 'unset'} — ${label ?? '(no label)'}`,
+      subtitle: `${status ?? 'unset'} — ${message ?? '(no message)'}`,
     }),
   },
 })

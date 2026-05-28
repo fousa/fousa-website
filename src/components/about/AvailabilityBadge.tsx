@@ -10,12 +10,10 @@ const DOT: Record<AvailabilityStatus, string> = {
 
 export function AvailabilityBadge({
   status,
-  label,
-  detail,
+  message,
 }: {
   status: AvailabilityStatus;
-  label: string;
-  detail?: string;
+  message: string;
 }) {
   return (
     <span className="flex items-center gap-[10px] font-mono text-[11px] uppercase tracking-[0.1em] text-panel-muted">
@@ -24,10 +22,7 @@ export function AvailabilityBadge({
         style={{ backgroundColor: DOT[status], color: DOT[status] }}
         aria-hidden
       />
-      <span>
-        {label}
-        {detail ? ` · ${detail}` : ""}
-      </span>
+      <span>{message}</span>
     </span>
   );
 }

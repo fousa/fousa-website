@@ -6,8 +6,7 @@ import {defineQuery} from 'next-sanity'
 export const AVAILABILITY_QUERY = defineQuery(`
   *[_id == "availability"][0]{
     status,
-    label,
-    detail,
+    message,
     nextOpening
   }
 `)

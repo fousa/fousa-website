@@ -89,11 +89,10 @@ export default async function AboutPage({
   );
 
   const availStatus = (availability?.status ?? "available") as AvailabilityStatus;
-  const availLabel = t(locale, `availability_${availStatus.replace("-", "_")}` as any);
-  const availDetail = pickLocale(
-    typeof availability?.detail === "object" ? availability.detail : null,
+  const availMessage = pickLocale(
+    typeof availability?.message === "object" ? availability.message : null,
     locale,
-  ) ?? undefined;
+  ) ?? t(locale, `availability_${availStatus.replace("-", "_")}` as any);
 
   return (
     <>
@@ -184,8 +183,7 @@ export default async function AboutPage({
       >
         <AvailabilityBadge
           status={availStatus}
-          label={availLabel}
-          detail={availDetail}
+          message={availMessage}
         />
         <a
           href="mailto:jelle@fousa.be"
