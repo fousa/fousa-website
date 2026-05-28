@@ -205,6 +205,48 @@ export const project = defineType({
       'Full case study narrative — context, approach, outcome. Shown on the dedicated /work/<slug> page.'
     ),
     defineField({
+      name: 'gallery',
+      title: 'Gallery (screenshots)',
+      type: 'array',
+      group: 'caseStudy',
+      description: 'Screenshots shown on the detail page when there\u2019s no full case study. Each image picks its own frame.',
+      of: [
+        {
+          name: 'shot',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'image',
+              title: 'Image',
+              type: 'image',
+              options: {hotspot: true},
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'frame',
+              title: 'Frame',
+              type: 'string',
+              initialValue: 'browser',
+              options: {
+                layout: 'radio',
+                list: [
+                  {title: 'Phone', value: 'phone'},
+                  {title: 'Tablet', value: 'tablet'},
+                  {title: 'Browser', value: 'browser'},
+                  {title: 'None (bare image)', value: 'none'},
+                ],
+              },
+              validation: (Rule) => Rule.required(),
+            }),
+            i18nString('caption', 'Caption'),
+          ],
+          preview: {
+            select: {media: 'image', subtitle: 'frame'},
+          },
+        },
+      ],
+    }),
+    defineField({
       name: 'cover',
       title: 'Cover image',
       type: 'image',

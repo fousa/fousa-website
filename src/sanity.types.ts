@@ -155,6 +155,22 @@ export type Project = {
       _key: string;
     }>;
   };
+  gallery?: Array<{
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    frame?: "phone" | "tablet" | "browser" | "none";
+    caption?: {
+      en?: string;
+      nl?: string;
+    };
+    _type: "shot";
+    _key: string;
+  }>;
   cover?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
