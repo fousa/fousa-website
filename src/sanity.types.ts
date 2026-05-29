@@ -15,11 +15,11 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
-export type EmployerReference = {
+export type TimelineEntryReference = {
   _ref: string;
   _type: "reference";
   _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "employer";
+  [internalGroqTypeReferenceTo]?: "timelineEntry";
 };
 
 export type StackTagReference = {
@@ -44,7 +44,7 @@ export type Project = {
   _rev: string;
   name?: string;
   slug?: Slug;
-  employer?: EmployerReference;
+  employer?: TimelineEntryReference;
   client?: string;
   role?: string;
   year?: number;
@@ -221,28 +221,23 @@ export type StackTag = {
   category?: "ios" | "rails" | "frontend" | "tooling" | "other";
 };
 
-export type Employer = {
+export type TimelineEntry = {
   _id: string;
-  _type: "employer";
+  _type: "timelineEntry";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  name?: string;
-  role?: string;
+  organisation?: string;
+  title?: string;
+  group?: "freelance" | "employed" | "education";
   startDate?: string;
   endDate?: string;
-  pinned?: boolean;
-  engagement?:
-    | "freelance"
-    | "full-time"
-    | "owner"
-    | "internship"
-    | "holiday"
-    | "education";
   description?: {
     en?: string;
     nl?: string;
   };
+  location?: string;
+  order?: number;
 };
 
 export type SiteSettings = {
@@ -490,7 +485,7 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
-  | EmployerReference
+  | TimelineEntryReference
   | StackTagReference
   | SanityImageAssetReference
   | Project
@@ -498,7 +493,7 @@ export type AllSanitySchemaTypes =
   | SanityImageHotspot
   | Slug
   | StackTag
-  | Employer
+  | TimelineEntry
   | SiteSettings
   | Availability
   | SanityFileAssetReference
@@ -514,7 +509,7 @@ export type AllSanitySchemaTypes =
 
 // Source: src/sanity/queries/about.ts
 // Variable: ABOUT_QUERY
-// Query: {    "profile": *[_id == "profile"][0]{      name,      tagline,      aboutHeadline,      bio,      beyondCode[]{ title, body },      location,      email,      socialLinks,      "cvEnUrl": cvEn.asset->url,      "cvNlUrl": cvNl.asset->url,      vatNumber,      copyrightYear,      "portraitUrl": portrait.asset->url    },    "employers": *[_type == "employer"] | order(pinned desc, startDate desc) {      _id,      name,      role,      startDate,      endDate,      pinned,      engagement,      description,      "slug": "employer-" + lower(name)    },    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {      _id,      name,      "slug": slug.current,      deck,      year,      state,      liveUrl    }  }
+// Query: {    "profile": *[_id == "profile"][0]{      name,      tagline,      aboutHeadline,      bio,      beyondCode[]{ title, body },      location,      email,      socialLinks,      "cvEnUrl": cvEn.asset->url,      "cvNlUrl": cvNl.asset->url,      vatNumber,      copyrightYear,      "portraitUrl": portrait.asset->url    },    "timeline": *[_type == "timelineEntry"] | order(startDate desc, order desc) {      _id,      organisation,      title,      group,      startDate,      endDate,      description,      location    },    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {      _id,      name,      "slug": slug.current,      deck,      year,      state,      liveUrl    }  }
 export type ABOUT_QUERY_RESULT = {
   profile:
     | {
@@ -539,6 +534,21 @@ export type ABOUT_QUERY_RESULT = {
         bio: null;
         beyondCode: null;
         location: null;
+        email: null;
+        socialLinks: null;
+        cvEnUrl: null;
+        cvNlUrl: null;
+        vatNumber: null;
+        copyrightYear: null;
+        portraitUrl: null;
+      }
+    | {
+        name: null;
+        tagline: null;
+        aboutHeadline: null;
+        bio: null;
+        beyondCode: null;
+        location: string | null;
         email: null;
         socialLinks: null;
         cvEnUrl: null;
@@ -634,26 +644,18 @@ export type ABOUT_QUERY_RESULT = {
         portraitUrl: string | null;
       }
     | null;
-  employers: Array<{
+  timeline: Array<{
     _id: string;
-    name: string | null;
-    role: string | null;
+    organisation: string | null;
+    title: string | null;
+    group: "education" | "employed" | "freelance" | null;
     startDate: string | null;
     endDate: string | null;
-    pinned: boolean | null;
-    engagement:
-      | "education"
-      | "freelance"
-      | "full-time"
-      | "holiday"
-      | "internship"
-      | "owner"
-      | null;
     description: {
       en?: string;
       nl?: string;
     } | null;
-    slug: string | null;
+    location: string | null;
   }>;
   ownApps: Array<never>;
 };
@@ -784,8 +786,8 @@ export type CASE_STUDY_QUERY_RESULT = {
   featured: boolean | null;
   employer: {
     _id: string;
-    name: string | null;
-    slug: string | null;
+    name: null;
+    slug: null;
   } | null;
   stack: Array<{
     _id: string;
@@ -882,6 +884,23 @@ export type PROFILE_QUERY_RESULT =
       portraitUrl: null;
       beyondCode: null;
       location: null;
+      email: null;
+      socialLinks: null;
+      cvEnUrl: null;
+      cvNlUrl: null;
+      vatNumber: null;
+      copyrightYear: null;
+    }
+  | {
+      name: null;
+      tagline: null;
+      roleLine: null;
+      filterIntro: null;
+      aboutHeadline: null;
+      bio: null;
+      portraitUrl: null;
+      beyondCode: null;
+      location: string | null;
       email: null;
       socialLinks: null;
       cvEnUrl: null;
@@ -1056,7 +1075,7 @@ export type PROJECTS_QUERY_RESULT = Array<{
   writeupUrl: string | null;
   employer: {
     _id: string;
-    name: string | null;
+    name: null;
   } | null;
   stack: Array<{
     _id: string;
@@ -1148,7 +1167,7 @@ export type SITEMAP_SLUGS_QUERY_RESULT = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  {\n    "profile": *[_id == "profile"][0]{\n      name,\n      tagline,\n      aboutHeadline,\n      bio,\n      beyondCode[]{ title, body },\n      location,\n      email,\n      socialLinks,\n      "cvEnUrl": cvEn.asset->url,\n      "cvNlUrl": cvNl.asset->url,\n      vatNumber,\n      copyrightYear,\n      "portraitUrl": portrait.asset->url\n    },\n    "employers": *[_type == "employer"] | order(pinned desc, startDate desc) {\n      _id,\n      name,\n      role,\n      startDate,\n      endDate,\n      pinned,\n      engagement,\n      description,\n      "slug": "employer-" + lower(name)\n    },\n    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {\n      _id,\n      name,\n      "slug": slug.current,\n      deck,\n      year,\n      state,\n      liveUrl\n    }\n  }\n': ABOUT_QUERY_RESULT;
+    '\n  {\n    "profile": *[_id == "profile"][0]{\n      name,\n      tagline,\n      aboutHeadline,\n      bio,\n      beyondCode[]{ title, body },\n      location,\n      email,\n      socialLinks,\n      "cvEnUrl": cvEn.asset->url,\n      "cvNlUrl": cvNl.asset->url,\n      vatNumber,\n      copyrightYear,\n      "portraitUrl": portrait.asset->url\n    },\n    "timeline": *[_type == "timelineEntry"] | order(startDate desc, order desc) {\n      _id,\n      organisation,\n      title,\n      group,\n      startDate,\n      endDate,\n      description,\n      location\n    },\n    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {\n      _id,\n      name,\n      "slug": slug.current,\n      deck,\n      year,\n      state,\n      liveUrl\n    }\n  }\n': ABOUT_QUERY_RESULT;
     '\n  *[_id == "availability"][0]{\n    status,\n    message,\n    nextOpening\n  }\n': AVAILABILITY_QUERY_RESULT;
     '\n  *[_type == "project" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    role,\n    client,\n    deck,\n    summary,\n    description,\n    outcome,\n    body,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    featured,\n    "employer": employer->{\n      _id,\n      name,\n      "slug": "employer-" + lower(name)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      category\n    },\n    "coverUrl": cover.asset->url,\n    "coverAlt": cover.alt,\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    },\n    "gallery": gallery[]{\n      _key,\n      frame,\n      caption,\n      "imageUrl": image.asset->url,\n      "width": image.asset->metadata.dimensions.width,\n      "height": image.asset->metadata.dimensions.height\n    },\n    "related": *[\n      _type == "project"\n      && slug.current != $slug\n      && references(^.employer._ref)\n    ] | order(featured desc, year desc) [0...3] {\n      _id,\n      name,\n      "slug": slug.current,\n      year,\n      deck\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
