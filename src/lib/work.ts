@@ -14,7 +14,7 @@ import type {Locale} from '@/i18n/config'
 import type {PROJECTS_QUERY_RESULT, CASE_STUDY_QUERY_RESULT, CASE_STUDY_SLUGS_QUERY_RESULT} from '@/sanity.types'
 
 export type State = 'active' | 'maintained' | 'archived' | 'cancelled'
-export type Engagement = 'freelance' | 'full-time' | 'internship' | 'student'
+export type Engagement = 'freelance' | 'full-time' | 'student'
 export type Depth = 'none' | 'gallery' | 'full'
 export type Frame = 'phone' | 'tablet' | 'browser' | 'none'
 
@@ -61,17 +61,16 @@ export const FILTERS = [
   'All',
   'Freelance',
   'Full-time',
-  'Internship',
-  'iOS',
-  'Rails',
+  'Mobile',
+  'Web',
   'Other',
 ] as const
 
 export type Filter = (typeof FILTERS)[number]
 
 /** Tech keys that have their own filter chip; everything else is "Other". */
-const KNOWN_TECH = ['ios', 'rails']
-const ENGAGEMENTS: string[] = ['freelance', 'full-time', 'internship']
+const KNOWN_TECH = ['mobile', 'web']
+const ENGAGEMENTS: string[] = ['freelance', 'full-time']
 
 /**
  * Test whether a project passes the given filter.

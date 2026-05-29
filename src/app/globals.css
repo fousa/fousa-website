@@ -9,12 +9,24 @@
   --muted:#71717a; --faint:#a1a1aa; --line:#ececec; --hover:#fafafa;
   --accent:#ff4d1c; --panel:#0c0c0d; --panel-text:#ffffff; --panel-muted:#8a8a92;
   --status-ok:#34c27a; --status-warn:#e0a83a; --status-full:#e5484d;
+  --cat-mobile:#0077ed; --cat-mobile-bg:#e8f2ff;
+  --cat-web:#d6336c;    --cat-web-bg:#fce4ec;
+  --cat-frontend:#8b5cf6; --cat-frontend-bg:#ede9fe;
+  --cat-tooling:#0ea5e9;  --cat-tooling-bg:#e0f2fe;
+  --cat-other:#71717a;     --cat-other-bg:#f4f4f5;
+  --cat-sepia:#92400e;
 }
 .dark {
   --bg:#0a0a0b; --surface:#141417; --ink:#f2f2f3; --text:#c2c2c8;
   --muted:#8a8a92; --faint:#5e5e66; --line:#1e1e22; --hover:#17171b;
   --accent:#ff5a36; --panel:#141417; --panel-text:#f2f2f3; --panel-muted:#8a8a92;
   --status-ok:#3ad08a; --status-warn:#edb24a; --status-full:#ff5d62;
+  --cat-mobile:#4da3ff; --cat-mobile-bg:#1a2a40;
+  --cat-web:#f472b6;    --cat-web-bg:#3b1a2a;
+  --cat-frontend:#a78bfa; --cat-frontend-bg:#2a1f47;
+  --cat-tooling:#38bdf8;  --cat-tooling-bg:#1a2c3d;
+  --cat-other:#a1a1aa;     --cat-other-bg:#1e1e22;
+  --cat-sepia:#d4a574;
 }
 
 @theme inline {
@@ -22,6 +34,12 @@
   --color-text:var(--text); --color-muted:var(--muted); --color-faint:var(--faint);
   --color-line:var(--line); --color-hover:var(--hover); --color-accent:var(--accent);
   --color-panel:var(--panel); --color-panel-text:var(--panel-text); --color-panel-muted:var(--panel-muted);
+  --color-mobile:var(--cat-mobile); --color-mobile-bg:var(--cat-mobile-bg);
+  --color-web:var(--cat-web); --color-web-bg:var(--cat-web-bg);
+  --color-frontend:var(--cat-frontend); --color-frontend-bg:var(--cat-frontend-bg);
+  --color-tooling:var(--cat-tooling); --color-tooling-bg:var(--cat-tooling-bg);
+  --color-other:var(--cat-other); --color-other-bg:var(--cat-other-bg);
+  --color-sepia:var(--cat-sepia);
   --font-display:var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-sans:var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono:var(--font-space-mono), ui-monospace, monospace;

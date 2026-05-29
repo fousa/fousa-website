@@ -109,7 +109,7 @@ function ExternalLinks({project, locale}: {project: Project; locale: Locale}) {
           href={project.liveUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="font-mono text-[12px] font-medium text-ios hover:underline"
+          className="font-mono text-[12px] font-medium text-accent hover:underline"
         >
           ↗ {t(locale, 'liveLink')}
         </a>

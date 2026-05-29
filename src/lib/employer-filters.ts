@@ -1,18 +1,18 @@
 /**
  * Computes the dominant stack category for each employer based on their
  * project history. Used to wire career timeline rows to filtered homepage
- * URLs ("click on icapps → see all icapps-era iOS projects").
+ * URLs ("click on icapps → see all icapps-era mobile projects").
  *
  * "Dominant" = most-frequent category across that employer's projects.
- * Ties broken by enum order (ios > rails > frontend > tooling > other) —
+ * Ties broken by enum order (mobile > web > frontend > tooling > other) —
  * arbitrary but stable.
  */
 import type {PROJECTS_QUERY_RESULT} from '@/sanity.types'
 import type {StackCategory} from './filter-projects'
 
 const TIE_BREAK_ORDER: readonly StackCategory[] = [
-  'ios',
-  'rails',
+  'mobile',
+  'web',
   'frontend',
   'tooling',
   'other',

@@ -19,9 +19,8 @@ const FILTER_KEYS = {
   All: "filterAll",
   Freelance: "filterFreelance",
   "Full-time": "filterFullTime",
-  Internship: "filterInternship",
-  iOS: "filterIos",
-  Rails: "filterRails",
+  Mobile: "filterMobile",
+  Web: "filterWeb",
   Other: "filterOther",
 } as const;
 

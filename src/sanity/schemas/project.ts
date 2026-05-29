@@ -47,7 +47,7 @@ export const project = defineType({
       group: 'basics',
       to: [{type: 'timelineEntry'}],
       description: 'Who you were employed by (icapps, KBC). Leave empty for freelance/personal.',
-      hidden: ({parent}) => parent?.engagement !== 'full-time' && parent?.engagement !== 'internship',
+      hidden: ({parent}) => parent?.engagement !== 'full-time',
     }),
     defineField({
       name: 'client',
@@ -97,7 +97,6 @@ export const project = defineType({
         list: [
           {title: 'Freelance', value: 'freelance'},
           {title: 'Full-time', value: 'full-time'},
-          {title: 'Internship', value: 'internship'},
           {title: 'Student', value: 'student'},
         ],
         layout: 'radio',

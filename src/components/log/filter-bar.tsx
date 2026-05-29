@@ -27,18 +27,17 @@ type Counts = {
 }
 
 const STACK_LABELS: Record<StackCategory, string> = {
-  ios: 'iOS',
-  rails: 'Rails',
+  mobile: 'Mobile',
+  web: 'Web',
   frontend: 'Frontend',
   tooling: 'Tooling',
   other: 'Other',
 }
 
-const ENGAGEMENT_KEYS: Record<Engagement, 'freelance' | 'fullTime' | 'owner' | 'internship'> = {
+const ENGAGEMENT_KEYS: Record<Engagement, 'freelance' | 'fullTime' | 'owner'> = {
   freelance: 'freelance',
   'full-time': 'fullTime',
   owner: 'owner',
-  internship: 'internship',
 }
 
 export function FilterBar({
@@ -97,13 +96,13 @@ const VARIANT_CLASSES: Record<string, {active: string; inactive: string}> = {
     active: 'bg-ink text-page',
     inactive: 'bg-surface text-ink-muted border border-ink/10 hover:text-ink',
   },
-  ios: {
-    active: 'bg-ios text-page',
-    inactive: 'bg-ios-bg text-ios hover:bg-ios/10',
+  mobile: {
+    active: 'bg-mobile text-page',
+    inactive: 'bg-mobile-bg text-mobile hover:bg-mobile/10',
   },
-  rails: {
-    active: 'bg-rails text-page',
-    inactive: 'bg-rails-bg text-rails hover:bg-rails/10',
+  web: {
+    active: 'bg-web text-page',
+    inactive: 'bg-web-bg text-web hover:bg-web/10',
   },
   frontend: {
     active: 'bg-frontend text-page',

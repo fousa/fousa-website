@@ -2,22 +2,22 @@
  * Pure filtering for the project log.
  *
  * Two filter categories:
- *   - `stack` filters by Stack tag CATEGORY (ios / rails / frontend / tooling
+ *   - `stack` filters by Stack tag CATEGORY (mobile / web / frontend / tooling
  *     / other), NOT by individual tag. A project with any tag in the chosen
  *     category(ies) matches.
  *   - `engagement` filters by the project's engagement enum.
  *
  * Within a category: OR. Across categories: AND.
- * "iOS + Rails" → projects with iOS OR Rails tags.
- * "iOS + Freelance" → projects with iOS tags AND engagement=freelance.
+ * "Mobile + Web" → projects with Mobile OR Web tags.
+ * "Mobile + Freelance" → projects with Mobile tags AND engagement=freelance.
  *
  * Empty arrays mean "no filter applied for this category" — the whole list
  * passes through.
  */
 import type {PROJECTS_QUERY_RESULT} from '@/sanity.types'
 
-export type StackCategory = 'ios' | 'rails' | 'frontend' | 'tooling' | 'other'
-export type Engagement = 'freelance' | 'full-time' | 'owner' | 'internship'
+export type StackCategory = 'mobile' | 'web' | 'frontend' | 'tooling' | 'other'
+export type Engagement = 'freelance' | 'full-time' | 'owner'
 
 export type Filters = {
   stack: StackCategory[]
@@ -78,8 +78,8 @@ export function deriveFilterCounts(projects: PROJECTS_QUERY_RESULT): {
   engagement: Record<Engagement, number>
 } {
   const stack: Record<StackCategory, number> = {
-    ios: 0,
-    rails: 0,
+    mobile: 0,
+    web: 0,
     frontend: 0,
     tooling: 0,
     other: 0,
@@ -88,7 +88,6 @@ export function deriveFilterCounts(projects: PROJECTS_QUERY_RESULT): {
     freelance: 0,
     'full-time': 0,
     owner: 0,
-    internship: 0,
   }
 
   for (const p of projects ?? []) {

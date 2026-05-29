@@ -20,8 +20,8 @@ import type {CASE_STUDY_QUERY_RESULT} from '@/sanity.types'
 export const runtime = 'edge'
 
 const CATEGORY_BG: Record<string, string> = {
-  ios: '#1e40af',
-  rails: '#166534',
+  mobile: '#1e40af',
+  web: '#166534',
   frontend: '#92400e',
   tooling: '#6b21a8',
   other: '#1f2937',

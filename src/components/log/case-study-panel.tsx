@@ -115,7 +115,7 @@ function Screenshots({project}: {project: Project}) {
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="aspect-[3/4] rounded bg-ios/10 flex items-center justify-center"
+            className="aspect-[3/4] rounded bg-mobile/10 flex items-center justify-center"
           >
             <span className="font-serif italic text-ink-faint text-[10px]">
               [ {project.name} ]
@@ -167,7 +167,7 @@ function PanelLinks({project, locale}: {project: Project; locale: Locale}) {
           href={project.liveUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-ios font-medium hover:underline"
+          className="text-mobile font-medium hover:underline"
         >
           ↗ {t(locale, 'liveLink')}
         </a>

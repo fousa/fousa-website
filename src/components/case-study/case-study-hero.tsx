@@ -20,8 +20,8 @@ import type {CASE_STUDY_QUERY_RESULT} from '@/sanity.types'
 type Project = NonNullable<CASE_STUDY_QUERY_RESULT>
 
 const CATEGORY_BG: Record<string, string> = {
-  ios: 'bg-ios',
-  rails: 'bg-rails',
+  mobile: 'bg-mobile',
+  web: 'bg-web',
   frontend: 'bg-frontend',
   tooling: 'bg-tooling',
   other: 'bg-other',

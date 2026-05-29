@@ -1,17 +1,17 @@
 /**
  * A single stack tag chip — small colored pill with monospace text.
  *
- * Colors come from the chip's category (ios, rails, frontend, tooling, other).
+ * Colors come from the chip's category (mobile, web, frontend, tooling, other).
  * Categories are stored on Stack tag documents in Sanity; the migration's
  * hand-tuned category map gave each tag a sensible default.
  */
 import {clsx} from 'clsx'
 
-type Category = 'ios' | 'rails' | 'frontend' | 'tooling' | 'other'
+type Category = 'mobile' | 'web' | 'frontend' | 'tooling' | 'other'
 
 const CATEGORY_CLASSES: Record<Category, string> = {
-  ios: 'bg-ios-bg text-ios',
-  rails: 'bg-rails-bg text-rails',
+  mobile: 'bg-mobile-bg text-mobile',
+  web: 'bg-web-bg text-web',
   frontend: 'bg-frontend-bg text-frontend',
   tooling: 'bg-tooling-bg text-tooling',
   other: 'bg-other-bg text-other',

@@ -36,8 +36,8 @@ export const stackTag = defineType({
       description: 'Which family this tag belongs to. Drives semantic chip colors in the UI.',
       options: {
         list: [
-          {title: 'iOS', value: 'ios'},
-          {title: 'Rails', value: 'rails'},
+          {title: 'Mobile', value: 'mobile'},
+          {title: 'Web', value: 'web'},
           {title: 'Frontend', value: 'frontend'},
           {title: 'Tooling', value: 'tooling'},
           {title: 'Other', value: 'other'},
@@ -45,7 +45,7 @@ export const stackTag = defineType({
         layout: 'radio',
       },
       validation: (Rule) => Rule.required(),
-      initialValue: 'ios',
+      initialValue: 'mobile',
     }),
   ],
   orderings: [

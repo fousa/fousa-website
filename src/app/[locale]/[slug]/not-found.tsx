@@ -32,7 +32,7 @@ export default async function NotFound() {
       </p>
       <Link
         href={localizedHref(locale, '/')}
-        className="font-mono text-[11px] font-medium uppercase tracking-wider text-ios hover:underline"
+        className="font-mono text-[11px] font-medium uppercase tracking-wider text-accent hover:underline"
       >
         ← {t(locale, 'backToLog')}
       </Link>

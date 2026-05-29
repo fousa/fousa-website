@@ -5,7 +5,7 @@
  * URL-backed filter state.
  *
  * Filters live as comma-separated values in the query string:
- *   /en?stack=ios,rails&engagement=freelance
+ *   /en?stack=mobile,web&engagement=freelance
  *
  * Toggling a value:
  *   - If the value is already in the list, it's removed
@@ -19,8 +19,8 @@ import {useCallback, useMemo} from 'react'
 import {useRouter, usePathname, useSearchParams} from 'next/navigation'
 import type {Filters, StackCategory, Engagement} from '@/lib/filter-projects'
 
-const VALID_STACK: readonly StackCategory[] = ['ios', 'rails', 'frontend', 'tooling', 'other']
-const VALID_ENGAGEMENT: readonly Engagement[] = ['freelance', 'full-time', 'owner', 'internship']
+const VALID_STACK: readonly StackCategory[] = ['mobile', 'web', 'frontend', 'tooling', 'other']
+const VALID_ENGAGEMENT: readonly Engagement[] = ['freelance', 'full-time', 'owner']
 
 function parseList<T extends string>(value: string | null, allowed: readonly T[]): T[] {
   if (!value) return []
@@ -66,7 +66,7 @@ export function useFilterState() {
    * Toggle one filter value within a category.
    *
    * @param category - 'stack' | 'engagement'
-   * @param value - The category-specific value (e.g. 'ios', 'freelance')
+   * @param value - The category-specific value (e.g. 'mobile', 'freelance')
    */
   const toggle = useCallback(
     <K extends keyof Filters>(category: K, value: Filters[K][number]) => {
