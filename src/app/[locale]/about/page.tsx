@@ -148,6 +148,7 @@ export default async function AboutPage({
                 alt={profile.name ?? "Portrait"}
                 width={260}
                 height={320}
+                priority
                 className="h-[280px] w-[220px] shrink-0 rounded object-cover md:h-[320px] md:w-[260px]"
               />
             ) : (
