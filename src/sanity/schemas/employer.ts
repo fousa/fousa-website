@@ -29,24 +29,25 @@ export const employer = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'startYear',
-      title: 'Start year',
-      type: 'number',
-      validation: (Rule) => Rule.required().min(1990).max(new Date().getFullYear()),
+      name: 'startDate',
+      title: 'Start date',
+      type: 'date',
+      options: {dateFormat: 'YYYY-MM'},
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'endYear',
-      title: 'End year',
-      type: 'number',
+      name: 'endDate',
+      title: 'End date',
+      type: 'date',
+      options: {dateFormat: 'YYYY-MM'},
       description: 'Leave empty if you still work here.',
-      validation: (Rule) =>
-        Rule.min(1990)
-          .max(new Date().getFullYear())
-          .custom((endYear, context) => {
-            const start = (context.document?.startYear as number | undefined) ?? 0
-            if (endYear && endYear < start) return 'End year must be after start year.'
-            return true
-          }),
+    }),
+    defineField({
+      name: 'pinned',
+      title: 'Pin to top',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Pin above the chronological list as the ongoing umbrella (Fousa).',
     }),
     defineField({
       name: 'engagement',
@@ -58,6 +59,8 @@ export const employer = defineType({
           {title: 'Full-time', value: 'full-time'},
           {title: 'Owner', value: 'owner'},
           {title: 'Internship', value: 'internship'},
+          {title: 'Holiday', value: 'holiday'},
+          {title: 'Education', value: 'education'},
         ],
         layout: 'radio',
       },
@@ -72,15 +75,19 @@ export const employer = defineType({
   orderings: [
     {
       title: 'Most recent first',
-      name: 'startYearDesc',
-      by: [{field: 'startYear', direction: 'desc'}, {field: 'endYear', direction: 'desc'}],
+      name: 'startDateDesc',
+      by: [{field: 'startDate', direction: 'desc'}],
     },
   ],
   preview: {
-    select: {name: 'name', role: 'role', startYear: 'startYear', endYear: 'endYear'},
-    prepare: ({name, role, startYear, endYear}) => ({
-      title: name,
-      subtitle: `${role} · ${startYear}${endYear ? `–${endYear}` : ' — now'}`,
-    }),
+    select: {name: 'name', role: 'role', startDate: 'startDate', endDate: 'endDate', pinned: 'pinned'},
+    prepare: ({name, role, startDate, endDate, pinned}) => {
+      const startYear = startDate ? new Date(startDate).getFullYear() : '?'
+      const endLabel = endDate ? `–${new Date(endDate).getFullYear()}` : ' — now'
+      return {
+        title: `${pinned ? '📌 ' : ''}${name}`,
+        subtitle: `${role} · ${startYear}${endLabel}`,
+      }
+    },
   },
 })
