@@ -13,6 +13,7 @@ export const client = createClient({
   projectId,
   useCdn: true,
   token: process.env.SANITY_API_TOKEN,
+  perspective: 'published',
 })
 
 const builder = createImageUrlBuilder({projectId, dataset})

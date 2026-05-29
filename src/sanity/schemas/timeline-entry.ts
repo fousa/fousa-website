@@ -64,12 +64,6 @@ export const timelineEntry = defineType({
       type: 'string',
       description: 'Optional (e.g. "Antwerpen").',
     }),
-    defineField({
-      name: 'order',
-      title: 'Order tiebreak',
-      type: 'number',
-      description: 'Optional. Higher = higher within the same start date. Usually leave empty.',
-    }),
   ],
   preview: {
     select: {title: 'organisation', subtitle: 'title', group: 'group'},

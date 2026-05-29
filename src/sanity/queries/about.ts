@@ -27,7 +27,7 @@ export const ABOUT_QUERY = defineQuery(`
       copyrightYear,
       "portraitUrl": portrait.asset->url
     },
-    "timeline": *[_type == "timelineEntry"] | order(startDate desc, order desc) {
+    "timeline": *[_type == "timelineEntry"] | order(startDate desc) {
       _id,
       organisation,
       title,

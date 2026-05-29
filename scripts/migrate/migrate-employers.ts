@@ -67,9 +67,6 @@ export async function migrateEmployers(
       continue
     }
 
-    const orderMatch = /^(\d+)-/.exec(file)
-    const order = orderMatch ? parseInt(orderMatch[1], 10) : undefined
-
     const id = `timelineEntry.${slugify(data.company)}`
     await client.createOrReplace({
       _id: id,
@@ -81,7 +78,6 @@ export async function migrateEmployers(
       endDate: toSanityDate(data.endDate),
       description: body.trim() ? i18n(body.trim()) : undefined,
       location: data.location,
-      order,
     })
 
     index.set(data.company.toLowerCase(), id)
