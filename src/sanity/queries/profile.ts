@@ -13,8 +13,6 @@ export const PROFILE_QUERY = defineQuery(`
     tagline,
     roleLine,
     filterIntro,
-    leadHeadline,
-    leadSubline,
     aboutHeadline,
     bio,
     "portraitUrl": portrait.asset->url,

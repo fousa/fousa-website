@@ -38,17 +38,6 @@ export const profile = defineType({
       'Filter invitation',
       'Friendly line inviting visitors to filter the log. Shown below the role line on the homepage.'
     ),
-    i18nString(
-      'leadHeadline',
-      'Homepage headline (legacy)',
-      'Bold headline on the homepage (e.g. "Crafting native apps & web platforms").'
-    ),
-    i18nText(
-      'leadSubline',
-      'Homepage subline (legacy)',
-      'Two-line intro below the headline on the homepage.'
-    ),
-
     // ── About page ─────────────────────────────────────────────────────
     i18nString(
       'aboutHeadline',

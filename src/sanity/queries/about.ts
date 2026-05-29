@@ -15,8 +15,6 @@ export const ABOUT_QUERY = defineQuery(`
     "profile": *[_id == "profile"][0]{
       name,
       tagline,
-      leadHeadline,
-      leadSubline,
       aboutHeadline,
       bio,
       beyondCode[]{ title, body },
