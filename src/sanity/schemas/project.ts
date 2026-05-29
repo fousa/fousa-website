@@ -45,7 +45,7 @@ export const project = defineType({
       title: 'Employer',
       type: 'reference',
       group: 'basics',
-      to: [{type: 'employer'}],
+      to: [{type: 'timelineEntry'}],
       description: 'Who you were employed by (icapps, KBC). Leave empty for freelance/personal.',
       hidden: ({parent}) => parent?.engagement !== 'full-time' && parent?.engagement !== 'internship',
     }),

@@ -4,8 +4,8 @@
  * Customizes the left sidebar in the Sanity Studio. Singletons (Profile,
  * Availability) are pinned at the top as direct items — clicking one opens
  * the document immediately, with no "create new" affordance because only
- * one of each should ever exist. Collections (Projects, Employers, Stack
- * tags) sit below as standard browseable lists.
+ * one of each should ever exist. Collections (Projects, Timeline entries,
+ * Stack tags) sit below as standard browseable lists.
  */
 import type {StructureResolver} from 'sanity/structure'
 
@@ -52,7 +52,7 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
       // Collections — Sanity's default list views
       S.documentTypeListItem('project').title('Projects'),
-      S.documentTypeListItem('employer').title('Employers'),
+      S.documentTypeListItem('timelineEntry').title('Timeline'),
       S.documentTypeListItem('stackTag').title('Stack tags'),
     ])
 
