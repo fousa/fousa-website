@@ -27,13 +27,15 @@ export const ABOUT_QUERY = defineQuery(`
       copyrightYear,
       "portraitUrl": portrait.asset->url
     },
-    "employers": *[_type == "employer"] | order(startYear desc, endYear desc) {
+    "employers": *[_type == "employer"] | order(pinned desc, startDate desc) {
       _id,
       name,
       role,
-      startYear,
-      endYear,
+      startDate,
+      endDate,
+      pinned,
       engagement,
+      description,
       "slug": "employer-" + lower(name)
     },
     "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {
