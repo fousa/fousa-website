@@ -40,8 +40,8 @@ function deriveEngagement(
 }
 
 /**
- * Ensures an Employer doc exists for `name`. If not already in the index,
- * creates a stub (just name + engagement). Mutates the index in place.
+ * Ensures a timelineEntry doc exists for `name`. If not already in the index,
+ * creates a stub. Mutates the index in place.
  */
 async function ensureEmployer(
   client: SanityClient,
@@ -53,17 +53,17 @@ async function ensureEmployer(
   const existing = index.get(key)
   if (existing) return existing
 
-  const id = `employer.${slugify(name)}`
+  const id = `timelineEntry.${slugify(name)}`
   await client.createOrReplace({
     _id: id,
-    _type: 'employer',
-    name,
-    role: 'Client', // placeholder, user can edit in Studio
-    startYear: new Date().getFullYear(), // placeholder
-    engagement,
+    _type: 'timelineEntry',
+    organisation: name,
+    title: 'Client',
+    group: 'freelance',
+    startDate: `${new Date().getFullYear()}-01-01`,
   })
   index.set(key, id)
-  console.log(`    Auto-created employer: ${name}`)
+  console.log(`    Auto-created timeline entry: ${name}`)
   return id
 }
 

@@ -43,8 +43,6 @@ export type ProfileFrontmatter = {
 }
 
 /**
- * Engagement types we keep on Employer documents. Mirrors the schema enum.
- * Timeline types that don't map here (birth, education, holiday-work) are
- * filtered out during migration.
+ * Engagement types kept on Project documents. Mirrors the schema enum.
  */
 export type Engagement = 'freelance' | 'full-time' | 'owner' | 'internship'
