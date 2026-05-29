@@ -3,7 +3,7 @@
  *
  * Three sub-queries combined:
  *   - profile: full Profile singleton (bio, portrait asset, socials, CV)
- *   - employers: every Employer ordered most-recent-first (career timeline)
+ *   - timeline: every TimelineEntry ordered most-recent-first (career timeline)
  *   - ownApps: every Project with engagement = "owner", featured first
  *
  * Single round-trip — Sanity handles the multi-query in one request.
@@ -27,16 +27,15 @@ export const ABOUT_QUERY = defineQuery(`
       copyrightYear,
       "portraitUrl": portrait.asset->url
     },
-    "employers": *[_type == "employer"] | order(pinned desc, startDate desc) {
+    "timeline": *[_type == "timelineEntry"] | order(startDate desc, order desc) {
       _id,
-      name,
-      role,
+      organisation,
+      title,
+      group,
       startDate,
       endDate,
-      pinned,
-      engagement,
       description,
-      "slug": "employer-" + lower(name)
+      location
     },
     "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {
       _id,
