@@ -24,7 +24,7 @@ import type {
   AVAILABILITY_QUERY_RESULT,
   SITE_SETTINGS_QUERY_RESULT,
 } from "@/sanity.types";
-import { formatYearRange } from "@/lib/format-year-range";
+import { formatTenure } from "@/lib/tenure";
 import { localizedHref } from "@/lib/href";
 import { altMetadata } from "@/lib/seo";
 import { OutboundLink } from "@/components/layout/OutboundLink";
@@ -72,6 +72,8 @@ export default async function AboutPage({
 
   const profile = about?.profile;
   const employers = about?.employers ?? [];
+  const pinnedEmployers = employers.filter((e) => e.pinned);
+  const chronologicalEmployers = employers.filter((e) => !e.pinned);
   const beyondCode = profile?.beyondCode ?? [];
 
   const availStatus = (availability?.status ?? "available") as AvailabilityStatus;
@@ -160,19 +162,50 @@ export default async function AboutPage({
             {t(locale, "career")}
           </h2>
           <div className="mt-6">
-            {employers.map((e) => (
+            {pinnedEmployers.map((e) => (
+              <div key={e._id}>
+                <p className="font-mono text-[9px] font-medium uppercase tracking-[2px] text-sepia mb-2">
+                  {t(locale, "careerOngoing")}
+                </p>
+                <div className="flex gap-6 py-4">
+                  <span className="w-[120px] shrink-0 font-mono text-[13px] text-muted">
+                    {formatTenure(e.startDate!, e.endDate, t(locale, "careerPresent"))}
+                  </span>
+                  <div className="text-[14.5px]">
+                    <span className="font-display font-semibold text-ink">
+                      {e.role}
+                    </span>
+                    <span className="text-muted"> · {e.name}</span>
+                    {pickLocale(typeof e.description === "object" ? e.description : null, locale) && (
+                      <p className="mt-1 text-[13px] text-muted">
+                        {pickLocale(typeof e.description === "object" ? e.description : null, locale)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+            {pinnedEmployers.length > 0 && (
+              <div className="border-t border-line" />
+            )}
+            {chronologicalEmployers.map((e) => (
               <div
                 key={e._id}
                 className="flex gap-6 border-t border-line py-4 first:border-t-0"
               >
                 <span className="w-[120px] shrink-0 font-mono text-[13px] text-muted">
-                  {formatYearRange(e.startYear ?? undefined, e.endYear ?? undefined)}
+                  {formatTenure(e.startDate!, e.endDate, t(locale, "careerPresent"))}
                 </span>
                 <div className="text-[14.5px]">
                   <span className="font-display font-semibold text-ink">
                     {e.role}
                   </span>
                   <span className="text-muted"> · {e.name}</span>
+                  {pickLocale(typeof e.description === "object" ? e.description : null, locale) && (
+                    <p className="mt-1 text-[13px] text-muted">
+                      {pickLocale(typeof e.description === "object" ? e.description : null, locale)}
+                    </p>
+                  )}
                 </div>
               </div>
             ))}

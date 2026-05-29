@@ -14,6 +14,8 @@
 import Link from 'next/link'
 import {clsx} from 'clsx'
 import {t} from '@/i18n/messages'
+import {pickLocale} from '@/i18n/pick-locale'
+import {formatTenure} from '@/lib/tenure'
 import type {Locale} from '@/i18n/config'
 import type {ABOUT_QUERY_RESULT} from '@/sanity.types'
 import type {StackCategory} from '@/lib/filter-projects'
@@ -25,6 +27,8 @@ const ENGAGEMENT_LABEL: Record<string, {label: string; tone: 'sepia' | 'muted'}>
   'full-time': {label: 'FULL-TIME', tone: 'muted'},
   owner: {label: 'OWNER', tone: 'sepia'},
   internship: {label: 'INTERNSHIP', tone: 'muted'},
+  holiday: {label: 'HOLIDAY', tone: 'muted'},
+  education: {label: 'EDUCATION', tone: 'muted'},
 }
 
 export function CareerSection({
@@ -36,6 +40,9 @@ export function CareerSection({
   employerStackCategories: Map<string, StackCategory | null>
   locale: Locale
 }) {
+  const pinnedEmployers = employers.filter((e) => e.pinned)
+  const chronologicalEmployers = employers.filter((e) => !e.pinned)
+
   return (
     <section>
       <div className="flex items-baseline justify-between gap-4 mb-5">
@@ -50,7 +57,22 @@ export function CareerSection({
         </Link>
       </div>
       <ul role="list" className="divide-y divide-black/5">
-        {employers.map((employer) => (
+        {pinnedEmployers.map((employer) => (
+          <li key={employer._id}>
+            <p className="font-mono text-[9px] font-medium uppercase tracking-[2px] text-sepia mb-2 pt-3">
+              {t(locale, 'careerOngoing')}
+            </p>
+            <CareerRow
+              employer={employer}
+              stackCategory={employerStackCategories.get(employer._id) ?? null}
+              locale={locale}
+            />
+          </li>
+        ))}
+        {pinnedEmployers.length > 0 && (
+          <li className="border-t border-line" aria-hidden />
+        )}
+        {chronologicalEmployers.map((employer) => (
           <CareerRow
             key={employer._id}
             employer={employer}
@@ -72,21 +94,27 @@ function CareerRow({
   stackCategory: StackCategory | null
   locale: Locale
 }) {
-  const yearRange =
-    employer.endYear && employer.endYear !== employer.startYear
-      ? `${employer.startYear}–${String(employer.endYear).slice(2)}`
-      : `${employer.startYear ?? ''} —`
+  const tenure = employer.startDate
+    ? formatTenure(employer.startDate, employer.endDate, t(locale, 'careerPresent'))
+    : ''
 
   const engagement = employer.engagement ? ENGAGEMENT_LABEL[employer.engagement] : null
+  const description = pickLocale(
+    typeof employer.description === 'object' ? employer.description : null,
+    locale,
+  )
 
   const rowContent = (
     <>
       <span className="font-mono text-[12px] font-medium text-ink-muted shrink-0 w-[80px]">
-        {yearRange}
+        {tenure}
       </span>
       <span className="font-sans text-[13px] text-ink flex-1 truncate">
         <span className="font-medium">{employer.name}</span>
         {employer.role && <span className="text-ink-muted"> · {employer.role}</span>}
+        {description && (
+          <span className="block text-[12px] text-ink-muted mt-0.5">{description}</span>
+        )}
       </span>
       {engagement && (
         <span
