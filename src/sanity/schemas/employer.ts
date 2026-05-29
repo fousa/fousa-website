@@ -68,18 +68,12 @@ export const employer = defineType({
       'Description',
       'Optional one or two sentences about what this role was. Shown on hover or in the expanded employer view.'
     ),
-    defineField({
-      name: 'order',
-      title: 'Sort order',
-      type: 'number',
-      description: 'Used when two entries share a year. Higher number appears first. Leave empty to sort by year only.',
-    }),
   ],
   orderings: [
     {
       title: 'Most recent first',
       name: 'startYearDesc',
-      by: [{field: 'startYear', direction: 'desc'}, {field: 'order', direction: 'desc'}],
+      by: [{field: 'startYear', direction: 'desc'}, {field: 'endYear', direction: 'desc'}],
     },
   ],
   preview: {

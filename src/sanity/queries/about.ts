@@ -27,7 +27,7 @@ export const ABOUT_QUERY = defineQuery(`
       copyrightYear,
       "portraitUrl": portrait.asset->url
     },
-    "employers": *[_type == "employer"] | order(startYear desc, order desc) {
+    "employers": *[_type == "employer"] | order(startYear desc, endYear desc) {
       _id,
       name,
       role,
