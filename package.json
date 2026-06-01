@@ -11,6 +11,8 @@
     "backup": "sanity dataset export production backups/dataset-$(date +%Y%m%d-%H%M%S).tar.gz",
     "migrate:content": "tsx -r dotenv/config scripts/migrate-content.ts dotenv_config_path=.env.local",
     "migrate:content:dry": "tsx -r dotenv/config scripts/migrate-content.ts dotenv_config_path=.env.local --dry-run",
+    "publish:drafts": "tsx -r dotenv/config scripts/publish-drafts.ts dotenv_config_path=.env.local",
+    "publish:drafts:dry": "tsx -r dotenv/config scripts/publish-drafts.ts dotenv_config_path=.env.local --dry-run",
     "schema:extract": "sanity schema extract --path=./schema.json",
     "typegen": "pnpm schema:extract && sanity typegen generate"
   },
