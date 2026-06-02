@@ -264,6 +264,7 @@ export function ProjectLog({
               >
                 <button
                   onClick={() => toggleRow(p.slug)}
+                  aria-expanded={open === p.slug}
                   className="w-full px-5 py-[17px] text-left cursor-pointer"
                 >
                   <div className="flex items-center justify-between gap-3">
@@ -347,8 +348,16 @@ function Row({
     <>
       <tr
         role="button"
+        tabIndex={0}
+        aria-expanded={open}
         onClick={onToggle}
-        className={`group cursor-pointer text-[14.5px] text-text [&>td]:border-t [&>td]:border-line ${open ? "[&>td]:bg-hover" : "hover:[&>td]:bg-hover"}`}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault(); // Space must not scroll the page
+            onToggle();
+          }
+        }}
+        className={`group cursor-pointer text-[14.5px] text-text [&>td]:border-t [&>td]:border-line focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset ${open ? "[&>td]:bg-hover" : "hover:[&>td]:bg-hover"}`}
       >
         <td className="px-11 py-5 align-top">
           <span
