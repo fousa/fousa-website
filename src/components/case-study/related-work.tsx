@@ -42,7 +42,7 @@ export function RelatedWork({
               return (
                 <li key={r._id}>
                   <Link
-                    href={localizedHref(locale, `/${r.slug}`)}
+                    href={localizedHref(locale, `/work/${r.slug}`)}
                     className="block bg-surface p-4 rounded-lg border border-ink/10 hover:border-ink/20 transition-colors h-full"
                   >
                     <p className="font-sans text-[14px] font-medium text-ink mb-1">
