@@ -173,7 +173,7 @@ export default async function AboutPage({
             <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
               {t(locale, "beyondCode")}
             </h2>
-            <div className="mt-6 grid gap-8 md:grid-cols-3">
+            <div className="mt-6 grid grid-cols-1 gap-y-8 md:grid-cols-3 md:gap-y-0">
               {beyondCode.map((b, i) => {
                 const title = pickLocale(
                   typeof b.title === "object" ? b.title : null,
@@ -183,8 +183,30 @@ export default async function AboutPage({
                   typeof b.body === "object" ? b.body : null,
                   locale,
                 );
+                const image = b.image;
+                const alt =
+                  pickLocale(
+                    typeof image?.alt === "object" ? image.alt : null,
+                    locale,
+                  ) ?? title;
                 return (
-                  <div key={title ?? i}>
+                  <article
+                    key={title ?? i}
+                    className="md:border-r md:border-line md:px-6 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
+                  >
+                    {image?.url && (
+                      <div className="relative mb-3.5 aspect-[4/3] overflow-hidden rounded-md bg-surface">
+                        <Image
+                          src={image.url}
+                          alt={alt ?? ""}
+                          fill
+                          sizes="(min-width: 768px) 33vw, 100vw"
+                          placeholder={image.lqip ? "blur" : "empty"}
+                          blurDataURL={image.lqip ?? undefined}
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
                     <h3 className="font-display text-base font-semibold text-ink">
                       {title}
                     </h3>
@@ -193,7 +215,7 @@ export default async function AboutPage({
                         {body}
                       </p>
                     )}
-                  </div>
+                  </article>
                 );
               })}
             </div>
