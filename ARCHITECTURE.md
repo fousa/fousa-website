@@ -96,6 +96,17 @@ Class-based dark mode (`.dark` on `<html>`). Tokens in `globals.css` via CSS cus
 
 Theme toggle persists to `localStorage`; an inline script in the root layout prevents flash on reload.
 
+### Motion
+
+The project log carries four small motion layers, all defined in `globals.css` and kept subtle (compositor-friendly properties, ≤280ms, no position shift beyond a few pixels):
+
+- **Hover arrow** — a coral `→` after the project name in the desktop table fades + slides in 4px on row hover, only for rows with a detail page (`depth !== "none"`). Opacity-only reservation keeps the tooling chip from shifting.
+- **Active pulse** (`.pulse-active`) — a coral box-shadow halo ripples out from the `active` status dot on a 2.4s loop, matching the availability badge's `.avail-pulse` cadence.
+- **Smooth expand** — expanded row bodies stay mounted and animate via `grid-template-rows: 0fr → 1fr` (220ms) with an 80ms-delayed opacity fade on the content. The collapsed body gets `inert` so its links stay out of the tab order.
+- **Filter cross-fade** (`.fade-up`) — the list wrapper is keyed by the active filter combo, so any filter change remounts it and replays a soft fade + 4px rise.
+
+A global `@media (prefers-reduced-motion: reduce)` safeguard collapses every animation and transition to near-zero duration, so all of the above (and the avail badge) go static for users who ask for less motion.
+
 ## Content model
 
 Seven document types. Four singletons (Profile, Availability, Site Settings, Empty states) edited in place from the pinned top of the Studio nav. Three collections (Employer, Stack tag, Project) — Project references Employer and Stack tag.
