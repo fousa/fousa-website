@@ -131,6 +131,10 @@ export function ProjectLog({
   // filters means the dataset itself is empty, a different problem.
   const isEmpty = hasAnyFilter && rows.length === 0;
 
+  // Stable identity for the current filter combo. Used as the list wrapper's
+  // `key` so any filter change remounts it and replays the fade-up entrance.
+  const filterKey = activeValues(filters).sort().join(",") || "all";
+
   // Optional hand-written copy for this exact filter combo; falls back to the
   // universal dictionary copy when no override matches.
   const override = useMemo(
@@ -216,16 +220,17 @@ export function ProjectLog({
         )}
       </div>
 
-      {isEmpty ? (
-        <EmptyState
-          headline={emptyHeadline}
-          body={emptyBody}
-          clearLabel={t(locale, "empty.clear")}
-          showAllLabel={t(locale, "empty.showAll")}
-          onClear={clearAll}
-        />
-      ) : (
-        <>
+      <div key={filterKey} className="fade-up">
+        {isEmpty ? (
+          <EmptyState
+            headline={emptyHeadline}
+            body={emptyBody}
+            clearLabel={t(locale, "empty.clear")}
+            showAllLabel={t(locale, "empty.showAll")}
+            onClear={clearAll}
+          />
+        ) : (
+          <>
           {/* Desktop table */}
           <table className="hidden w-full border-collapse md:table">
             <thead>
@@ -311,7 +316,8 @@ export function ProjectLog({
             ))}
           </ul>
         </>
-      )}
+        )}
+      </div>
 
       {/* Filtered count */}
       {hasAnyFilter && (

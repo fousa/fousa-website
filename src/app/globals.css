@@ -77,6 +77,15 @@
 }
 .pulse-active { animation: pulse-active 2.4s infinite; }
 
+/* One-shot entrance for the project list: a soft fade + 4px rise. Re-keying
+ * the wrapper on each filter change remounts it, replaying this animation so
+ * results settle in rather than snapping. */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fade-up 0.26s ease-out; }
+
 /* Reduced-motion safeguard: collapse every animation/transition to a near-zero
  * duration for users who ask for less motion. `!important` is justified — this
  * intentionally overrides design intent, so no per-component opt-out is needed. */
