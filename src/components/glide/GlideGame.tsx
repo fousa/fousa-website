@@ -13,6 +13,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { GlideCanvas } from "./GlideCanvas";
 import { track } from "@/lib/analytics";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
@@ -70,6 +71,7 @@ export function GlideGame({ locale }: { locale: Locale }) {
             aria-label={t(locale, "playGame")}
             className="fixed inset-0 z-[100] bg-bg text-ink"
           >
+            <GlideCanvas />
             <button
               ref={closeRef}
               type="button"
