@@ -11,6 +11,9 @@
  */
 import { GLIDE } from "./config";
 
+/** How a flight ended: ran out of altitude, or flew into a storm. */
+export type EndReason = "land" | "storm";
+
 /** Per-frame control input, derived from keyboard or touch. */
 export type Input = {
   /** -1 turn left, 0 straight, 1 turn right. */

@@ -19,12 +19,14 @@ import type { Locale } from "@/i18n/config";
 import {
   altitudeM,
   createGlider,
+  distanceKm,
   stepGlider,
   varioMs,
+  type EndReason,
   type Glider,
   type Input,
 } from "./engine";
-import { drawInstruments, LOW_ALT } from "./instruments";
+import { drawInstruments, drawScore, LOW_ALT } from "./instruments";
 import {
   createWorld,
   liftAt,
@@ -213,7 +215,13 @@ function drawGlider(
   ctx.restore();
 }
 
-export function GlideCanvas({ locale }: { locale: Locale }) {
+export function GlideCanvas({
+  locale,
+  onEnd,
+}: {
+  locale: Locale;
+  onEnd: (reason: EndReason, km: number) => void;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -225,6 +233,7 @@ export function GlideCanvas({ locale }: { locale: Locale }) {
     let pal = readPalette();
     const fonts: Fonts = readFonts();
     const lowLabel = t(locale, "glideLow");
+    const distanceLabel = t(locale, "glideDistance");
     let dims = fitCanvas(canvas, ctx);
     let cameraX = -dims.w * ANCHOR_X;
     const glider: Glider = createGlider(dims.h);
@@ -273,6 +282,7 @@ export function GlideCanvas({ locale }: { locale: Locale }) {
         low: glider.alt < LOW_ALT,
         lowLabel,
       });
+      drawScore(ctx!, pal, fonts, distanceKm(glider), distanceLabel);
     }
 
     function frame(now: number) {
@@ -286,13 +296,22 @@ export function GlideCanvas({ locale }: { locale: Locale }) {
       active = lift.active;
       stepGlider(glider, input, dt, dims, lift.value - riverSinkAt(world, glider));
 
-      // End the flight on landing (no altitude) or flying into a storm core.
-      if (glider.alt <= 0 || stormHit(world, glider, dims.h)) ended = true;
+      // End the flight on flying into a storm core or landing (no altitude).
+      let reason: EndReason | null = null;
+      if (stormHit(world, glider, dims.h)) reason = "storm";
+      else if (glider.alt <= 0) reason = "land";
 
       const target = glider.x - dims.w * ANCHOR_X;
       cameraX += (target - cameraX) * (1 - Math.exp(-CAM_EASE * dt));
       paint();
-      raf = ended ? 0 : requestAnimationFrame(frame);
+
+      if (reason) {
+        ended = true;
+        raf = 0;
+        onEnd(reason, distanceKm(glider));
+      } else {
+        raf = requestAnimationFrame(frame);
+      }
     }
 
     function start() {
@@ -403,7 +422,7 @@ export function GlideCanvas({ locale }: { locale: Locale }) {
       document.removeEventListener("visibilitychange", onVisibility);
       reduceQuery.removeEventListener("change", onReduceChange);
     };
-  }, [locale]);
+  }, [locale, onEnd]);
 
   return (
     <canvas

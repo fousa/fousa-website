@@ -125,6 +125,26 @@ function needle(
   ctx.fill();
 }
 
+/** Live distance-made-good readout, top-left: a small caption over the km. */
+export function drawScore(
+  ctx: CanvasRenderingContext2D,
+  pal: Palette,
+  fonts: Fonts,
+  km: number,
+  caption: string,
+) {
+  ctx.save();
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = pal.muted;
+  ctx.font = `10px ${fonts.mono}`;
+  ctx.fillText(caption.toUpperCase(), PAD, PAD + 12);
+  ctx.fillStyle = pal.ink;
+  ctx.font = `22px ${fonts.display}`;
+  ctx.fillText(`${km.toFixed(1)} km`, PAD, PAD + 38);
+  ctx.restore();
+}
+
 /** Draws the full instrument cluster bottom-left, plus the low warning. */
 export function drawInstruments(
   ctx: CanvasRenderingContext2D,
