@@ -15,6 +15,13 @@
  */
 import { useEffect, useRef } from "react";
 import { createGlider, stepGlider, type Glider, type Input } from "./engine";
+import {
+  createWorld,
+  liftAt,
+  updateWorld,
+  type Thermal,
+  type World,
+} from "./world";
 import { readPalette, type Palette } from "./palette";
 
 /** Glider screen anchor as a fraction of viewport width — the camera keeps the
@@ -65,6 +72,43 @@ function drawGround(
   ctx.globalAlpha = 1;
 }
 
+/** A cumulus puff marking a thermal. The active thermal (currently lifting the
+ *  glider) additionally gets a coral ring at its radius and a core dot. */
+function drawThermal(
+  ctx: CanvasRenderingContext2D,
+  sx: number,
+  sy: number,
+  t: Thermal,
+  pal: Palette,
+  active: boolean,
+) {
+  ctx.save();
+  ctx.fillStyle = pal.muted;
+  ctx.globalAlpha = 0.16;
+  ctx.beginPath();
+  ctx.arc(sx, sy, t.r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 0.22;
+  ctx.beginPath();
+  ctx.arc(sx, sy, t.r * 0.62, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  if (active) {
+    ctx.save();
+    ctx.strokeStyle = pal.accent;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(sx, sy, t.r, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = pal.accent;
+    ctx.beginPath();
+    ctx.arc(sx, sy, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
 /** A small dart pointing along the heading, in the site accent. */
 function drawGlider(
   ctx: CanvasRenderingContext2D,
@@ -100,6 +144,8 @@ export function GlideCanvas() {
     let dims = fitCanvas(canvas, ctx);
     let cameraX = -dims.w * ANCHOR_X;
     const glider: Glider = createGlider(dims.h);
+    const world: World = createWorld();
+    let active: Thermal | null = null;
     let raf = 0;
     let last = 0;
 
@@ -118,13 +164,22 @@ export function GlideCanvas() {
 
     function paint() {
       drawGround(ctx!, dims.w, dims.h, pal, cameraX);
+      for (const t of world.thermals) {
+        const sx = t.x - cameraX;
+        if (sx + t.r < 0 || sx - t.r > dims.w) continue;
+        drawThermal(ctx!, sx, t.yFrac * dims.h, t, pal, t === active);
+      }
       drawGlider(ctx!, glider.x - cameraX, glider.y, glider.heading, pal);
     }
 
     function frame(now: number) {
       const dt = last ? Math.min((now - last) / 1000, 0.05) : 0;
       last = now;
-      stepGlider(glider, readInput(), dt, dims);
+      updateWorld(world, cameraX, dims.w);
+      const input = readInput();
+      const lift = liftAt(world, glider, dims.h, input.turn !== 0);
+      active = lift.active;
+      stepGlider(glider, input, dt, dims, lift.value);
       const target = glider.x - dims.w * ANCHOR_X;
       cameraX += (target - cameraX) * (1 - Math.exp(-CAM_EASE * dt));
       paint();
