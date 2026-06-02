@@ -22,12 +22,9 @@ fousa/
     │   │   ├── not-found.tsx ← 404 ("drifted off the map")
     │   │   ├── about/
     │   │   │   └── page.tsx  ← about (hero, career, beyond code, contact)
-    │   │   ├── work/
-    │   │   │   └── [slug]/
-    │   │   │       └── page.tsx ← case study page
-    │   │   └── [slug]/
-    │   │       ├── page.tsx  ← legacy case study route (Sanity-connected)
-    │   │       └── not-found.tsx
+    │   │   └── work/
+    │   │       └── [slug]/
+    │   │           └── page.tsx ← case study page (sole canonical route)
     │   ├── studio/
     │   │   └── [[...tool]]/page.tsx  ← Sanity Studio mount
     │   └── api/
@@ -156,10 +153,12 @@ English is the unprefixed default locale; Dutch lives under `/nl`. No browser-lo
 
 - `/`, `/about`, `/work/<slug>` → English (canonical)
 - `/nl`, `/nl/about`, `/nl/work/<slug>` → Dutch
-- `/<slug>`, `/nl/<slug>` → legacy case study route (Sanity-connected)
+- `/<slug>`, `/nl/<slug>` → 308 redirect to `/work/<slug>` (resp. `/nl/work/<slug>`)
 - `/en/...` → 308 redirect to unprefixed equivalent
 - `/studio` → Sanity Studio (no locale prefix — admin only)
 - `/api/revalidate` → webhook endpoint, requires `?secret=` query param
+
+Case studies live at exactly one canonical path, `/work/<slug>`. The bare `/<slug>` (and `/nl/<slug>`) shape was a duplicate route; the proxy now 308-redirects any single bare slug that isn't a reserved top-level route (`work`, `about`) to the canonical path, preserving SEO equity from any indexed legacy URL.
 
 All internal links use `localizedHref(locale, path)` from `lib/href.ts`. SEO metadata uses `altMetadata(locale, path)` from `lib/seo.ts` for canonical + hreflang (`x-default` points at English).
 
