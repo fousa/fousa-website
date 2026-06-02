@@ -34,9 +34,7 @@ export default defineConfig({
     visionTool({defaultApiVersion: apiVersion}),
     // i18n is handled at the FIELD level (see src/sanity/fields/i18n.ts)
     // rather than document-level — both locales live inside a single
-    // document so editors can compare them side by side. The
-    // @sanity/document-internationalization plugin is installed but not
-    // used here because it requires at least one schema type and we
-    // intentionally have none.
+    // document so editors can compare them side by side, so no
+    // document-internationalization plugin is needed.
   ],
 })
