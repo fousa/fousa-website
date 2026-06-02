@@ -225,13 +225,16 @@ export async function getProject(
     slug: row.slug ?? '',
     name: row.name ?? '',
     employer: row.employer?.name ? { name: row.employer.name } : null,
+    employerSlug: null,
     client: row.client ?? null,
     stack: stackTags.map((s) => s?.name).filter(Boolean).join(' · ') || '—',
     role: row.role ?? '',
     year: row.year ?? 0,
+    endYear: row.endYear ?? null,
     state: (row.state as State) ?? 'active',
     engagement: (row.engagement as Engagement) ?? 'freelance',
     tech: [...new Set(stackTags.map((s) => normalizeTech(s?.category)))],
+    tagSlugs: stackTags.map((s) => s?.slug).filter((s): s is string => Boolean(s)),
     summary:
       pickLocale(typeof row.summary === 'object' ? row.summary : null, locale) ??
       pickLocale(typeof row.deck === 'object' ? row.deck : null, locale) ??
