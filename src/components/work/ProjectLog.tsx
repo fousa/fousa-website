@@ -31,6 +31,7 @@ type ChipDef = { group: Group; value: string; labelKey: MessageKey };
 
 const CHIPS: ChipDef[] = [
   { group: "stack", value: "apple", labelKey: "apple" },
+  { group: "stack", value: "web", labelKey: "web" },
   { group: "status", value: "active", labelKey: "active" },
   { group: "affiliation", value: "freelance", labelKey: "freelance" },
   { group: "affiliation", value: "icapps", labelKey: "icapps" },

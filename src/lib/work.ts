@@ -63,7 +63,7 @@ export function projectDepth(p: { hasBody?: boolean | null; galleryCount?: numbe
 // Three-group filter model
 // ---------------------------------------------------------------------------
 
-export type StackFilter = 'apple'
+export type StackFilter = 'apple' | 'web'
 export type StatusFilter = 'active'
 export type AffiliationFilter = 'freelance' | 'icapps' | '10to1'
 
@@ -76,14 +76,17 @@ export type Filters = {
 /** Stack-tag slugs that count as Apple-platform work (lowercase, no spaces). */
 const APPLE_TAGS = new Set(['ios', 'ipados', 'macos', 'watchos', 'swift', 'swiftui'])
 
+/** Stack-tag slugs that count as web work (lowercase, no spaces). */
+const WEB_TAGS = new Set(['website', 'ruby-on-rails', 'node', 'api', 'next-js'])
+
 /** Normalize a tag slug for matching (lowercase, strip spaces). */
 function normTag(s: string): string {
   return s.toLowerCase().replace(/\s+/g, '')
 }
 
-/** Project carries at least one Apple-platform stack tag. */
-function isApple(p: Project): boolean {
-  return p.tagSlugs.some((t) => APPLE_TAGS.has(normTag(t)))
+/** Project carries at least one tag in the given set. */
+function hasTag(p: Project, tags: Set<string>): boolean {
+  return p.tagSlugs.some((t) => tags.has(normTag(t)))
 }
 
 /** Project is ongoing (no end year). */
@@ -91,12 +94,17 @@ function isActive(p: Project): boolean {
   return !p.endYear
 }
 
+const STACK_TAG_SETS: Record<StackFilter, Set<string>> = {
+  apple: APPLE_TAGS,
+  web: WEB_TAGS,
+}
+
 /**
  * Test whether a project passes the combined multi-select filters.
  * OR within a group, AND across groups. Empty group = not applied.
  */
 export function matchesFilters(p: Project, f: Filters): boolean {
-  if (f.stack.length && f.stack.includes('apple') && !isApple(p)) return false
+  if (f.stack.length && !f.stack.some((s) => hasTag(p, STACK_TAG_SETS[s]))) return false
   if (f.status.includes('active') && !isActive(p)) return false
   if (f.affiliation.length) {
     const match = f.affiliation.some((a) =>
