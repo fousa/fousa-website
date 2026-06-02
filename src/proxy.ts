@@ -38,6 +38,33 @@ export function proxy(req: NextRequest) {
     return NextResponse.redirect(url, 308)
   }
 
+  // Collapse the legacy case-study route to the canonical /work/<slug>.
+  // Legacy shapes were /<slug> (default locale) and /nl/<slug>; a bare single
+  // slug that isn't a locale or a reserved top-level route can only be one.
+  // 308 (permanent) so any indexed legacy URL keeps its SEO equity.
+  const RESERVED = new Set(['work', 'about'])
+  const segments = pathname.split('/').filter(Boolean)
+  // /nl/<slug> → /nl/work/<slug>
+  if (
+    segments.length === 2 &&
+    isLocale(segments[0]) &&
+    !RESERVED.has(segments[1])
+  ) {
+    const url = req.nextUrl.clone()
+    url.pathname = `/${segments[0]}/work/${segments[1]}`
+    return NextResponse.redirect(url, 308)
+  }
+  // /<slug> → /work/<slug>
+  if (
+    segments.length === 1 &&
+    !isLocale(segments[0]) &&
+    !RESERVED.has(segments[0])
+  ) {
+    const url = req.nextUrl.clone()
+    url.pathname = `/work/${segments[0]}`
+    return NextResponse.redirect(url, 308)
+  }
+
   // /nl/... → pass through, rewrite to [locale]=nl
   if (isLocale(seg1)) {
     const res = NextResponse.next()
