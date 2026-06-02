@@ -32,7 +32,7 @@ export const PROJECTS_QUERY = defineQuery(`
     writeupUrl,
     "employer": employer->{
       _id,
-      name,
+      "name": organisation,
       "slug": lower(organisation)
     },
     "stack": stack[]->{

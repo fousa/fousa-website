@@ -33,8 +33,8 @@ export const CASE_STUDY_QUERY = defineQuery(`
     featured,
     "employer": employer->{
       _id,
-      name,
-      "slug": "employer-" + lower(name)
+      "name": organisation,
+      "slug": "employer-" + lower(organisation)
     },
     "stack": stack[]->{
       _id,
