@@ -222,13 +222,15 @@ export function ProjectLog({
 
       <div key={filterKey} className="fade-up">
         {isEmpty ? (
-          <EmptyState
-            headline={emptyHeadline}
-            body={emptyBody}
-            clearLabel={t(locale, "empty.clear")}
-            showAllLabel={t(locale, "empty.showAll")}
-            onClear={clearAll}
-          />
+          <div role="status" aria-live="polite" aria-atomic="true">
+            <EmptyState
+              headline={emptyHeadline}
+              body={emptyBody}
+              clearLabel={t(locale, "empty.clear")}
+              showAllLabel={t(locale, "empty.showAll")}
+              onClear={clearAll}
+            />
+          </div>
         ) : (
           <>
           {/* Desktop table */}
@@ -322,7 +324,12 @@ export function ProjectLog({
 
       {/* Filtered count */}
       {hasAnyFilter && (
-        <div className="px-5 py-3 font-mono text-[11px] uppercase tracking-[0.08em] text-muted md:px-11">
+        <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className="px-5 py-3 font-mono text-[11px] uppercase tracking-[0.08em] text-muted md:px-11"
+        >
           {t(locale, "showingOf")
             .replace("{shown}", String(rows.length))
             .replace("{total}", String(projects.length))}
