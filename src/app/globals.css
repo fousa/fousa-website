@@ -68,6 +68,15 @@
 .avail-pulse { animation: avail-pulse 2.4s infinite; }
 @media (prefers-reduced-motion: reduce) { .avail-pulse { animation: none; } }
 
+/* Coral halo that ripples out from the "Active" status dot, signalling a
+ * live engagement. Same 2.4s cadence as the availability badge. */
+@keyframes pulse-active {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+  70%  { box-shadow: 0 0 0 5px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.pulse-active { animation: pulse-active 2.4s infinite; }
+
 /* Reduced-motion safeguard: collapse every animation/transition to a near-zero
  * duration for users who ask for less motion. `!important` is justified — this
  * intentionally overrides design intent, so no per-component opt-out is needed. */

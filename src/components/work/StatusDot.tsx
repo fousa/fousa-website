@@ -23,7 +23,7 @@ export function StatusDot({ state, locale }: { state: State; locale: Locale }) {
       className={`inline-flex items-center gap-2 text-[13.5px] ${isAccent ? "text-ink" : "text-muted"}`}
     >
       <span
-        className={`h-[7px] w-[7px] rounded-full ${isAccent ? "bg-accent" : "bg-faint"}`}
+        className={`h-[7px] w-[7px] rounded-full ${isAccent ? "bg-accent pulse-active" : "bg-faint"}`}
       />
       {t(locale, KEY[state])}
     </span>
