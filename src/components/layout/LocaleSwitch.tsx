@@ -18,7 +18,7 @@ const LOCALES = [
 const DEFAULT = "en";
 
 /** Parse the pathname into locale + rest parts. */
-function pathParts(pathname: string) {
+export function pathParts(pathname: string) {
   const parts = pathname.split("/").filter(Boolean);
   const hasPrefix = (LOCALES as readonly { code: string }[]).some(
     (l) => l.code === parts[0],
@@ -29,7 +29,7 @@ function pathParts(pathname: string) {
 }
 
 /** Build a localized href for the target locale. */
-function hrefFor(pathname: string, target: string) {
+export function hrefFor(pathname: string, target: string) {
   const { rest } = pathParts(pathname);
   const body = "/" + rest.join("/");
   return target === DEFAULT
