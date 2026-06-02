@@ -44,11 +44,6 @@ const CHIPS: ChipDef[] = [
   { group: "affiliation", value: "10to1", labelKey: "tenToOne" },
 ];
 
-/** Reverse lookup: chip value → its i18n label key. */
-const LABEL_KEYS = Object.fromEntries(
-  CHIPS.map((c) => [`${c.group}:${c.value}`, c.labelKey])
-) as Record<string, MessageKey>;
-
 /** Map table column headers to i18n keys. */
 const COLUMNS = ["project", "for", "stack", "role", "year", "state"] as const;
 
@@ -83,15 +78,6 @@ function filtersToParams(f: Filters, base: URLSearchParams): URLSearchParams {
 
 function filterCount(f: Filters): number {
   return f.stack.length + f.status.length + f.affiliation.length;
-}
-
-/** All active {group, value} pairs for rendering pills. */
-function activeEntries(f: Filters): { group: Group; value: string }[] {
-  const entries: { group: Group; value: string }[] = [];
-  for (const g of ["stack", "status", "affiliation"] as Group[]) {
-    for (const v of f[g]) entries.push({ group: g, value: v });
-  }
-  return entries;
 }
 
 // ---------------------------------------------------------------------------
@@ -155,37 +141,8 @@ export function ProjectLog({
     }
   };
 
-  const active = activeEntries(filters);
-
   return (
     <section>
-      {/* Active filter pills */}
-      {active.length > 0 && (
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-dashed border-line px-5 pt-3 pb-3 md:px-11">
-          <span className="font-mono text-[10.5px] uppercase tracking-[0.08em] text-faint">
-            {t(locale, "filteringBy")}
-          </span>
-          {active.map(({ group, value }) => (
-            <button
-              key={`${group}:${value}`}
-              onClick={() => toggle(group, value)}
-              className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-3 py-[5px] text-[12.5px] font-semibold text-accent-deep transition-opacity hover:opacity-80 cursor-pointer"
-            >
-              {t(locale, LABEL_KEYS[`${group}:${value}`])}
-              <span aria-hidden className="text-[11px] opacity-60">
-                ×
-              </span>
-            </button>
-          ))}
-          <button
-            onClick={clearAll}
-            className="ml-1 text-[11.5px] text-accent transition-colors hover:text-accent-deep cursor-pointer"
-          >
-            {t(locale, "clearAll")}
-          </button>
-        </div>
-      )}
-
       {/* Chip bar */}
       <div className="flex flex-wrap gap-x-2 gap-y-2 border-b border-line px-5 pb-3 pt-3 md:flex-nowrap md:px-11">
         {CHIPS.map(({ group, value, labelKey }) => {
@@ -205,6 +162,14 @@ export function ProjectLog({
             </button>
           );
         })}
+        {hasAnyFilter && (
+          <button
+            onClick={clearAll}
+            className="shrink-0 text-[12.5px] text-accent transition-colors hover:text-accent-deep cursor-pointer"
+          >
+            {t(locale, "clearAll")}
+          </button>
+        )}
       </div>
 
       {/* Desktop table */}
