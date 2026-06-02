@@ -22,7 +22,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
         <div className="flex items-center gap-4">
           <LocaleSwitch />
           <span className="h-3 w-px bg-line" aria-hidden />
-          <ThemeToggle />
+          <ThemeToggle locale={locale} />
         </div>
       </div>
     </footer>

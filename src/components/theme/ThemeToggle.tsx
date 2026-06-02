@@ -5,6 +5,8 @@
  */
 import { useSyncExternalStore, useCallback } from "react";
 import { track } from "@/lib/analytics";
+import { t } from "@/i18n/messages";
+import type { Locale } from "@/i18n/config";
 
 function subscribe(cb: () => void) {
   const observer = new MutationObserver(cb);
@@ -23,7 +25,7 @@ function getServerSnapshot() {
   return false;
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({ locale }: { locale: Locale }) {
   const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const toggle = useCallback(() => {
@@ -38,7 +40,10 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      aria-label="Toggle dark mode"
+      // Label states the action (what activation does), not the current mode;
+      // aria-pressed carries the current on/off state for AT.
+      aria-label={dark ? t(locale, "theme.switchToLight") : t(locale, "theme.switchToDark")}
+      aria-pressed={dark}
       className="font-mono text-xs text-muted transition-colors hover:text-ink"
     >
       {dark ? "Light" : "Dark"}
