@@ -15,6 +15,7 @@
   --cat-tooling:#0ea5e9;  --cat-tooling-bg:#e0f2fe;
   --cat-other:#71717a;     --cat-other-bg:#f4f4f5;
   --cat-sepia:#92400e;
+  --accent-soft:#ffe3d9; --accent-deep:#a83b1a;
 }
 .dark {
   --bg:#0a0a0b; --surface:#141417; --ink:#f2f2f3; --text:#c2c2c8;
@@ -27,6 +28,7 @@
   --cat-tooling:#38bdf8;  --cat-tooling-bg:#1a2c3d;
   --cat-other:#a1a1aa;     --cat-other-bg:#1e1e22;
   --cat-sepia:#d4a574;
+  --accent-soft:#3a1a10; --accent-deep:#ff8a66;
 }
 
 @theme inline {
@@ -40,6 +42,7 @@
   --color-tooling:var(--cat-tooling); --color-tooling-bg:var(--cat-tooling-bg);
   --color-other:var(--cat-other); --color-other-bg:var(--cat-other-bg);
   --color-sepia:var(--cat-sepia);
+  --color-accent-soft:var(--accent-soft); --color-accent-deep:var(--accent-deep);
   --font-display:var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-sans:var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono:var(--font-space-mono), ui-monospace, monospace;
