@@ -1,5 +1,7 @@
 allowBuilds:
+  chromedriver: false
   esbuild: true
+  puppeteer: false
   sharp: true
   unrs-resolver: true
 ignoredBuiltDependencies:
