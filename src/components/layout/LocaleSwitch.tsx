@@ -74,7 +74,9 @@ export function LocaleSwitch() {
             )}
             <button
               onClick={() => switchTo(l.code)}
-              aria-label={l.name}
+              // No aria-label: the visible label (full name on desktop, code on
+              // mobile) is the accessible name, so it always matches what's shown
+              // (WCAG 2.5.3 Label in Name).
               aria-current={active ? "true" : undefined}
               className={[
                 // Vertical-only ::after hit-area: a horizontal bump would overlap
