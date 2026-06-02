@@ -201,6 +201,38 @@ Vercel Analytics (cookie-less, no consent banner). Mounted once in the locale la
 | `theme_toggle` | ThemeToggle | to |
 | `outbound_click` | OutboundLink | kind, href, locale |
 
+## Testing
+
+A foundation to grow, not full coverage. Two layers:
+
+- **Unit / component (Vitest + React Testing Library, jsdom).** Pure helpers
+  carry the bulk of the logic and are tested directly: `forLabel`
+  (`work-display.ts`), `projectDepth` + `matchesFilters` (`work.ts`),
+  `altMetadata` (`seo.ts`), and `pathParts` + `hrefFor` (`LocaleSwitch.tsx`).
+  One component test (`ProjectLog`) covers keyboard row-expansion and the
+  empty-filter state. `vitest.setup.ts` stubs the public Sanity env vars so
+  `sanity/env.ts` doesn't throw at import.
+- **E2E (Playwright, Chromium, against a production build).** Three core
+  journeys: filter the work log (URL reflects the selection, clear-all
+  restores it), expand a project row and follow a case-study CTA when one
+  exists (data-driven so it passes regardless of dataset), and toggle theme +
+  switch locale without losing scroll position.
+
+Not covered: Sanity schema definitions, layout/chrome components, and visual
+regression — left out deliberately to keep the suite fast and low-maintenance.
+
+Run it:
+
+```bash
+pnpm test           # unit + component (CI: also test:cov)
+pnpm test:watch     # watch mode
+pnpm build          # E2E runs against the production build
+pnpm test:e2e       # Playwright happy paths
+```
+
+CI (`.github/workflows/test.yml`) runs both layers on every push and PR;
+build + E2E need the Sanity repository secrets, while the unit suite stubs them.
+
 ## Conventions
 
 - One concept per file. No god-modules.
