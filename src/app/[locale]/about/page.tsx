@@ -173,7 +173,7 @@ export default async function AboutPage({
             <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
               {t(locale, "beyondCode")}
             </h2>
-            <div className="mt-6 grid grid-cols-1 gap-y-8 md:grid-cols-3 md:gap-y-0">
+            <div className="mt-6 grid grid-cols-1 border-t border-line md:grid-cols-3">
               {beyondCode.map((b, i) => {
                 const title = pickLocale(
                   typeof b.title === "object" ? b.title : null,
@@ -192,29 +192,36 @@ export default async function AboutPage({
                 return (
                   <article
                     key={title ?? i}
-                    className="md:border-r md:border-line md:px-6 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
+                    className="border-line py-5 [&:not(:first-child)]:border-t md:border-t-0 md:border-r md:px-6 md:py-6 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
                   >
-                    {image?.url && (
-                      <div className="relative mb-3.5 aspect-[4/3] overflow-hidden rounded-md bg-surface">
-                        <Image
-                          src={image.url}
-                          alt={alt ?? ""}
-                          fill
-                          sizes="(min-width: 768px) 33vw, 100vw"
-                          placeholder={image.lqip ? "blur" : "empty"}
-                          blurDataURL={image.lqip ?? undefined}
-                          className="object-cover"
-                        />
+                    <div className="grid grid-cols-[48px_1fr] items-start gap-4">
+                      {image?.url ? (
+                        <div className="relative h-12 w-12 overflow-hidden rounded-md bg-surface">
+                          <Image
+                            src={image.url}
+                            alt={alt ?? ""}
+                            fill
+                            sizes="48px"
+                            placeholder={image.lqip ? "blur" : "empty"}
+                            blurDataURL={image.lqip ?? undefined}
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        /* reserve the column so titles align across items */
+                        <div aria-hidden className="h-12 w-12" />
+                      )}
+                      <div className="min-w-0">
+                        <h3 className="font-display text-base font-semibold text-ink">
+                          {title}
+                        </h3>
+                        {body && (
+                          <p className="mt-1 text-[14px] leading-[1.6] text-text">
+                            {body}
+                          </p>
+                        )}
                       </div>
-                    )}
-                    <h3 className="font-display text-base font-semibold text-ink">
-                      {title}
-                    </h3>
-                    {body && (
-                      <p className="mt-2 text-[14px] leading-[1.65] text-text">
-                        {body}
-                      </p>
-                    )}
+                    </div>
                   </article>
                 );
               })}
