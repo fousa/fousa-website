@@ -27,6 +27,7 @@ import { track } from "@/lib/analytics";
 import { localizedHref } from "@/lib/href";
 import { StatusDot } from "./StatusDot";
 import { ToolingChip } from "./ToolingChip";
+import { EmptyState } from "./EmptyState";
 
 // ---------------------------------------------------------------------------
 // Chip definitions
@@ -105,6 +106,10 @@ export function ProjectLog({
     [projects, filters],
   );
 
+  // Only an empty state when filters are active — an empty list with no
+  // filters means the dataset itself is empty, a different problem.
+  const isEmpty = hasAnyFilter && rows.length === 0;
+
   /** Write a Filters object to the URL, preserving hash. */
   const writeUrl = useCallback(
     (next: Filters) => {
@@ -172,111 +177,95 @@ export function ProjectLog({
         )}
       </div>
 
-      {/* Desktop table */}
-      <table className="hidden w-full border-collapse md:table">
-        <thead>
-          <tr className="text-left font-mono text-[11px] uppercase tracking-[0.09em] text-faint">
-            {COLUMNS.map((h) => (
-              <th key={h} className="px-11 py-[18px] align-top font-semibold">
-                {t(locale, h)}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.length === 0 ? (
-            <tr>
-              <td colSpan={6} className="px-11 py-10 text-center text-muted">
-                {t(locale, "noProjectsFound")}
-                <br />
-                <button
-                  onClick={clearAll}
-                  className="mt-2 text-[13px] text-accent underline underline-offset-2 cursor-pointer"
-                >
-                  {t(locale, "resetFilters")}
-                </button>
-              </td>
-            </tr>
-          ) : (
-            rows.map((p) => (
-              <Row
-                key={p.slug}
-                p={p}
-                locale={locale}
-                open={open === p.slug}
-                onToggle={() => toggleRow(p.slug)}
-              />
-            ))
-          )}
-        </tbody>
-      </table>
+      {isEmpty ? (
+        <EmptyState
+          headline={t(locale, "empty.headline")}
+          body={t(locale, "empty.body")}
+          clearLabel={t(locale, "empty.clear")}
+          showAllLabel={t(locale, "empty.showAll")}
+          onClear={clearAll}
+        />
+      ) : (
+        <>
+          {/* Desktop table */}
+          <table className="hidden w-full border-collapse md:table">
+            <thead>
+              <tr className="text-left font-mono text-[11px] uppercase tracking-[0.09em] text-faint">
+                {COLUMNS.map((h) => (
+                  <th key={h} className="px-11 py-[18px] align-top font-semibold">
+                    {t(locale, h)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((p) => (
+                <Row
+                  key={p.slug}
+                  p={p}
+                  locale={locale}
+                  open={open === p.slug}
+                  onToggle={() => toggleRow(p.slug)}
+                />
+              ))}
+            </tbody>
+          </table>
 
-      {/* Mobile cards */}
-      <ul className="md:hidden">
-        {rows.length === 0 ? (
-          <li className="px-5 py-10 text-center text-muted">
-            {t(locale, "noProjectsFound")}
-            <br />
-            <button
-              onClick={clearAll}
-              className="mt-2 text-[13px] text-accent underline underline-offset-2 cursor-pointer"
-            >
-              {t(locale, "resetFilters")}
-            </button>
-          </li>
-        ) : (
-          rows.map((p) => (
-            <li
-              key={p.slug}
-              className={`border-t border-line first:border-t-0 ${open === p.slug ? "bg-hover" : ""}`}
-            >
-              <button
-                onClick={() => toggleRow(p.slug)}
-                className="w-full px-5 py-[17px] text-left cursor-pointer"
+          {/* Mobile cards */}
+          <ul className="md:hidden">
+            {rows.map((p) => (
+              <li
+                key={p.slug}
+                className={`border-t border-line first:border-t-0 ${open === p.slug ? "bg-hover" : ""}`}
               >
-                <div className="flex items-center justify-between gap-3">
-                  <span
-                    className={`font-display text-base font-semibold ${open === p.slug ? "text-accent" : "text-ink"}`}
-                  >
-                    {p.name}
-                  </span>
-                  {p.featureTooling && (
-                    <ToolingChip label={t(locale, "toolingChip")} />
-                  )}
-                  <StatusDot state={p.state} locale={locale} />
-                </div>
-                <div className="mt-[5px] text-[12.5px] text-muted">
-                  <ForLabelInline f={forLabel(p, t(locale, "personal"))} /> ·{" "}
-                  {p.stack} · {p.year}
-                </div>
-              </button>
-              {open === p.slug && (
-                <div className="px-5 pb-5">
-                  <div className="border-l-2 border-accent pl-4">
-                    <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
-                      {p.summary}
-                    </p>
-                    {p.tooling && (
-                      <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.06em] text-faint">
-                        {t(locale, "toolingPrefix")} ·{" "}
-                        <span className="normal-case tracking-normal text-muted">
-                          {p.tooling}
-                        </span>
-                      </div>
+                <button
+                  onClick={() => toggleRow(p.slug)}
+                  className="w-full px-5 py-[17px] text-left cursor-pointer"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span
+                      className={`font-display text-base font-semibold ${open === p.slug ? "text-accent" : "text-ink"}`}
+                    >
+                      {p.name}
+                    </span>
+                    {p.featureTooling && (
+                      <ToolingChip label={t(locale, "toolingChip")} />
                     )}
-                    <DepthLink
-                      depth={p.depth}
-                      slug={p.slug}
-                      locale={locale}
-                      size="sm"
-                    />
+                    <StatusDot state={p.state} locale={locale} />
                   </div>
-                </div>
-              )}
-            </li>
-          ))
-        )}
-      </ul>
+                  <div className="mt-[5px] text-[12.5px] text-muted">
+                    <ForLabelInline f={forLabel(p, t(locale, "personal"))} /> ·{" "}
+                    {p.stack} · {p.year}
+                  </div>
+                </button>
+                {open === p.slug && (
+                  <div className="px-5 pb-5">
+                    <div className="border-l-2 border-accent pl-4">
+                      <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
+                        {p.summary}
+                      </p>
+                      {p.tooling && (
+                        <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.06em] text-faint">
+                          {t(locale, "toolingPrefix")} ·{" "}
+                          <span className="normal-case tracking-normal text-muted">
+                            {p.tooling}
+                          </span>
+                        </div>
+                      )}
+                      <DepthLink
+                        depth={p.depth}
+                        slug={p.slug}
+                        locale={locale}
+                        size="sm"
+                      />
+                    </div>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
       {/* Filtered count */}
       {hasAnyFilter && (

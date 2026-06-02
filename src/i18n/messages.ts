@@ -44,6 +44,11 @@ export const messages = {
     cv: 'Download CV',
     done: 'done',
     downloadCv: 'Download CV (pdf)',
+    'empty.headline': 'Nothing here yet.',
+    'empty.body':
+      'No project matches the filters you picked. Loosen one to see more, or browse the full log.',
+    'empty.clear': 'Clear filters',
+    'empty.showAll': 'or browse all projects',
     employer: 'Employer',
     escapeToClose: 'ESC to close',
     clearAll: 'Clear all',
@@ -141,6 +146,11 @@ export const messages = {
     cv: 'Download CV',
     done: 'klaar',
     downloadCv: 'CV downloaden (pdf)',
+    'empty.headline': 'Niets gevonden in deze hoek van mijn werk.',
+    'empty.body':
+      'Geen enkel project past bij deze combinatie. Laat er eentje los, of bekijk de volledige log.',
+    'empty.clear': 'Filters wissen',
+    'empty.showAll': 'of bekijk alle projecten',
     employer: 'Werkgever',
     escapeToClose: 'ESC om te sluiten',
     clearAll: 'Alles wissen',
