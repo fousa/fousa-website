@@ -22,7 +22,7 @@ export const GLIDE = {
   M_PER_PX: 1.1,
   /** Variometer display clamp, in m/s (needle saturates here). */
   MAXV: 8,
-  /** Variometer dial half-range in degrees of needle sweep. */
+  /** Variometer display scale: internal alt-units/s × VDISP → m/s shown. */
   VDISP: 18,
   /** Eased airspeed target (km/h) when pitching down (↓/S). */
   SLOW: 90,
