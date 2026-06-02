@@ -77,8 +77,7 @@ fousa/
     │   ├── analytics.ts         ← typed track() wrapper over @vercel/analytics
     │   ├── href.ts              ← localizedHref() — unprefixed en, /nl for Dutch
     │   ├── seo.ts               ← altMetadata() — canonical + hreflang alternates
-    │   ├── filter-projects.ts   ← stack category + engagement filtering (Sanity)
-    │   ├── employer-filters.ts  ← derive dominant stack per employer
+    │   ├── filter-projects.ts   ← stack/status/affiliation filtering (Sanity)
     │   ├── format-year-range.ts ← format year or year range
     │   └── json-ld.ts           ← Schema.org JSON-LD builders
     └── hooks/
@@ -113,7 +112,17 @@ Six document types. Three singletons (Profile, Availability, Site Settings) edit
 
 ## Content layer (`lib/work.ts` + `lib/work-display.ts`)
 
-Typed `Project` interface with two-axis tagging (`engagement`: freelance/full-time/internship/student; `tech`: ios/rails/web/…) and filter helpers. Filters: All, Freelance, Full-time, Internship, iOS, Rails, Other. Project `state`: active/maintained/archived/cancelled — only `active` gets the coral accent dot. Backed by Sanity GROQ queries — `getProjects` / `getProject` / `getProjectSlugs` fetch and normalize Sanity data into the flat `Project` shape the components expect.
+Typed `Project` interface backed by Sanity GROQ queries — `getProjects` / `getProject` / `getProjectSlugs` fetch and normalize Sanity data into the flat `Project` shape the components expect. Project `state`: active/maintained/archived/cancelled — only `active` gets the coral accent dot.
+
+### Filtering (`lib/filter-projects.ts`)
+
+Three filter groups, OR within a group, AND across groups:
+
+- **stack** — `apple`: matches projects with any Apple-platform stack tag. The match set is a hardcoded list in `APPLE_TAGS`: iOS, iPadOS, macOS, watchOS, Swift, SwiftUI (extend this set if a new Apple platform is added). Compared against the stack tag's `slug` field.
+- **status** — `active`: matches ongoing projects (no `endYear` set).
+- **affiliation** — `freelance` | `icapps` | `10to1`: mutually exclusive per project. `freelance` checks `engagement === 'freelance'`; `icapps` / `10to1` check `employer->slug` (projected as `lower(organisation)` in the GROQ query).
+
+URL state: `/en?stack=apple&status=active&affiliation=freelance,icapps`. Managed by `useFilterState` hook, which preserves the `#hash` for deep-link expansion.
 
 `forLabel()` in `work-display.ts` derives the "For" column from employer + client: "employer → client" when both exist, a single name when one, or "Personal" as fallback. `projectDepth()` derives `full` / `gallery` / `none` from content — no manual field. The `Frame` component (`components/work/Frame.tsx`) renders minimal hairline device frames (phone/tablet/browser) around gallery screenshots.
 
