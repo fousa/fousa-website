@@ -35,7 +35,6 @@
     "styled-components": "^6.4.2"
   },
   "devDependencies": {
-    "@axe-core/cli": "^4.11.3",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
@@ -50,8 +49,6 @@
     "eslint-config-next": "16.2.6",
     "gray-matter": "^4.0.3",
     "jsdom": "^29.1.1",
-    "lighthouse": "^13.3.0",
-    "pa11y": "^9.1.1",
     "tailwindcss": "^4",
     "tsx": "^4.22.3",
     "typescript": "^5",
