@@ -376,6 +376,17 @@ export type Profile = {
       en?: string;
       nl?: string;
     };
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: {
+        en?: string;
+        nl?: string;
+      };
+      _type: "image";
+    };
     _key: string;
   }>;
   cvEn?: {
@@ -529,7 +540,7 @@ export type AllSanitySchemaTypes =
 
 // Source: src/sanity/queries/about.ts
 // Variable: ABOUT_QUERY
-// Query: {    "profile": *[_id == "profile"][0]{      name,      tagline,      aboutHeadline,      bio,      beyondCode[]{ title, body },      location,      email,      socialLinks,      "cvEnUrl": cvEn.asset->url,      "cvNlUrl": cvNl.asset->url,      vatNumber,      copyrightYear,      "portraitUrl": portrait.asset->url    },    "timeline": *[_type == "timelineEntry"] | order(startDate desc) {      _id,      organisation,      title,      group,      startDate,      endDate,      description,      location    },    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {      _id,      name,      "slug": slug.current,      deck,      year,      state,      liveUrl    }  }
+// Query: {    "profile": *[_id == "profile"][0]{      name,      tagline,      aboutHeadline,      bio,      beyondCode[]{        title,        body,        image{          "url": asset->url,          "lqip": asset->metadata.lqip,          "width": asset->metadata.dimensions.width,          "height": asset->metadata.dimensions.height,          alt        }      },      location,      email,      socialLinks,      "cvEnUrl": cvEn.asset->url,      "cvNlUrl": cvNl.asset->url,      vatNumber,      copyrightYear,      "portraitUrl": portrait.asset->url    },    "timeline": *[_type == "timelineEntry"] | order(startDate desc) {      _id,      organisation,      title,      group,      startDate,      endDate,      description,      location    },    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {      _id,      name,      "slug": slug.current,      deck,      year,      state,      liveUrl    }  }
 export type ABOUT_QUERY_RESULT = {
   profile:
     | {
@@ -648,6 +659,16 @@ export type ABOUT_QUERY_RESULT = {
           body: {
             en?: string;
             nl?: string;
+          } | null;
+          image: {
+            url: string | null;
+            lqip: string | null;
+            width: number | null;
+            height: number | null;
+            alt: {
+              en?: string;
+              nl?: string;
+            } | null;
           } | null;
         }> | null;
         location: string | null;
@@ -1208,7 +1229,7 @@ export type SITEMAP_SLUGS_QUERY_RESULT = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  {\n    "profile": *[_id == "profile"][0]{\n      name,\n      tagline,\n      aboutHeadline,\n      bio,\n      beyondCode[]{ title, body },\n      location,\n      email,\n      socialLinks,\n      "cvEnUrl": cvEn.asset->url,\n      "cvNlUrl": cvNl.asset->url,\n      vatNumber,\n      copyrightYear,\n      "portraitUrl": portrait.asset->url\n    },\n    "timeline": *[_type == "timelineEntry"] | order(startDate desc) {\n      _id,\n      organisation,\n      title,\n      group,\n      startDate,\n      endDate,\n      description,\n      location\n    },\n    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {\n      _id,\n      name,\n      "slug": slug.current,\n      deck,\n      year,\n      state,\n      liveUrl\n    }\n  }\n': ABOUT_QUERY_RESULT;
+    '\n  {\n    "profile": *[_id == "profile"][0]{\n      name,\n      tagline,\n      aboutHeadline,\n      bio,\n      beyondCode[]{\n        title,\n        body,\n        image{\n          "url": asset->url,\n          "lqip": asset->metadata.lqip,\n          "width": asset->metadata.dimensions.width,\n          "height": asset->metadata.dimensions.height,\n          alt\n        }\n      },\n      location,\n      email,\n      socialLinks,\n      "cvEnUrl": cvEn.asset->url,\n      "cvNlUrl": cvNl.asset->url,\n      vatNumber,\n      copyrightYear,\n      "portraitUrl": portrait.asset->url\n    },\n    "timeline": *[_type == "timelineEntry"] | order(startDate desc) {\n      _id,\n      organisation,\n      title,\n      group,\n      startDate,\n      endDate,\n      description,\n      location\n    },\n    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {\n      _id,\n      name,\n      "slug": slug.current,\n      deck,\n      year,\n      state,\n      liveUrl\n    }\n  }\n': ABOUT_QUERY_RESULT;
     '\n  *[_id == "availability"][0]{\n    status,\n    message,\n    nextOpening\n  }\n': AVAILABILITY_QUERY_RESULT;
     '\n  *[_type == "project" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    role,\n    client,\n    deck,\n    summary,\n    description,\n    outcome,\n    body,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    featured,\n    "employer": employer->{\n      _id,\n      name,\n      "slug": "employer-" + lower(name)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current\n    },\n    "coverUrl": cover.asset->url,\n    "coverAlt": cover.alt,\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    },\n    "gallery": gallery[]{\n      _key,\n      frame,\n      caption,\n      "imageUrl": image.asset->url,\n      "width": image.asset->metadata.dimensions.width,\n      "height": image.asset->metadata.dimensions.height\n    },\n    "related": *[\n      _type == "project"\n      && slug.current != $slug\n      && references(^.employer._ref)\n    ] | order(featured desc, year desc) [0...3] {\n      _id,\n      name,\n      "slug": slug.current,\n      year,\n      deck\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
