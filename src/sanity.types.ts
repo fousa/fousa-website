@@ -1219,7 +1219,7 @@ export type SITE_SETTINGS_QUERY_RESULT =
 
 // Source: src/sanity/queries/sitemap.ts
 // Variable: SITEMAP_SLUGS_QUERY
-// Query: *[_type == "project" && defined(slug.current)]{    "slug": slug.current,    "lastModified": _updatedAt  }
+// Query: *[_type == "project" && defined(slug.current) && (count(body.en) > 0 || count(gallery) > 0)]{    "slug": slug.current,    "lastModified": _updatedAt  }
 export type SITEMAP_SLUGS_QUERY_RESULT = Array<{
   slug: string | null;
   lastModified: string;
@@ -1237,6 +1237,6 @@ declare module "@sanity/client" {
     '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    roleLine,\n    filterIntro,\n    aboutHeadline,\n    bio,\n    "portraitUrl": portrait.asset->url,\n    beyondCode[]{\n      title,\n      body\n    },\n    location,\n    email,\n    socialLinks,\n    "cvEnUrl": cvEn.asset->url,\n    "cvNlUrl": cvNl.asset->url,\n    vatNumber,\n    copyrightYear\n  }\n': PROFILE_QUERY_RESULT;
     '\n  *[_type == "project"] | order(featured desc, year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    featured,\n    role,\n    client,\n    deck,\n    summary,\n    description,\n    outcome,\n    liveUrl,\n    githubUrl,\n    writeupUrl,\n    "employer": employer->{\n      _id,\n      "name": organisation,\n      "slug": lower(organisation)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current\n    },\n    "screenshots": screenshots[]{\n      _key,\n      alt,\n      "asset": asset->\n    },\n    tooling,\n    featureTooling,\n    "hasBody": count(body.en) > 0,\n    "galleryCount": count(gallery)\n  }\n': PROJECTS_QUERY_RESULT;
     '\n  *[_id == "siteSettings"][0]{\n    email,\n    socials[]{\n      platform,\n      url,\n      label\n    },\n    metaDescription,\n    "ogImageUrl": ogImage.asset->url\n  }\n': SITE_SETTINGS_QUERY_RESULT;
-    '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': SITEMAP_SLUGS_QUERY_RESULT;
+    '\n  *[_type == "project" && defined(slug.current) && (count(body.en) > 0 || count(gallery) > 0)]{\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': SITEMAP_SLUGS_QUERY_RESULT;
   }
 }
