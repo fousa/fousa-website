@@ -9,7 +9,7 @@
  * selections survive reloads and are shareable.
  */
 import Link from "next/link";
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   matchesFilters,
@@ -139,6 +139,15 @@ export function ProjectLog({
   );
   const emptyHeadline = override?.headline ?? t(locale, "empty.headline");
   const emptyBody = override?.body ?? t(locale, "empty.body");
+
+  // A zero-match combo is a meaningful signal — track it once per transition.
+  useEffect(() => {
+    if (!isEmpty) return;
+    track("empty_state_shown", {
+      filters: activeValues(filters).sort().join(","),
+      locale,
+    });
+  }, [isEmpty]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /** Write a Filters object to the URL, preserving hash. */
   const writeUrl = useCallback(

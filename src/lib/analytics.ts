@@ -18,6 +18,7 @@ type Events = {
   };
   filter_select: { filter: string; locale: string };
   clear_filters: { count: number; locale: string };
+  empty_state_shown: { filters: string; locale: string };
   locale_switch: { from: string; to: string; path: string };
   theme_toggle: { to: "dark" | "light" };
   outbound_click: {
