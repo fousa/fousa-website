@@ -73,11 +73,7 @@ export function CaseStudyBody({project, locale}: {project: Project; locale: Loca
           <div className="flex flex-wrap gap-1.5">
             {project.stack.map((tag) =>
               tag ? (
-                <StackChip
-                  key={tag._id}
-                  name={tag.name ?? ''}
-                  category={tag.category as never}
-                />
+                <StackChip key={tag._id} name={tag.name ?? ''} />
               ) : null
             )}
           </div>

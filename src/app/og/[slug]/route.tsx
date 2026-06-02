@@ -2,9 +2,9 @@
  * Branded og:image generator at /og/<slug>.
  *
  * Returns a 1200×630 PNG per the Open Graph spec. Layout: project name in
- * large serif, deck italic underneath, "fousa.be" wordmark in the corner,
- * background colored by the project's primary stack category. Edge runtime
- * so generation is fast and Vercel doesn't bill Node CPU for each request.
+ * large serif, deck italic underneath, "fousa.be" wordmark in the corner.
+ * Edge runtime so generation is fast and Vercel doesn't bill Node CPU for
+ * each request.
  *
  * Caches forever (immutable header) since the URL key includes the slug —
  * if project content changes, the social platforms eventually re-crawl.
@@ -18,14 +18,6 @@ import {CASE_STUDY_QUERY} from '@/sanity/queries/case-study'
 import type {CASE_STUDY_QUERY_RESULT} from '@/sanity.types'
 
 export const runtime = 'edge'
-
-const CATEGORY_BG: Record<string, string> = {
-  mobile: '#1e40af',
-  web: '#166534',
-  frontend: '#92400e',
-  tooling: '#6b21a8',
-  other: '#1f2937',
-}
 
 export async function GET(
   _req: Request,
@@ -44,8 +36,7 @@ export async function GET(
 
   const deck =
     (typeof project.deck === 'object' && project.deck?.en) || ''
-  const primaryCategory = project.stack?.[0]?.category ?? 'other'
-  const bg = CATEGORY_BG[primaryCategory] ?? CATEGORY_BG.other
+  const bg = '#1f2937'
 
   return new ImageResponse(
     (

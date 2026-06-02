@@ -38,7 +38,6 @@ export type Project = {
   endYear?: number | null
   state: State
   engagement: Engagement
-  tech: string[]
   tagSlugs: string[]
   employerSlug?: string | null
   summary: string
@@ -138,17 +137,6 @@ export function deriveFilterCounts(projects: Project[]): FilterCounts {
 }
 
 /**
- * Normalize a stack tag's category to a lowercase tech key for filtering.
- *
- * @param category - Sanity stackTag category value
- * @returns lowercase tech key
- */
-function normalizeTech(category: string | null | undefined): string {
-  if (!category) return 'other'
-  return category.toLowerCase()
-}
-
-/**
  * Map a Sanity project row into the flat Project interface.
  */
 function toProject(
@@ -168,7 +156,6 @@ function toProject(
     endYear: row.endYear ?? null,
     state: (row.state as State) ?? 'active',
     engagement: (row.engagement as Engagement) ?? 'freelance',
-    tech: [...new Set(stackTags.map((s) => normalizeTech(s?.category)))],
     tagSlugs: stackTags.map((s) => s?.slug).filter((s): s is string => Boolean(s)),
     summary:
       pickLocale(typeof row.summary === 'object' ? row.summary : null, locale) ??
@@ -233,7 +220,6 @@ export async function getProject(
     endYear: row.endYear ?? null,
     state: (row.state as State) ?? 'active',
     engagement: (row.engagement as Engagement) ?? 'freelance',
-    tech: [...new Set(stackTags.map((s) => normalizeTech(s?.category)))],
     tagSlugs: stackTags.map((s) => s?.slug).filter((s): s is string => Boolean(s)),
     summary:
       pickLocale(typeof row.summary === 'object' ? row.summary : null, locale) ??

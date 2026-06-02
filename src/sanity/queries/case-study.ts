@@ -39,8 +39,7 @@ export const CASE_STUDY_QUERY = defineQuery(`
     "stack": stack[]->{
       _id,
       name,
-      "slug": slug.current,
-      category
+      "slug": slug.current
     },
     "coverUrl": cover.asset->url,
     "coverAlt": cover.alt,

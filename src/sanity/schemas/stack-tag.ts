@@ -29,34 +29,16 @@ export const stackTag = defineType({
       options: {source: 'name', maxLength: 32},
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'category',
-      title: 'Category',
-      type: 'string',
-      description: 'Which family this tag belongs to. Drives semantic chip colors in the UI.',
-      options: {
-        list: [
-          {title: 'Mobile', value: 'mobile'},
-          {title: 'Web', value: 'web'},
-          {title: 'Frontend', value: 'frontend'},
-          {title: 'Tooling', value: 'tooling'},
-          {title: 'Other', value: 'other'},
-        ],
-        layout: 'radio',
-      },
-      validation: (Rule) => Rule.required(),
-      initialValue: 'mobile',
-    }),
   ],
   orderings: [
     {
-      title: 'Category, then name',
-      name: 'categoryAndName',
-      by: [{field: 'category', direction: 'asc'}, {field: 'name', direction: 'asc'}],
+      title: 'Name A–Z',
+      name: 'nameAsc',
+      by: [{field: 'name', direction: 'asc'}],
     },
   ],
   preview: {
-    select: {name: 'name', category: 'category'},
-    prepare: ({name, category}) => ({title: name, subtitle: category}),
+    select: {name: 'name'},
+    prepare: ({name}) => ({title: name}),
   },
 })

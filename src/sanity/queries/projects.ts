@@ -38,8 +38,7 @@ export const PROJECTS_QUERY = defineQuery(`
     "stack": stack[]->{
       _id,
       name,
-      "slug": slug.current,
-      category
+      "slug": slug.current
     },
     "screenshots": screenshots[]{
       _key,

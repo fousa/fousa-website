@@ -76,10 +76,7 @@ export function ProjectRow({
         </span>
         <span>
           {primaryStack && (
-            <StackChip
-              name={primaryStack.name ?? ''}
-              category={primaryStack.category as never}
-            />
+            <StackChip name={primaryStack.name ?? ''} />
           )}
         </span>
         <span className="font-sans text-[13px] text-ink-muted truncate">

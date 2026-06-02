@@ -1,13 +1,9 @@
 /**
  * Case study hero — full-bleed image at the top, title block beneath.
  *
- * Image source: the first screenshot if present, otherwise a flat colored
- * panel using the project's primary stack category color. The flat fallback
- * keeps the page from looking broken when screenshots haven't been uploaded
- * yet (the migration didn't include image assets).
- *
- * Title block: project name (large serif), italic deck, three-up metadata
- * (employer/client · role · year range).
+ * Image source: the first screenshot if present, otherwise a neutral
+ * fallback panel. Title block: project name (large serif), italic deck,
+ * three-up metadata (employer/client · role · year range).
  */
 import Image from 'next/image'
 import {urlFor} from '@/sanity/client'
@@ -19,14 +15,6 @@ import type {CASE_STUDY_QUERY_RESULT} from '@/sanity.types'
 
 type Project = NonNullable<CASE_STUDY_QUERY_RESULT>
 
-const CATEGORY_BG: Record<string, string> = {
-  mobile: 'bg-mobile',
-  web: 'bg-web',
-  frontend: 'bg-frontend',
-  tooling: 'bg-tooling',
-  other: 'bg-other',
-}
-
 export function CaseStudyHero({project, locale}: {project: Project; locale: Locale}) {
   const deck = pickLocale(
     typeof project.deck === 'object' ? project.deck : null,
@@ -35,7 +23,6 @@ export function CaseStudyHero({project, locale}: {project: Project; locale: Loca
 
   const hero = project.screenshots?.[0]
   const heroAsset = hero?.asset
-  const primaryCategory = project.stack?.[0]?.category ?? 'other'
 
   const employerName = project.employer?.name ?? '—'
   const clientLabel =
@@ -63,7 +50,7 @@ export function CaseStudyHero({project, locale}: {project: Project; locale: Loca
           />
         ) : (
           <div
-            className={`size-full ${CATEGORY_BG[primaryCategory] ?? CATEGORY_BG.other} flex items-center justify-center`}
+            className="size-full bg-ink flex items-center justify-center"
             aria-hidden
           >
             <span className="font-serif italic text-white/30 text-[14px]">

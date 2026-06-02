@@ -72,11 +72,7 @@ export function CaseStudyPanel({
             </span>
             {project.stack.map((tag) =>
               tag ? (
-                <StackChip
-                  key={tag._id}
-                  name={tag.name ?? ''}
-                  category={tag.category as never}
-                />
+                <StackChip key={tag._id} name={tag.name ?? ''} />
               ) : null
             )}
           </div>
