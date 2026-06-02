@@ -7,7 +7,7 @@
 :root {
   --bg:#ffffff; --surface:#f4f4f5; --ink:#0c0c0d; --text:#3f3f46;
   --muted:#71717a; --faint:#a1a1aa; --line:#ececec; --hover:#fafafa;
-  --accent:#ff4d1c; --panel:#0c0c0d; --panel-text:#ffffff; --panel-muted:#8a8a92;
+  --accent:#e13100; --panel:#0c0c0d; --panel-text:#ffffff; --panel-muted:#8a8a92;
   --status-ok:#34c27a; --status-warn:#e0a83a; --status-full:#e5484d;
   --cat-mobile:#0077ed; --cat-mobile-bg:#e8f2ff;
   --cat-web:#d6336c;    --cat-web-bg:#fce4ec;
