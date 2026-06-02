@@ -110,7 +110,9 @@ export default async function AboutPage({
           <div className="flex flex-col gap-10 md:flex-row md:gap-16">
             <div className="flex-1">
               <h1 className="font-display text-[28px] font-semibold leading-[1.12] tracking-[-0.03em] md:text-[34px] md:leading-[1.1]">
-                {headline}
+                {headline.endsWith(".")
+                  ? <>{headline.slice(0, -1)}<span className="text-accent">.</span></>
+                  : headline}
               </h1>
               {bio && (
                 <PortableTextRenderer
@@ -208,7 +210,12 @@ export default async function AboutPage({
           locale={locale}
           className="mt-4 block font-display text-[24px] font-bold tracking-[-0.02em] text-panel-text md:text-[32px]"
         >
-          {email}
+          {(() => {
+            const lastDot = email.lastIndexOf(".");
+            return lastDot >= 0
+              ? <>{email.slice(0, lastDot)}<span className="text-accent">.</span>{email.slice(lastDot + 1)}</>
+              : email;
+          })()}
         </OutboundLink>
         {socials.length > 0 && (
           <div className="mt-6 flex gap-6 text-sm text-panel-muted">
