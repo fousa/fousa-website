@@ -194,14 +194,14 @@ export default async function AboutPage({
                     key={title ?? i}
                     className="border-line py-5 [&:not(:first-child)]:border-t md:border-t-0 md:border-r md:px-6 md:py-6 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
                   >
-                    <div className="grid grid-cols-[48px_1fr] items-start gap-4">
+                    <div className="grid grid-cols-[96px_1fr] items-start gap-4">
                       {image?.url ? (
-                        <div className="relative h-12 w-12 overflow-hidden rounded-md bg-surface">
+                        <div className="relative h-24 w-24 overflow-hidden rounded-md bg-surface">
                           <Image
                             src={image.url}
                             alt={alt ?? ""}
                             fill
-                            sizes="48px"
+                            sizes="96px"
                             placeholder={image.lqip ? "blur" : "empty"}
                             blurDataURL={image.lqip ?? undefined}
                             className="object-cover"
@@ -209,7 +209,7 @@ export default async function AboutPage({
                         </div>
                       ) : (
                         /* reserve the column so titles align across items */
-                        <div aria-hidden className="h-12 w-12" />
+                        <div aria-hidden className="h-24 w-24" />
                       )}
                       <div className="min-w-0">
                         <h3 className="font-display text-base font-semibold text-ink">
