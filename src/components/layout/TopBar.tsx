@@ -56,7 +56,7 @@ export function TopBar({ locale }: { locale: Locale }) {
             className="font-semibold text-ink"
           >
             {t(locale, "hireMe")}
-            <span className="text-accent"> →</span>
+            <span aria-hidden className="text-accent"> →</span>
           </Link>
         </nav>
 
@@ -86,7 +86,7 @@ export function TopBar({ locale }: { locale: Locale }) {
             onClick={() => setOpen(false)}
           >
             {t(locale, "hireMe")}
-            <span className="text-accent"> →</span>
+            <span aria-hidden className="text-accent"> →</span>
           </Link>
         </nav>
       )}

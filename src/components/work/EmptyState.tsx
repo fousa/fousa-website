@@ -42,7 +42,7 @@ export function EmptyState({
             className="font-display text-[13.5px] font-semibold text-ink cursor-pointer"
           >
             {clearLabel}
-            <span className="text-accent"> →</span>
+            <span aria-hidden className="text-accent"> →</span>
           </button>
           <span className="text-[13.5px] text-muted">· {showAllLabel}</span>
         </div>

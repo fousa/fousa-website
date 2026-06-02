@@ -471,7 +471,7 @@ function DepthLink({
       className={`font-display font-semibold text-ink ${size === "sm" ? "text-[13px]" : "text-sm"}`}
     >
       {label}
-      <span className="text-accent"> →</span>
+      <span aria-hidden className="text-accent"> →</span>
     </Link>
   );
 }

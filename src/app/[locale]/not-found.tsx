@@ -32,7 +32,7 @@ export default async function NotFound() {
         className="mt-8 font-display text-sm font-semibold text-ink"
       >
         {t(locale, "backToTheLog")}
-        <span className="text-accent"> →</span>
+        <span aria-hidden className="text-accent"> →</span>
       </Link>
     </main>
   );

@@ -126,7 +126,7 @@ export default async function AboutPage({
                   className="font-display text-sm font-semibold text-ink"
                 >
                   {t(locale, "hireMe")}
-                  <span className="text-accent"> →</span>
+                  <span aria-hidden className="text-accent"> →</span>
                 </Link>
                 {cvUrl && (
                   <OutboundLink
@@ -137,7 +137,7 @@ export default async function AboutPage({
                     className="font-display text-sm font-semibold text-ink"
                   >
                     {t(locale, "cv")}
-                    <span className="text-accent"> →</span>
+                    <span aria-hidden className="text-accent"> →</span>
                   </OutboundLink>
                 )}
               </div>
