@@ -76,11 +76,14 @@ export function LocaleSwitch() {
               onClick={() => switchTo(l.code)}
               aria-label={l.name}
               aria-current={active ? "true" : undefined}
-              className={
+              className={[
+                // Vertical-only ::after hit-area: a horizontal bump would overlap
+                // the adjacent locale button, so we extend the tap target up/down only.
+                "relative after:absolute after:-inset-y-[14px] after:inset-x-0 after:content-['']",
                 active
                   ? "cursor-default text-ink"
-                  : "cursor-pointer text-muted transition-colors hover:text-ink"
-              }
+                  : "cursor-pointer text-muted transition-colors hover:text-ink",
+              ].join(" ")}
             >
               {/* mobile: code */}
               <span className="inline font-mono text-xs uppercase md:hidden">

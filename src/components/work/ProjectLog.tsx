@@ -200,7 +200,7 @@ export function ProjectLog({
               key={`${group}:${value}`}
               onClick={() => toggle(group, value)}
               aria-pressed={isOn}
-              className={`inline-flex shrink-0 items-center rounded-full border px-3 py-[5px] text-[12.5px] font-medium transition-colors cursor-pointer ${
+              className={`relative inline-flex shrink-0 items-center rounded-full border px-3 py-[5px] text-[12.5px] font-medium transition-colors cursor-pointer after:absolute after:-inset-y-[9px] after:inset-x-0 after:content-[''] ${
                 isOn
                   ? "border-transparent bg-accent-soft text-accent-deep font-semibold"
                   : "border-line text-muted hover:text-ink"

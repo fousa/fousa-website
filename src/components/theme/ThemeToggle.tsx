@@ -44,7 +44,7 @@ export function ThemeToggle({ locale }: { locale: Locale }) {
       // aria-pressed carries the current on/off state for AT.
       aria-label={dark ? t(locale, "theme.switchToLight") : t(locale, "theme.switchToDark")}
       aria-pressed={dark}
-      className="font-mono text-xs text-muted transition-colors hover:text-ink"
+      className="relative inline-flex font-mono text-xs text-muted transition-colors hover:text-ink after:absolute after:-inset-y-[14px] after:inset-x-0 after:content-['']"
     >
       {dark ? "Light" : "Dark"}
     </button>

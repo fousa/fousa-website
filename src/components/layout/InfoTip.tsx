@@ -5,7 +5,7 @@
  * - Mobile: tap toggles; tap-outside or Escape closes.
  * The popover anchors above the button with a small arrow.
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 export function InfoTip({
   label,
@@ -16,6 +16,7 @@ export function InfoTip({
 }) {
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLSpanElement>(null);
+  const tipId = useId();
 
   useEffect(() => {
     if (!open) return;
@@ -42,13 +43,15 @@ export function InfoTip({
         type="button"
         aria-label={label}
         aria-expanded={open}
+        aria-describedby={open ? tipId : undefined}
         onClick={() => setOpen((v) => !v)}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
         className={[
-          "inline-flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border font-mono text-[9px] leading-none transition-colors",
+          // ::after extends the tap area to ~44px without changing visual size.
+          "relative inline-flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border font-mono text-[9px] leading-none transition-colors after:absolute after:-inset-[14px] after:content-['']",
           open
             ? "border-ink bg-ink text-bg"
             : "border-muted text-muted hover:border-ink hover:text-ink",
@@ -59,6 +62,7 @@ export function InfoTip({
 
       {open && (
         <span
+          id={tipId}
           role="tooltip"
           className="absolute bottom-[calc(100%+8px)] left-1/2 z-50 w-[240px] -translate-x-1/2 rounded-md bg-ink px-3 py-2 text-left font-sans text-[12.5px] leading-[1.45] text-bg shadow-md"
         >

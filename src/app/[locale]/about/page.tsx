@@ -228,7 +228,6 @@ export default async function AboutPage({
             </div>
           </section>
         )}
-      </main>
 
       {/* Contact panel — the one filled block */}
       <section id="contact" className="bg-panel px-5 py-14 md:px-11">
@@ -266,6 +265,7 @@ export default async function AboutPage({
           </div>
         )}
       </section>
+      </main>
     </>
   );
 }

@@ -126,7 +126,7 @@ export default async function DetailPage({
   return (
     <>
       {jsonLd && <JsonLd data={jsonLd} />}
-      <article id="main">
+      <main id="main">
         {/* Back link */}
       <div className="px-5 pt-8 md:px-11">
         <Link
@@ -282,7 +282,7 @@ export default async function DetailPage({
           </div>
         </section>
       )}
-    </article>
+    </main>
     </>
   );
 }

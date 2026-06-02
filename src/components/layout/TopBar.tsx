@@ -5,7 +5,7 @@
  * hairline border + translucent backdrop-blur once the user scrolls.
  */
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 import { localizedHref } from "@/lib/href";
@@ -16,10 +16,36 @@ export function TopBar({ locale }: { locale: Locale }) {
   const sentinel = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const scrolled = useScrolled(sentinel);
+  const menuId = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLElement>(null);
+  // Guards the focus-return effect from firing on initial mount (menu starts
+  // closed), which would otherwise steal focus to the hamburger on page load.
+  const mounted = useRef(false);
   const NAV = [
     { href: localizedHref(locale, "/"), label: t(locale, "work") },
     { href: localizedHref(locale, "/about"), label: t(locale, "about") },
   ];
+
+  // On open: move focus into the menu and allow Escape to close.
+  // On close (after the first render): return focus to the trigger.
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    if (open) {
+      menuRef.current
+        ?.querySelector<HTMLElement>("a, button")
+        ?.focus();
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setOpen(false);
+      };
+      document.addEventListener("keydown", onKey);
+      return () => document.removeEventListener("keydown", onKey);
+    }
+    triggerRef.current?.focus();
+  }, [open]);
 
   return (
     <>
@@ -62,9 +88,11 @@ export function TopBar({ locale }: { locale: Locale }) {
 
         {/* Mobile hamburger */}
         <button
+          ref={triggerRef}
           onClick={() => setOpen((v) => !v)}
-          aria-label="Menu"
+          aria-label={open ? t(locale, "menu.close") : t(locale, "menu.open")}
           aria-expanded={open}
+          aria-controls={menuId}
           className="flex flex-col gap-[5px] md:hidden"
         >
           <span className="block h-[2px] w-5 bg-ink" />
@@ -75,7 +103,11 @@ export function TopBar({ locale }: { locale: Locale }) {
 
       {/* Mobile menu */}
       {open && (
-        <nav className="flex flex-col gap-4 border-t border-line bg-bg px-5 py-5 text-base font-medium md:hidden">
+        <nav
+          ref={menuRef}
+          id={menuId}
+          className="flex flex-col gap-4 border-t border-line bg-bg px-5 py-5 text-base font-medium md:hidden"
+        >
           {NAV.map((n) => (
             <Link key={n.href} href={n.href} onClick={() => setOpen(false)}>
               {n.label}
