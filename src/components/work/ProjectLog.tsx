@@ -10,9 +10,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   matchesFilters,
-  deriveFilterCounts,
   type Filters,
-  type FilterCounts,
   type Project,
   type Depth,
 } from "@/lib/work";
@@ -57,11 +55,6 @@ export function ProjectLog({
   const hasAnyFilter =
     filters.stack.length + filters.status.length + filters.affiliation.length > 0;
 
-  const counts: FilterCounts = useMemo(
-    () => deriveFilterCounts(projects),
-    [projects],
-  );
-
   const rows = useMemo(
     () => projects.filter((p) => matchesFilters(p, filters)),
     [projects, filters],
@@ -94,7 +87,6 @@ export function ProjectLog({
       <div className="flex flex-wrap gap-x-6 gap-y-3 border-b border-line px-5 pt-1 md:flex-nowrap md:gap-y-0 md:px-11 md:pt-0">
         {CHIPS.map(({ group, value, labelKey }) => {
           const active = (filters[group] as string[]).includes(value);
-          const count = (counts[group] as Record<string, number>)[value] ?? 0;
           return (
             <button
               key={`${group}:${value}`}
@@ -106,7 +98,6 @@ export function ProjectLog({
               }`}
             >
               {t(locale, labelKey)}
-              <span className="ml-1.5 text-[11px] text-faint">{count}</span>
             </button>
           );
         })}

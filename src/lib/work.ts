@@ -73,12 +73,6 @@ export type Filters = {
   affiliation: AffiliationFilter[]
 }
 
-export type FilterCounts = {
-  stack: Record<StackFilter, number>
-  status: Record<StatusFilter, number>
-  affiliation: Record<AffiliationFilter, number>
-}
-
 /** Stack-tag slugs that count as Apple-platform work (lowercase, no spaces). */
 const APPLE_TAGS = new Set(['ios', 'ipados', 'macos', 'watchos', 'swift', 'swiftui'])
 
@@ -113,27 +107,6 @@ export function matchesFilters(p: Project, f: Filters): boolean {
     if (!match) return false
   }
   return true
-}
-
-/**
- * Compute per-chip counts from the FULL project list.
- * Counts never drop to zero as you filter.
- */
-export function deriveFilterCounts(projects: Project[]): FilterCounts {
-  const counts: FilterCounts = {
-    stack: { apple: 0 },
-    status: { active: 0 },
-    affiliation: { freelance: 0, icapps: 0, '10to1': 0 },
-  }
-  for (const p of projects) {
-    if (isApple(p)) counts.stack.apple++
-    if (isActive(p)) counts.status.active++
-    if (p.engagement === 'freelance') counts.affiliation.freelance++
-    const emp = p.employerSlug
-    if (emp === 'icapps') counts.affiliation.icapps++
-    if (emp === '10to1') counts.affiliation['10to1']++
-  }
-  return counts
 }
 
 /**
