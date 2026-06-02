@@ -52,6 +52,9 @@ export async function generateMetadata({
 
   const title = `${project.name} ${t(locale, "caseStudyMetaSuffix")}`;
   const path = `/work/${slug}`;
+  // Per-project share image from the dedicated /og generator; falls back to
+  // the site default only if a project somehow has no generated card.
+  const ogImage = `${SITE_URL}/og/${slug}`;
 
   return {
     title,
@@ -64,6 +67,13 @@ export async function generateMetadata({
       siteName: "fousa.be",
       locale: locale === "nl" ? "nl_BE" : "en_US",
       type: "article",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: project.name }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: project.summary,
+      images: [ogImage],
     },
   };
 }
