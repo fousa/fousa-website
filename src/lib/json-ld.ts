@@ -13,11 +13,14 @@ export function buildProjectJsonLd({
   project,
   locale,
   siteUrl,
+  url,
   authorName,
 }: {
   project: NonNullable<CASE_STUDY_QUERY_RESULT>
   locale: 'en' | 'nl'
   siteUrl: string
+  /** Canonical URL of the page this script is embedded in. */
+  url: string
   authorName: string
 }) {
   const deck =
@@ -31,7 +34,7 @@ export function buildProjectJsonLd({
     name: project.name,
     description: deck,
     image: `${siteUrl}/og/${project.slug}`,
-    url: `${siteUrl}/${locale}/${project.slug}`,
+    url,
     inLanguage: locale,
     creator: {
       '@type': 'Person',

@@ -110,6 +110,7 @@ export default async function CaseStudyPage({
     project,
     locale,
     siteUrl: SITE_URL,
+    url: `${SITE_URL}/${locale}/${slug}`,
     authorName: profile?.name ?? 'Jelle Vandebeeck',
   })
 

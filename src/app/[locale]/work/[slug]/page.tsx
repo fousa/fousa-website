@@ -18,12 +18,20 @@ import { getProject, getProjectSlugs } from "@/lib/work";
 import { forLabel } from "@/lib/work-display";
 import { fetchSanity } from "@/sanity/fetch";
 import { CASE_STUDY_QUERY } from "@/sanity/queries/case-study";
+import { PROFILE_QUERY } from "@/sanity/queries/profile";
 import { localizedHref } from "@/lib/href";
 import { altMetadata } from "@/lib/seo";
+import { buildProjectJsonLd } from "@/lib/json-ld";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { StatusDot } from "@/components/work/StatusDot";
 import { PortableTextRenderer } from "@/components/portable-text";
 import { Frame } from "@/components/work/Frame";
-import type { CASE_STUDY_QUERY_RESULT } from "@/sanity.types";
+import type {
+  CASE_STUDY_QUERY_RESULT,
+  PROFILE_QUERY_RESULT,
+} from "@/sanity.types";
+
+const SITE_URL = "https://fousa.be";
 
 export async function generateStaticParams() {
   const slugs = await getProjectSlugs();
@@ -71,9 +79,23 @@ export default async function DetailPage({
   const project = await getProject(slug, locale);
   if (!project || project.depth === "none") notFound();
 
-  const raw = await fetchSanity<CASE_STUDY_QUERY_RESULT>(CASE_STUDY_QUERY, {
-    slug,
-  });
+  const [raw, profile] = await Promise.all([
+    fetchSanity<CASE_STUDY_QUERY_RESULT>(CASE_STUDY_QUERY, { slug }),
+    fetchSanity<PROFILE_QUERY_RESULT>(PROFILE_QUERY),
+  ]);
+
+  // CreativeWork structured data, pointing at this page's canonical URL so it
+  // agrees with the sitemap and hreflang alternates.
+  const jsonLd = raw
+    ? buildProjectJsonLd({
+        project: raw,
+        locale,
+        siteUrl: SITE_URL,
+        url: altMetadata(locale, `/work/${slug}`).alternates
+          ?.canonical as string,
+        authorName: profile?.name ?? "Jelle Vandebeeck",
+      })
+    : null;
 
   const coverUrl = raw?.coverUrl ?? null;
   const coverAlt = raw?.coverAlt ?? project.name;
@@ -92,8 +114,10 @@ export default async function DetailPage({
       : null;
 
   return (
-    <article id="main">
-      {/* Back link */}
+    <>
+      {jsonLd && <JsonLd data={jsonLd} />}
+      <article id="main">
+        {/* Back link */}
       <div className="px-5 pt-8 md:px-11">
         <Link
           href={localizedHref(locale, "/")}
@@ -249,5 +273,6 @@ export default async function DetailPage({
         </section>
       )}
     </article>
+    </>
   );
 }
