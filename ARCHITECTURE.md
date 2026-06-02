@@ -105,7 +105,7 @@ Six document types. Three singletons (Profile, Availability, Site Settings) edit
 
 ### Collections
 - **Timeline entry** (`timelineEntry`): a single row on the About career list. Covers freelance, employed, and education entries, discriminated by `group`. Uses `startDate`/`endDate` (date, month precision) for tenure; ongoing entries (no `endDate`) get the coral live dot. Also referenced by Project via the `employer` field.
-- **Stack tag**: technology labels (Swift, Rails, etc.). Referenced by Project; pre-seeded via `pnpm seed:stack-tags`.
+- **Stack tag**: technology labels (Swift, Rails, etc.) with `name` and `slug`. Referenced by Project; pre-seeded via `pnpm seed:stack-tags`.
 - **Project**: the workhorse. Each Project is a row in the homepage log AND a detail page. Two ownership fields: `employer` (reference, shown only when engagement = full-time or internship) and `client` (string, the end customer). `engagement` (freelance/full-time/internship/student) drives homepage filters. `state` (active/maintained/archived/cancelled) drives the colored status dot — only `active` shows the coral accent. Three depth levels derived automatically from content: `full` (has body → case study), `gallery` (has gallery images → screenshot page with device frames), or `none` (no detail page). Gallery images each pick a frame (phone/tablet/browser/none). Optional `tooling` (i18nString) describes how the project was built — shown as a mono meta-line in the expanded zone. `featureTooling` (boolean) opts in for a subtle "AI-assisted" chip next to the name in the log. Also includes summary, body, cover, and grouped into Basics / Case study / Links tabs.
 
 ## Content layer (`lib/work.ts` + `lib/work-display.ts`)
@@ -120,7 +120,7 @@ Five chips in three groups, multi-select. OR within a group, AND across groups:
 - **status** — `active`: matches ongoing projects (no `endYear` set).
 - **affiliation** — `freelance` | `icapps` | `10to1`: mutually exclusive per project. `freelance` checks `engagement === 'freelance'`; `icapps` / `10to1` check `employerSlug` (projected as `lower(organisation)` from the employer `timelineEntry` in the GROQ query).
 
-Stack-tag `category` is no longer used for filtering but is still used by stack chips in the project row, OG images, and the case-study hero.
+Stack-tag `category` has been removed. Stack chips use a single neutral style; hero and OG fallback backgrounds use a flat dark tone.
 
 Filter state lives as React `useState` in `ProjectLog.tsx` (component state, not URL-backed).
 
