@@ -3,5 +3,7 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
 ignoredBuiltDependencies:
+  - chromedriver
+  - puppeteer
   - sharp
   - unrs-resolver
