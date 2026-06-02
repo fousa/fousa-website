@@ -277,29 +277,36 @@ export function ProjectLog({
                     {p.stack} · {p.year}
                   </div>
                 </button>
-                {open === p.slug && (
-                  <div className="px-5 pb-5">
-                    <div className="border-l-2 border-accent pl-4">
-                      <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
-                        {p.summary}
-                      </p>
-                      {p.tooling && (
-                        <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.06em] text-faint">
-                          {t(locale, "toolingPrefix")} ·{" "}
-                          <span className="normal-case tracking-normal text-muted">
-                            {p.tooling}
-                          </span>
-                        </div>
-                      )}
-                      <DepthLink
-                        depth={p.depth}
-                        slug={p.slug}
-                        locale={locale}
-                        size="sm"
-                      />
+                <div
+                  className={`grid transition-[grid-template-rows] duration-[220ms] ease-out ${open === p.slug ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+                >
+                  <div className="overflow-hidden">
+                    <div
+                      inert={open !== p.slug || undefined}
+                      className={`px-5 pb-5 transition-opacity delay-[80ms] duration-150 ${open === p.slug ? "opacity-100" : "opacity-0"}`}
+                    >
+                      <div className="border-l-2 border-accent pl-4">
+                        <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
+                          {p.summary}
+                        </p>
+                        {p.tooling && (
+                          <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.06em] text-faint">
+                            {t(locale, "toolingPrefix")} ·{" "}
+                            <span className="normal-case tracking-normal text-muted">
+                              {p.tooling}
+                            </span>
+                          </div>
+                        )}
+                        <DepthLink
+                          depth={p.depth}
+                          slug={p.slug}
+                          locale={locale}
+                          size="sm"
+                        />
+                      </div>
                     </div>
                   </div>
-                )}
+                </div>
               </li>
             ))}
           </ul>
@@ -370,31 +377,42 @@ function Row({
           <StatusDot state={p.state} locale={locale} />
         </td>
       </tr>
-      {open && (
-        <tr className="[&>td]:bg-hover">
-          <td colSpan={6} className="px-11 pb-7">
-            <div className="max-w-[580px] border-l-2 border-accent pl-5">
-              <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
-                {p.summary}
-              </p>
-              {p.tooling && (
-                <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.06em] text-faint">
-                  {t(locale, "toolingPrefix")} ·{" "}
-                  <span className="normal-case tracking-normal text-muted">
-                    {p.tooling}
-                  </span>
+      {/* Expansion stays mounted so the 0fr→1fr grid track can animate height;
+          `inert` keeps the collapsed body out of the tab order. */}
+      <tr className={open ? "[&>td]:bg-hover" : ""}>
+        <td colSpan={6} className="p-0">
+          <div
+            className={`grid transition-[grid-template-rows] duration-[220ms] ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+          >
+            <div className="overflow-hidden">
+              <div
+                inert={!open || undefined}
+                className={`px-11 pb-7 transition-opacity delay-[80ms] duration-150 ${open ? "opacity-100" : "opacity-0"}`}
+              >
+                <div className="max-w-[580px] border-l-2 border-accent pl-5">
+                  <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
+                    {p.summary}
+                  </p>
+                  {p.tooling && (
+                    <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.06em] text-faint">
+                      {t(locale, "toolingPrefix")} ·{" "}
+                      <span className="normal-case tracking-normal text-muted">
+                        {p.tooling}
+                      </span>
+                    </div>
+                  )}
+                  <DepthLink
+                    depth={p.depth}
+                    slug={p.slug}
+                    locale={locale}
+                    size="base"
+                  />
                 </div>
-              )}
-              <DepthLink
-                depth={p.depth}
-                slug={p.slug}
-                locale={locale}
-                size="base"
-              />
+              </div>
             </div>
-          </td>
-        </tr>
-      )}
+          </div>
+        </td>
+      </tr>
     </>
   );
 }
