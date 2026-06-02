@@ -11,7 +11,10 @@ export const client = createClient({
   apiVersion,
   dataset,
   projectId,
-  useCdn: true,
+  // CDN is fast but can serve slightly stale content; skip it only in local
+  // `next dev` so it always reflects the latest published data. Preview and
+  // production deploys keep the CDN on.
+  useCdn: process.env.NODE_ENV !== 'development',
   token: process.env.SANITY_API_TOKEN,
   perspective: 'published',
 })
