@@ -21,7 +21,7 @@ type PtBlock = {
  * @param text - Plain text with paragraphs separated by one or more blank lines
  * @returns An array of Portable Text blocks (empty if input is whitespace-only)
  */
-export function toPortableText(text: string): PtBlock[] {
+function toPortableText(text: string): PtBlock[] {
   return text
     .trim()
     .split(/\n\s*\n+/)

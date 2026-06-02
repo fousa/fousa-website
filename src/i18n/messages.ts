@@ -9,7 +9,7 @@
  */
 import type {Locale} from './config'
 
-export const messages = {
+const messages = {
   en: {
     about: 'About',
     aboutDescription: 'iOS developer and Rails engineer from Edegem, Belgium. Building products since 2008, gliding the Belgian skies in between.',
