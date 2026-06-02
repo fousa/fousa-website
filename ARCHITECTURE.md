@@ -163,6 +163,14 @@ English is the unprefixed default locale; Dutch lives under `/nl`. No browser-lo
 
 All internal links use `localizedHref(locale, path)` from `lib/href.ts`. SEO metadata uses `altMetadata(locale, path)` from `lib/seo.ts` for canonical + hreflang (`x-default` points at English).
 
+## SEO surface
+
+- **Base + title template** — the root layout (`app/layout.tsx`) sets `metadataBase` (`https://fousa.be`) and a title template (`%s · fousa.be`); child pages return just their own title slice. It also carries the default Open Graph + Twitter (`summary_large_image`) card backed by `/og-image.png`.
+- **robots.txt** — `app/robots.ts` allows all crawlers, blocks `/studio/`, and points at the sitemap.
+- **sitemap.xml** — `app/sitemap.ts` lists both locales of `/`, `/about`, and every case study at `/work/<slug>` (+ `/nl/...`), with `_updatedAt` as `<lastmod>`. `SITEMAP_SLUGS_QUERY` filters to projects with a body or gallery so depth-`none` projects (which 404) are never listed.
+- **JSON-LD** — `components/seo/JsonLd.tsx` renders a `<script type="application/ld+json">`, escaping `<` to prevent tag breakout. A site-wide `Person` is emitted from the locale layout (name, jobTitle from `roleLine`, `sameAs` from socials); `buildProjectJsonLd` (`lib/json-ld.ts`) builds a `CreativeWork` per case study, taking the embedding page's canonical URL so the markup matches the sitemap.
+- **Per-page OG** — the canonical case study (`work/[slug]`) overrides the share image with the generated `/og/<slug>` card and a matching Twitter card; pages without an override inherit the site default.
+
 ## Rendering
 
 SSG with on-demand ISR. Pages build at deploy time; Sanity webhook hits `/api/revalidate` whenever content changes, which calls `revalidatePath` for the affected routes. Visitors always get a CDN-cached HTML response.
