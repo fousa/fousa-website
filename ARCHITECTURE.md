@@ -104,6 +104,19 @@ The project log carries four small motion layers, all defined in `globals.css` a
 
 A global `@media (prefers-reduced-motion: reduce)` safeguard collapses every animation and transition to near-zero duration, so all of the above (and the avail badge) go static for users who ask for less motion.
 
+### Accessibility
+
+The site targets practical access for keyboard, screen-reader, and 200%-zoom users rather than a formal WCAG 2.2 AA certification. Key decisions:
+
+- **Contrast**: `text-muted` clears 4.5:1 on both themes and carries all reading/data/interactive copy. `text-faint` (sub-4.5:1) is reserved for large mono-uppercase eyebrows and `aria-hidden` separators only. The light-mode accent was darkened to `#e13100` (4.53:1 on white) so coral links/arrows pass on normal text; dark-mode accent is unchanged.
+- **Keyboard-operable rows**: the desktop project-log row is a `role="button"` + `tabIndex={0}` `<tr>` with Enter/Space activation (Space `preventDefault` to stop page scroll) and a `focus-visible` inset ring; both desktop and mobile toggles expose `aria-expanded`. Collapsed expand-bodies get `inert` to keep their links out of the tab order.
+- **Live regions**: the filtered-count line and the empty state are wrapped in `role="status" aria-live="polite" aria-atomic` so filter changes are announced.
+- **Decorative glyphs**: coral `→` arrows and status dots are `aria-hidden`; the real label/state word carries the meaning.
+- **Focus management**: the mobile menu focuses its first item on open and returns focus to the hamburger trigger on close (guarded by a `mounted` ref so initial render doesn't steal focus), with Escape-to-close and `aria-controls` + a localized `aria-label`.
+- **Touch targets**: small controls (InfoTip "i", theme toggle, locale switch, filter chips) extend their hit area to ~44px via an `::after` pseudo-element without changing visual size; the locale switch expands vertically only to avoid overlapping its sibling.
+- **Skip link** in the root layout (`sr-only` → `focus:not-sr-only`) jumps to `#main`; every route's primary content lives in a single `<main id="main">` landmark (detail and About pages included, with the About contact panel pulled inside `<main>`).
+- **Labelled state controls**: the theme toggle carries a localized action `aria-label` plus `aria-pressed`; the InfoTip popover is wired via `aria-describedby`/`useId`.
+
 ## Content model
 
 Seven document types. Four singletons (Profile, Availability, Site Settings, Empty states) edited in place from the pinned top of the Studio nav. Three collections (Employer, Stack tag, Project) — Project references Employer and Stack tag.
