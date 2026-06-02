@@ -9,9 +9,10 @@
 import {fetchSanity} from '@/sanity/fetch'
 import {PROJECTS_QUERY} from '@/sanity/queries/projects'
 import {CASE_STUDY_QUERY, CASE_STUDY_SLUGS_QUERY} from '@/sanity/queries/case-study'
+import {EMPTY_STATES_QUERY} from '@/sanity/queries/empty-states'
 import {pickLocale} from '@/i18n/pick-locale'
 import type {Locale} from '@/i18n/config'
-import type {PROJECTS_QUERY_RESULT, CASE_STUDY_QUERY_RESULT, CASE_STUDY_SLUGS_QUERY_RESULT} from '@/sanity.types'
+import type {PROJECTS_QUERY_RESULT, CASE_STUDY_QUERY_RESULT, CASE_STUDY_SLUGS_QUERY_RESULT, EMPTY_STATES_QUERY_RESULT} from '@/sanity.types'
 
 export type State = 'active' | 'maintained' | 'archived' | 'cancelled'
 export type Engagement = 'freelance' | 'full-time' | 'student'
@@ -209,6 +210,39 @@ export async function getProject(
     depth: hasBody ? 'full' : gallery.length > 0 ? 'gallery' : 'none',
     gallery,
   }
+}
+
+// ---------------------------------------------------------------------------
+// Empty-state overrides
+// ---------------------------------------------------------------------------
+
+/**
+ * One hand-written empty-state message, resolved for the active locale.
+ * `filters` is the (order-independent) set of active filter keys the entry
+ * applies to; `headline`/`body` are null when the editor left them blank.
+ */
+export type EmptyStateOverride = {
+  filters: string[]
+  headline: string | null
+  body: string | null
+}
+
+/**
+ * Fetch the optional per-combination empty-state overrides.
+ *
+ * @param locale - active locale for resolving the headline/body i18n fields
+ * @returns the override list (empty when none are configured)
+ */
+export async function getEmptyStates(locale: Locale = 'en'): Promise<EmptyStateOverride[]> {
+  const data = await fetchSanity<EMPTY_STATES_QUERY_RESULT>(EMPTY_STATES_QUERY)
+  const overrides = data?.overrides ?? []
+  return overrides
+    .map((o) => ({
+      filters: (o.filters ?? []).filter((f): f is string => Boolean(f)),
+      headline: pickLocale(typeof o.headline === 'object' ? o.headline : null, locale),
+      body: pickLocale(typeof o.body === 'object' ? o.body : null, locale),
+    }))
+    .filter((o) => o.filters.length > 0)
 }
 
 /**

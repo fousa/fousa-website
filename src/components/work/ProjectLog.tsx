@@ -19,6 +19,7 @@ import {
   type AffiliationFilter,
   type Project,
   type Depth,
+  type EmptyStateOverride,
 } from "@/lib/work";
 import { forLabel, type ForLabel } from "@/lib/work-display";
 import { t, type MessageKey } from "@/i18n/messages";
@@ -81,6 +82,24 @@ function filterCount(f: Filters): number {
   return f.stack.length + f.status.length + f.affiliation.length;
 }
 
+/** Flatten the active filter values across all groups into one list. */
+function activeValues(f: Filters): string[] {
+  return [...f.stack, ...f.status, ...f.affiliation];
+}
+
+/**
+ * Find the override whose filter set exactly matches the active one
+ * (order-independent). First match wins; null when none match.
+ */
+function matchOverride(
+  active: string[],
+  list: EmptyStateOverride[],
+): EmptyStateOverride | null {
+  if (active.length === 0) return null;
+  const key = [...active].sort().join(",");
+  return list.find((o) => [...o.filters].sort().join(",") === key) ?? null;
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -88,9 +107,11 @@ function filterCount(f: Filters): number {
 export function ProjectLog({
   projects,
   locale,
+  overrides = [],
 }: {
   projects: Project[];
   locale: Locale;
+  overrides?: EmptyStateOverride[];
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -109,6 +130,15 @@ export function ProjectLog({
   // Only an empty state when filters are active — an empty list with no
   // filters means the dataset itself is empty, a different problem.
   const isEmpty = hasAnyFilter && rows.length === 0;
+
+  // Optional hand-written copy for this exact filter combo; falls back to the
+  // universal dictionary copy when no override matches.
+  const override = useMemo(
+    () => matchOverride(activeValues(filters), overrides),
+    [filters, overrides],
+  );
+  const emptyHeadline = override?.headline ?? t(locale, "empty.headline");
+  const emptyBody = override?.body ?? t(locale, "empty.body");
 
   /** Write a Filters object to the URL, preserving hash. */
   const writeUrl = useCallback(
@@ -179,8 +209,8 @@ export function ProjectLog({
 
       {isEmpty ? (
         <EmptyState
-          headline={t(locale, "empty.headline")}
-          body={t(locale, "empty.body")}
+          headline={emptyHeadline}
+          body={emptyBody}
           clearLabel={t(locale, "empty.clear")}
           showAllLabel={t(locale, "empty.showAll")}
           onClear={clearAll}

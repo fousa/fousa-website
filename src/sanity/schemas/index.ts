@@ -10,6 +10,7 @@ import type {SchemaTypeDefinition} from 'sanity'
 import {profile} from './profile'
 import {availability} from './availability'
 import {siteSettings} from './site-settings'
+import {emptyStates} from './empty-states'
 import {timelineEntry} from './timeline-entry'
 import {stackTag} from './stack-tag'
 import {project} from './project'
@@ -19,6 +20,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   profile,
   availability,
   siteSettings,
+  emptyStates,
   // Collections (many documents, listed in the Studio sidebar)
   timelineEntry,
   stackTag,
