@@ -343,6 +343,17 @@ function Row({
           >
             {p.name}
           </span>
+          {p.depth !== "none" && (
+            // Coral arrow hint for navigable rows: hidden until row hover,
+            // then fades + slides in 4px. Reserves its own width so the
+            // tooling chip never shifts.
+            <span
+              aria-hidden
+              className="ml-1.5 inline-block -translate-x-1 text-accent opacity-0 transition duration-[180ms] ease-out group-hover:translate-x-0 group-hover:opacity-100"
+            >
+              →
+            </span>
+          )}
           {p.featureTooling && (
             <ToolingChip label={t(locale, "toolingChip")} />
           )}
