@@ -1,243 +1,156 @@
 # fousa architecture
 
-Personal portfolio site at fousa.be. Next.js 16 (App Router) + Sanity v5 + Tailwind v4 + Vercel.
+Personal portfolio site at fousa.be. Longer-form companion to the README: the
+*why* behind the structure, not a file-by-file index.
 
-## Directory layout
+## Stack & conventions
 
-```
-fousa/
-├── ARCHITECTURE.md           ← you are here
-├── sanity.config.ts          ← Sanity Studio config (mounted at /studio)
-├── next.config.ts            ← Next.js config (image domains, etc.)
-├── scripts/                  ← one-shot maintenance scripts
-│   └── seed-stack-tags.ts    ← seed initial Stack tag documents
-└── src/
-    ├── proxy.ts             ← locale detection + redirect (edge proxy)
-    ├── app/
-    │   ├── layout.tsx        ← root layout (fonts, metadata, no-flash script)
-    │   ├── globals.css       ← design tokens + base layer (minimal-modern)
-    │   ├── [locale]/
-    │   │   ├── layout.tsx    ← locale validation + TopBar
-    │   │   ├── page.tsx      ← homepage (project log)
-    │   │   ├── not-found.tsx ← 404 ("drifted off the map")
-    │   │   ├── about/
-    │   │   │   └── page.tsx  ← about (hero, career, beyond code, contact)
-    │   │   └── work/
-    │   │       └── [slug]/
-    │   │           └── page.tsx ← case study page (sole canonical route)
-    │   ├── studio/
-    │   │   └── [[...tool]]/page.tsx  ← Sanity Studio mount
-    │   └── api/
-    │       └── revalidate/route.ts   ← Sanity webhook → ISR revalidation
-    ├── i18n/
-    │   ├── config.ts         ← supported locales + helpers
-    │   ├── messages.ts       ← static UI strings (EN/NL) for all components
-    │   └── pick-locale.ts    ← Sanity field locale picker with fallback
-    ├── sanity/
-    │   ├── client.ts         ← Sanity client + image URL builder
-    │   ├── env.ts            ← env var loading with assertions
-    │   ├── fetch.ts          ← server-side fetch wrapper (1h ISR)
-    │   ├── structure.ts      ← Studio desk structure (pinned singletons)
-    │   ├── schemas/
-    │   │   ├── index.ts      ← barrel; add new schemas here
-    │   │   ├── profile.ts    ← singleton: bio, contact, CV
-    │   │   ├── availability.ts ← singleton: status + message
-    │   │   ├── site-settings.ts ← singleton: email, socials, SEO
-    │   │   ├── empty-states.ts ← singleton: per-filter-combo empty-state overrides
-    │   │   ├── employer.ts   ← career timeline rows
-    │   │   ├── stack-tag.ts  ← Swift, Rails, etc.
-    │   │   └── project.ts    ← the workhorse — log row + case study
-    │   ├── fields/
-    │   │   └── i18n.ts       ← i18nString / i18nText / i18nPortableText
-    │   └── queries/          ← GROQ queries for each page
-    ├── components/
-    │   ├── theme/
-    │   │   └── ThemeToggle.tsx  ← dark-mode toggle (localStorage + .dark class)
-    │   ├── layout/
-    │   │   ├── TopBar.tsx       ← sticky header (wordmark, nav, hamburger); scroll-revealed hairline + blur
-    │   │   ├── use-scrolled.ts  ← IntersectionObserver hook: true once a sentinel leaves the viewport
-    │   │   ├── SiteFooter.tsx   ← copyright + inline privacy info tip, locale switch, theme toggle
-    │   │   ├── InfoTip.tsx      ← hover/focus + tap-toggle popover ("i" affordance)
-    │   │   ├── LocaleSwitch.tsx ← responsive EN/NL switch (full names desktop, codes mobile)
-    │   │   └── OutboundLink.tsx ← <a> wrapper that fires outbound_click analytics event
-    │   ├── work/
-    │   │   ├── ProjectLog.tsx   ← filterable project table/cards with expand
-    │   │   ├── EmptyState.tsx   ← "no projects match" panel (brand mark + headline + actions)
-    │   │   ├── ToolingChip.tsx  ← outline "AI-assisted" pill, shown when featureTooling is true
-    │   │   └── StatusDot.tsx    ← dot + word status indicator
-    │   ├── about/
-    │   │   ├── AvailabilityBadge.tsx ← coloured dot + label for contact panel
-    │   │   └── …                ← legacy Sanity-connected about components
-    │   ├── locale-switcher.tsx  ← EN/NL path-swap toggle
-    │   ├── log/                 ← legacy Sanity-connected log components
-    │   └── case-study/          ← legacy Sanity-connected case study components
-    ├── lib/
-    │   ├── work.ts              ← Project type, filters, getProjects/getProject
-    │   ├── analytics.ts         ← typed track() wrapper over @vercel/analytics
-    │   ├── href.ts              ← localizedHref() — unprefixed en, /nl for Dutch
-    │   ├── seo.ts               ← altMetadata() — canonical + hreflang alternates
-    │   ├── format-year-range.ts ← format year or year range
-    │   └── json-ld.ts           ← Schema.org JSON-LD builders
-    └── hooks/
-        └── use-expanded-slug.ts ← hash sync for expanded rows
-```
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind v4 · Sanity v5 ·
+Vercel. `@/*` resolves to `src/*`. House rules:
+
+- One concept per file; no god-modules.
+- Top-of-file JSDoc on every TS/TSX file; non-trivial functions get full JSDoc
+  (`@param`/`@returns`, the *why*).
+- Sanity schema fields use the `description` prop so the Studio is self-explaining.
+- Tailwind utility-first; design tokens live in `globals.css` via `@theme inline`.
+- Conventional Commits; one logical change per commit.
 
 ## Design system — minimal-modern
 
-Class-based dark mode (`.dark` on `<html>`). Tokens in `globals.css` via CSS custom properties mapped to Tailwind via `@theme inline`. Key rules:
+Class-based dark mode (`.dark` on `<html>`, persisted to `localStorage`; an inline
+script in the root layout sets it pre-paint to avoid flash). Tokens are CSS custom
+properties in `globals.css` mapped to Tailwind via `@theme inline`. Core rules:
 
-- **One accent** (coral): links + arrows, live dot, active filter underline, brand period
-- **Hairlines, not boxes**: 1px `border-line` + whitespace, no shadows or filled cards (except the About contact panel `bg-panel`)
-- **Type roles**: Space Grotesk (display/headings/nav), Inter (body), Space Mono (data/eyebrow labels)
-- **State = dot + word**, never a pill. Coral dot only for `active`; faint grey for all others
+- **One accent** (coral): links, arrows, the live status dot, active-filter wash,
+  the brand period. Nothing else competes for it.
+- **Hairlines, not boxes**: 1px `border-line` + whitespace; no shadows or filled
+  cards (the About contact panel `bg-panel` is the single exception).
+- **Type roles**: Space Grotesk (display/nav), Inter (body), Space Mono (data/eyebrows).
+- **State = dot + word**, never a pill. Coral dot only for `active`; faint grey otherwise.
 
-Theme toggle persists to `localStorage`; an inline script in the root layout prevents flash on reload.
-
-### Motion
-
-The project log carries four small motion layers, all defined in `globals.css` and kept subtle (compositor-friendly properties, ≤280ms, no position shift beyond a few pixels):
-
-- **Hover arrow** — a coral `→` after the project name in the desktop table fades + slides in 4px on row hover, only for rows with a detail page (`depth !== "none"`). Opacity-only reservation keeps the tooling chip from shifting.
-- **Active pulse** (`.pulse-active`) — a coral box-shadow halo ripples out from the `active` status dot on a 2.4s loop, matching the availability badge's `.avail-pulse` cadence.
-- **Smooth expand** — expanded row bodies stay mounted and animate via `grid-template-rows: 0fr → 1fr` (220ms) with an 80ms-delayed opacity fade on the content. The collapsed body gets `inert` so its links stay out of the tab order.
-- **Filter cross-fade** (`.fade-up`) — the list wrapper is keyed by the active filter combo, so any filter change remounts it and replays a soft fade + 4px rise.
-
-A global `@media (prefers-reduced-motion: reduce)` safeguard collapses every animation and transition to near-zero duration, so all of the above (and the avail badge) go static for users who ask for less motion.
-
-### Accessibility
-
-The site targets practical access for keyboard, screen-reader, and 200%-zoom users rather than a formal WCAG 2.2 AA certification. Key decisions:
-
-- **Contrast**: `text-muted` clears 4.5:1 on both themes and carries all reading/data/interactive copy. `text-faint` (sub-4.5:1) is reserved for large mono-uppercase eyebrows and `aria-hidden` separators only. The light-mode accent was darkened to `#e13100` (4.53:1 on white) so coral links/arrows pass on normal text; dark-mode accent is unchanged.
-- **Keyboard-operable rows**: the desktop project-log row is a `role="button"` + `tabIndex={0}` `<tr>` with Enter/Space activation (Space `preventDefault` to stop page scroll) and a `focus-visible` inset ring; both desktop and mobile toggles expose `aria-expanded`. Collapsed expand-bodies get `inert` to keep their links out of the tab order.
-- **Live regions**: the filtered-count line and the empty state are wrapped in `role="status" aria-live="polite" aria-atomic` so filter changes are announced.
-- **Decorative glyphs**: coral `→` arrows and status dots are `aria-hidden`; the real label/state word carries the meaning.
-- **Focus management**: the mobile menu focuses its first item on open and returns focus to the hamburger trigger on close (guarded by a `mounted` ref so initial render doesn't steal focus), with Escape-to-close and `aria-controls` + a localized `aria-label`.
-- **Touch targets**: small controls (InfoTip "i", theme toggle, locale switch, filter chips) extend their hit area to ~44px via an `::after` pseudo-element without changing visual size; the locale switch expands vertically only to avoid overlapping its sibling.
-- **Skip link** in the root layout (`sr-only` → `focus:not-sr-only`) jumps to `#main`; every route's primary content lives in a single `<main id="main">` landmark (detail and About pages included, with the About contact panel pulled inside `<main>`).
-- **Labelled state controls**: the theme toggle carries a localized action `aria-label` plus `aria-pressed`; the InfoTip popover is wired via `aria-describedby`/`useId`.
+Motion is deliberately small and compositor-friendly (≤280ms, no layout shift): a
+coral hover-arrow on detail rows, an `active`-dot pulse, a `grid-template-rows`
+expand for row bodies, and a keyed cross-fade when the filter set changes. A global
+`prefers-reduced-motion` rule collapses all of it to near-zero.
 
 ## Content model
 
-Seven document types. Four singletons (Profile, Availability, Site Settings, Empty states) edited in place from the pinned top of the Studio nav. Three collections (Employer, Stack tag, Project) — Project references Employer and Stack tag.
+Seven Sanity document types — four singletons (pinned at the top of the Studio nav)
+and three collections.
 
-### Singletons
-- **Profile**: name (plain string, shown large on the homepage with the coral brand period), roleLine (i18n — one-line subtitle), filterIntro (i18n — invitation to explore the log), plus tagline, about headline, bio (portable text), portrait, beyond-code list, per-locale CV files (EN + NL), location, email, social links, VAT, copyright year. The `HomeLead` component (`components/home/HomeLead.tsx`) renders name/role/filterIntro on the homepage; about page uses bio/portrait/beyond-code.
-- **Availability**: status enum (`available` / `after-hours` / `unavailable`) plus a localized `message` shown next to the coloured dot. Rendered in the about page contact panel (green = available, amber = after-hours, red = full).
-- **Site Settings**: global email, ordered social links (platform + URL + label), localized meta description, OG image override. Social links render in the about page contact panel.
-- **Empty states**: an optional list of hand-written overrides for the project-log empty state. Each entry holds a set of filter keys (`apple`, `web`, `active`, `freelance`, `icapps`, `10to1`) plus a localized headline + body. When the active filter set matches an entry exactly (order-independent, first match wins), its copy replaces the universal dictionary copy. Keep the list short — two or three combos; everything else falls back.
+**Singletons**
+- **Profile** — name, `roleLine`, `filterIntro`, bio (portable text), portrait,
+  beyond-code items, per-locale CV files, contact + social details.
+- **Availability** — status (`available` / `after-hours` / `unavailable`) + a
+  localized message; drives the coloured dot in the About contact panel.
+- **Site settings** — email, ordered social links, localized meta description, OG override.
+- **Empty states** — optional per-filter-combo overrides for the project-log empty state.
 
-### Collections
-- **Timeline entry** (`timelineEntry`): a single row on the About career list. Covers freelance, employed, and education entries, discriminated by `group`. Uses `startDate`/`endDate` (date, month precision) for tenure; ongoing entries (no `endDate`) get the coral live dot. Also referenced by Project via the `employer` field.
-- **Stack tag**: technology labels (Swift, Rails, etc.) with `name` and `slug`. Referenced by Project; pre-seeded via `pnpm seed:stack-tags`.
-- **Project**: the workhorse. Each Project is a row in the homepage log AND a detail page. Two ownership fields: `employer` (reference, shown only when engagement = full-time or internship) and `client` (string, the end customer). `engagement` (freelance/full-time/internship/student) drives homepage filters. `state` (active/maintained/archived/cancelled) drives the colored status dot — only `active` shows the coral accent. Three depth levels derived automatically from content: `full` (has body → case study), `gallery` (has gallery images → screenshot page with device frames), or `none` (no detail page). Gallery images each pick a frame (phone/tablet/browser/none). Optional `tooling` (i18nString) describes how the project was built — shown as a mono meta-line in the expanded zone. `featureTooling` (boolean) opts in for a subtle "AI-assisted" chip next to the name in the log. Also includes summary, body, cover, and grouped into Basics / Case study / Links tabs.
+**Collections**
+- **Timeline entry** — a row on the About career list (freelance / employed /
+  education, by `group`); `startDate`/`endDate` drive tenure. Also referenced by
+  Project as its employer (its display name is `organisation`, not `name`).
+- **Stack tag** — technology labels (Swift, Rails, …), seeded via `pnpm seed:stack-tags`.
+- **Project** — the workhorse: one homepage log row *and* one detail page.
+  `engagement` (freelance/full-time/internship/student) drives filters; `state`
+  (active/maintained/archived/cancelled) drives the status dot (only `active` is
+  coral). Detail depth is derived from content — `body` → full case study,
+  `gallery` → framed screenshots, neither → no detail page.
 
-## Content layer (`lib/work.ts` + `lib/work-display.ts`)
+Translatable fields are `{ en, nl }` objects (helpers in `sanity/fields/i18n.ts`),
+so both locales sit side by side in one document and Dutch falls back to English
+when empty. Static UI chrome lives in `i18n/messages.ts` via the typed `t(locale, key)`.
 
-Typed `Project` interface backed by Sanity GROQ queries — `getProjects` / `getProject` / `getProjectSlugs` fetch and normalize Sanity data into the flat `Project` shape the components expect. `getEmptyStates(locale)` fetches the optional empty-state overrides (resolving each entry's headline/body to the active locale). Project `state`: active/maintained/archived/cancelled — only `active` gets the coral accent dot.
+## Routing & i18n
 
-### Filtering (`lib/work.ts`)
+English is the unprefixed default; Dutch lives under `/nl`. The URL alone decides
+the language — no browser detection, no cookies. `src/proxy.ts` rewrites unprefixed
+paths to `[locale]=en` internally and 308-redirects to canonical forms.
 
-Six chips in three groups, multi-select. OR within a group, AND across groups:
+- `/`, `/about`, `/work/<slug>` → English (canonical); `/nl/...` → Dutch.
+- `/<slug>` (and `/nl/<slug>`) → 308 to `/work/<slug>` — collapses a legacy duplicate route.
+- `/en/...` → 308 to the unprefixed equivalent.
+- `/studio` → embedded Sanity Studio (no locale prefix). `/api/revalidate` → webhook.
 
-- **stack** — `apple` | `web`: matches projects with any tag in the corresponding set. `APPLE_TAGS`: iOS, iPadOS, macOS, watchOS, Swift, SwiftUI. `WEB_TAGS`: Website, Ruby on Rails, Node, API, Next.js. Extend these sets when a new platform is added. Compared against the stack tag's `slug` field (case/space-insensitive).
-- **status** — `active`: matches ongoing projects (no `endYear` set).
-- **affiliation** — `freelance` | `icapps` | `10to1`: mutually exclusive per project. `freelance` checks `engagement === 'freelance'`; `icapps` / `10to1` check `employerSlug` (projected as `lower(organisation)` from the employer `timelineEntry` in the GROQ query).
+Internal links use `localizedHref(locale, path)` (`lib/href.ts`); metadata uses
+`altMetadata(locale, path)` (`lib/seo.ts`) for canonical + hreflang (`x-default` = English).
 
-Stack-tag `category` has been removed. Stack chips use a single neutral style; hero and OG fallback backgrounds use a flat dark tone.
+## Component map
 
-Filter state is URL-backed via `useSearchParams` in `ProjectLog.tsx` (`?stack=apple&status=active&affiliation=freelance,icapps`). When filters are active, a row of soft coral pills appears above the chip bar with inline "Clear all"; the chip bar itself uses a coral wash (`bg-accent-soft` / `text-accent-deep`) on active chips. A filtered count is shown below the list.
+Grouped by domain under `src/components/`:
 
-When active filters yield zero projects, the table/cards are replaced by the `EmptyState` component (`components/work/EmptyState.tsx`): the hairline `f.` brand mark, a headline + one-paragraph body, and "Clear filters →" plus a muted "or browse all projects" hint. Universal copy lives in the i18n dictionary (`empty.*` keys); per-combination overrides live in the Empty states singleton and win when the active filter set matches exactly. The empty state is only shown when filters are active — an empty list with no filters means the dataset itself is empty.
+- **work/** — `ProjectLog` (filterable table/cards with expand-in-place rows),
+  `EmptyState`, `Frame` (hairline device frames for galleries), `StatusDot`, `ToolingChip`.
+- **layout/** — `TopBar` (scroll-revealed hairline + blur), `SiteFooter`, `LocaleSwitch`,
+  `InfoTip`, `OutboundLink`, `use-scrolled`.
+- **about/** — `CareerTimeline`, `AvailabilityBadge`.
+- **home/** `HomeLead` · **theme/** `ThemeToggle` · **brand/** `Wordmark` · **seo/** `JsonLd`.
 
-`forLabel()` in `work-display.ts` is the single source for the "For" label and derives it from employer + client per a fixed rule: both → `employer → client` (employer muted, client in ink); employer only → the employer name; client only → the client name; neither → the localized "Personal" fallback. It returns a discriminated union (`via` / `single` / `personal`) so each render site applies the right emphasis. Three sites must use it — never reimplement the rule: the desktop table "For" cell (`ForLabelInline` in `ProjectLog.tsx`), the mobile row meta line, and the case-study meta (`work/[slug]/page.tsx`). The employer reference points at a `timelineEntry`, whose display name lives in `organisation` (there is no `name` field) — the GROQ projections alias it as `"name": organisation`, so `forLabel` sees a populated employer; projecting bare `name` silently collapses the display to client-only. `projectDepth()` derives `full` / `gallery` / `none` from content — no manual field. The `Frame` component (`components/work/Frame.tsx`) renders minimal hairline device frames (phone/tablet/browser) around gallery screenshots.
+The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDepth`,
+`matchesFilters`) plus `lib/work-display.ts` (`forLabel` — the single source for the
+"For" label from employer + client). Filtering is six chips in three groups —
+**stack** (`apple` | `web`), **status** (`active`), **affiliation**
+(`freelance` | `icapps` | `10to1`) — OR within a group, AND across groups, all
+URL-backed via `useSearchParams`. The per-helper rules live in their JSDoc.
 
-## i18n
+## Accessibility decisions
 
-Field-level translations, not document-level. Translatable fields (deck, description, outcome, etc.) are objects with `en` and `nl` sub-fields, built via the helpers in `src/sanity/fields/i18n.ts`. Both locales live in the same document so editors can compare them side by side.
+Targets practical access for keyboard, screen-reader, and 200%-zoom users rather
+than formal WCAG certification:
 
-Static UI strings live in `src/i18n/messages.ts` with EN and NL translations for nav labels, filter names, and component chrome. Content copy (headlines, bios, beyond-code items) lives in Sanity. The `t(locale, key)` helper provides typed lookups; Sanity fields fall back to `t()` values when empty.
-
-At render time, missing Dutch fields fall back to English. The Next.js side reads `locale` from the URL and picks the right sub-field.
-
-## Routing
-
-English is the unprefixed default locale; Dutch lives under `/nl`. No browser-locale detection, no cookies — the URL alone determines the language. The proxy rewrites unprefixed paths to `[locale]=en` internally and 308-redirects `/en/...` to the unprefixed canonical form.
-
-- `/`, `/about`, `/work/<slug>` → English (canonical)
-- `/nl`, `/nl/about`, `/nl/work/<slug>` → Dutch
-- `/<slug>`, `/nl/<slug>` → 308 redirect to `/work/<slug>` (resp. `/nl/work/<slug>`)
-- `/en/...` → 308 redirect to unprefixed equivalent
-- `/studio` → Sanity Studio (no locale prefix — admin only)
-- `/api/revalidate` → webhook endpoint, requires `?secret=` query param
-
-Case studies live at exactly one canonical path, `/work/<slug>`. The bare `/<slug>` (and `/nl/<slug>`) shape was a duplicate route; the proxy now 308-redirects any single bare slug that isn't a reserved top-level route (`work`, `about`) to the canonical path, preserving SEO equity from any indexed legacy URL.
-
-All internal links use `localizedHref(locale, path)` from `lib/href.ts`. SEO metadata uses `altMetadata(locale, path)` from `lib/seo.ts` for canonical + hreflang (`x-default` points at English).
+- **Contrast**: `text-muted` clears 4.5:1 on both themes and carries all
+  reading/data/interactive copy; `text-faint` is reserved for large mono eyebrows
+  and `aria-hidden` separators. Light-mode accent darkened to `#e13100` (4.53:1 on white).
+- **Keyboard rows**: the desktop log row is a `role="button"` `<tr>` with Enter/Space
+  activation and a `focus-visible` ring; collapsed expand-bodies get `inert` to stay
+  out of the tab order. Both desktop and mobile toggles expose `aria-expanded`.
+- **Live regions**: the filtered-count line and empty state use
+  `role="status" aria-live="polite"` so filter changes are announced.
+- **Decorative glyphs** (arrows, dots) are `aria-hidden`; the label/word carries meaning.
+- **Focus management**: the mobile menu traps + restores focus, closes on Escape,
+  and is wired with `aria-controls` + a localized label.
+- **Touch targets**: small controls extend to ~44px via an `::after` hit area without
+  changing visual size.
+- **Skip link** in the root layout jumps to the single `<main id="main">` landmark per route.
 
 ## SEO surface
 
-- **Base + title template** — the root layout (`app/layout.tsx`) sets `metadataBase` (`https://fousa.be`) and a title template (`%s · fousa.be`); child pages return just their own title slice. It also carries the default Open Graph + Twitter (`summary_large_image`) card backed by `/og-image.png`.
-- **robots.txt** — `app/robots.ts` allows all crawlers, blocks `/studio/`, and points at the sitemap.
-- **sitemap.xml** — `app/sitemap.ts` lists both locales of `/`, `/about`, and every case study at `/work/<slug>` (+ `/nl/...`), with `_updatedAt` as `<lastmod>`. `SITEMAP_SLUGS_QUERY` filters to projects with a body or gallery so depth-`none` projects (which 404) are never listed.
-- **JSON-LD** — `components/seo/JsonLd.tsx` renders a `<script type="application/ld+json">`, escaping `<` to prevent tag breakout. A site-wide `Person` is emitted from the locale layout (name, jobTitle from `roleLine`, `sameAs` from socials); `buildProjectJsonLd` (`lib/json-ld.ts`) builds a `CreativeWork` per case study, taking the embedding page's canonical URL so the markup matches the sitemap.
-- **Per-page OG** — the canonical case study (`work/[slug]`) overrides the share image with the generated `/og/<slug>` card and a matching Twitter card; pages without an override inherit the site default.
-
-## Rendering
-
-SSG with on-demand ISR. Pages build at deploy time; Sanity webhook hits `/api/revalidate` whenever content changes, which calls `revalidatePath` for the affected routes. Visitors always get a CDN-cached HTML response.
-
-## Analytics
-
-Vercel Analytics (cookie-less, no consent banner). Mounted once in the locale layout via `<Analytics />`. Custom events emitted through the typed `track()` wrapper in `lib/analytics.ts`:
-
-| Event | Source | Properties |
-|---|---|---|
-| `project_expand` | ProjectLog | slug, depth, locale |
-| `project_open` | ProjectLog (DepthLink) | slug, depth, target, locale |
-| `filter_select` | ProjectLog | filter, locale |
-| `empty_state_shown` | ProjectLog | filters, locale |
-| `locale_switch` | LocaleSwitch | from, to, path |
-| `theme_toggle` | ThemeToggle | to |
-| `outbound_click` | OutboundLink | kind, href, locale |
+- **Base** — root layout sets `metadataBase` (`https://fousa.be`) and a
+  `%s · fousa.be` title template, plus default Open Graph / Twitter cards.
+- **robots.txt** (`app/robots.ts`) allows all, blocks `/studio/`, points at the sitemap.
+- **sitemap.xml** (`app/sitemap.ts`) lists both locales of `/`, `/about`, and every
+  case study with a body or gallery (depth-`none` projects 404, so they're excluded).
+- **JSON-LD** (`components/seo/JsonLd.tsx`) emits a site-wide `Person` and a per-case-study
+  `CreativeWork` (`lib/json-ld.ts`), escaping `<` to prevent tag breakout.
+- **Per-page OG** — case studies override the share image with the generated
+  `/og/<slug>` card; everything else inherits the site default.
 
 ## Testing
 
 A foundation to grow, not full coverage. Two layers:
 
-- **Unit / component (Vitest + React Testing Library, jsdom).** Pure helpers
-  carry the bulk of the logic and are tested directly: `forLabel`
-  (`work-display.ts`), `projectDepth` + `matchesFilters` (`work.ts`),
-  `altMetadata` (`seo.ts`), and `pathParts` + `hrefFor` (`LocaleSwitch.tsx`).
-  One component test (`ProjectLog`) covers keyboard row-expansion and the
-  empty-filter state. `vitest.setup.ts` stubs the public Sanity env vars so
-  `sanity/env.ts` doesn't throw at import.
-- **E2E (Playwright, Chromium, against a production build).** Three core
-  journeys: filter the work log (URL reflects the selection, clear-all
-  restores it), expand a project row and follow a case-study CTA when one
-  exists (data-driven so it passes regardless of dataset), and toggle theme +
-  switch locale without losing scroll position.
+- **Unit / component (Vitest + RTL, jsdom).** Pure helpers carry most of the logic
+  and are tested directly: `forLabel`, `projectDepth` + `matchesFilters`,
+  `altMetadata`, `pathParts` + `hrefFor`. One component test (`ProjectLog`) covers
+  keyboard row-expansion and the empty state. `vitest.setup.ts` stubs the public
+  Sanity env vars so `sanity/env.ts` doesn't throw at import.
+- **E2E (Playwright, Chromium, against a production build).** Three journeys: filter
+  the work log, expand a row + follow a case-study CTA when one exists (data-driven),
+  and toggle theme + switch locale without losing scroll.
 
-Not covered: Sanity schema definitions, layout/chrome components, and visual
-regression — left out deliberately to keep the suite fast and low-maintenance.
+Not covered: Sanity schemas, layout chrome, visual regression — left out to keep the
+suite fast. Run `pnpm test` (unit) and `pnpm build && pnpm test:e2e` (E2E); CI runs
+both on push and PR.
 
-Run it:
+## Operational notes
 
-```bash
-pnpm test           # unit + component (CI: also test:cov)
-pnpm test:watch     # watch mode
-pnpm build          # E2E runs against the production build
-pnpm test:e2e       # Playwright happy paths
-```
-
-CI (`.github/workflows/test.yml`) runs both layers on every push and PR;
-build + E2E need the Sanity repository secrets, while the unit suite stubs them.
-
-## Conventions
-
-- One concept per file. No god-modules.
-- Top-of-file JSDoc block on every TS/TSX file explaining what it is and why.
-- Non-trivial functions get full JSDoc (`@param`, `@returns`, why-not-just-what).
-- Schema fields use the `description` prop so the Studio explains itself.
-- Conventional Commits for every commit.
-- Tailwind utility-first; design tokens via CSS `@theme inline` in globals.css.
+- **Rendering** — SSG with on-demand ISR. Pages build at deploy time; a Sanity
+  webhook hits `/api/revalidate` (guarded by `SANITY_REVALIDATE_SECRET`) which calls
+  `revalidatePath` for the affected routes. Visitors always get CDN-cached HTML.
+- **Deploys** — Vercel, automatic on `main`. CI (`.github/workflows/test.yml`) needs
+  `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, and `SANITY_API_TOKEN`
+  as repository secrets for build + E2E.
+- **Analytics** — Vercel Analytics (cookie-less), mounted once in the locale layout.
+  Custom events go through the typed `track()` wrapper (`lib/analytics.ts`):
+  `project_expand`, `project_open`, `filter_select`, `empty_state_shown`,
+  `locale_switch`, `theme_toggle`, `outbound_click`.
