@@ -79,7 +79,7 @@ export function LocaleSwitch() {
               className={
                 active
                   ? "cursor-default text-ink"
-                  : "cursor-pointer text-faint transition-colors hover:text-muted"
+                  : "cursor-pointer text-muted transition-colors hover:text-ink"
               }
             >
               {/* mobile: code */}

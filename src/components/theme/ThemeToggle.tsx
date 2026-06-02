@@ -39,7 +39,7 @@ export function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label="Toggle dark mode"
-      className="font-mono text-xs text-faint transition-colors hover:text-ink"
+      className="font-mono text-xs text-muted transition-colors hover:text-ink"
     >
       {dark ? "Light" : "Dark"}
     </button>

@@ -51,7 +51,7 @@ export function InfoTip({
           "inline-flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border font-mono text-[9px] leading-none transition-colors",
           open
             ? "border-ink bg-ink text-bg"
-            : "border-faint text-faint hover:border-muted hover:text-muted",
+            : "border-muted text-muted hover:border-ink hover:text-ink",
         ].join(" ")}
       >
         i

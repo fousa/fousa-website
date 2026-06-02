@@ -23,7 +23,7 @@ export default async function NotFound() {
       id="main"
       className="flex min-h-[60vh] flex-col items-center justify-center px-5 text-center"
     >
-      <p className="font-mono text-[13px] font-semibold text-faint">404</p>
+      <p className="font-mono text-[13px] font-semibold text-muted">404</p>
       <h1 className="mt-4 font-display text-[24px] font-bold tracking-[-0.02em] text-ink md:text-[28px]">
         {t(locale, "notFoundHeadline")}
       </h1>

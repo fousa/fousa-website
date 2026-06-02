@@ -248,7 +248,7 @@ export default async function DetailPage({
               >
                 <Frame shot={shot} />
                 {shot.caption && (
-                  <p className="mt-2 text-center font-mono text-[11px] text-faint">
+                  <p className="mt-2 text-center font-mono text-[11px] text-muted">
                     {shot.caption}
                   </p>
                 )}

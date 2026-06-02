@@ -69,7 +69,7 @@ function TimelineRow({
 
   return (
     <li className={`flex gap-6 py-4 ${first ? '' : 'border-t border-line'}`}>
-      <span className="w-[96px] shrink-0 font-mono text-[13px] text-faint md:w-[150px]">
+      <span className="w-[96px] shrink-0 font-mono text-[13px] text-muted md:w-[150px]">
         {tenure.ongoing && (
           <span className="mr-1.5 inline-block h-[7px] w-[7px] rounded-full bg-accent align-middle" />
         )}

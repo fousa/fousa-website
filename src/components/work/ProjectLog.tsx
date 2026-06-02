@@ -296,7 +296,7 @@ export function ProjectLog({
                           {p.summary}
                         </p>
                         {p.tooling && (
-                          <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.06em] text-faint">
+                          <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted">
                             {t(locale, "toolingPrefix")} ·{" "}
                             <span className="normal-case tracking-normal text-muted">
                               {p.tooling}
@@ -322,7 +322,7 @@ export function ProjectLog({
 
       {/* Filtered count */}
       {hasAnyFilter && (
-        <div className="px-5 py-3 font-mono text-[11px] uppercase tracking-[0.08em] text-faint md:px-11">
+        <div className="px-5 py-3 font-mono text-[11px] uppercase tracking-[0.08em] text-muted md:px-11">
           {t(locale, "showingOf")
             .replace("{shown}", String(rows.length))
             .replace("{total}", String(projects.length))}
@@ -409,7 +409,7 @@ function Row({
                     {p.summary}
                   </p>
                   {p.tooling && (
-                    <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.06em] text-faint">
+                    <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
                       {t(locale, "toolingPrefix")} ·{" "}
                       <span className="normal-case tracking-normal text-muted">
                         {p.tooling}

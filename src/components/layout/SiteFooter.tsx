@@ -12,7 +12,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
   const year = new Date().getFullYear();
   return (
     <footer className="border-t border-line">
-      <div className="flex items-center justify-between gap-4 px-5 py-6 text-[13px] text-faint md:px-11 md:py-7">
+      <div className="flex items-center justify-between gap-4 px-5 py-6 text-[13px] text-muted md:px-11 md:py-7">
         <span className="inline-flex items-center gap-2">
           © {year} <Wordmark />
           <InfoTip label={t(locale, "privacyLabel")}>
