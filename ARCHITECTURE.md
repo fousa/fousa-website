@@ -46,6 +46,7 @@ fousa/
     │   │   ├── profile.ts    ← singleton: bio, contact, CV
     │   │   ├── availability.ts ← singleton: status + message
     │   │   ├── site-settings.ts ← singleton: email, socials, SEO
+    │   │   ├── empty-states.ts ← singleton: per-filter-combo empty-state overrides
     │   │   ├── employer.ts   ← career timeline rows
     │   │   ├── stack-tag.ts  ← Swift, Rails, etc.
     │   │   └── project.ts    ← the workhorse — log row + case study
@@ -64,6 +65,7 @@ fousa/
     │   │   └── OutboundLink.tsx ← <a> wrapper that fires outbound_click analytics event
     │   ├── work/
     │   │   ├── ProjectLog.tsx   ← filterable project table/cards with expand
+    │   │   ├── EmptyState.tsx   ← "no projects match" panel (brand mark + headline + actions)
     │   │   ├── ToolingChip.tsx  ← outline "AI-assisted" pill, shown when featureTooling is true
     │   │   └── StatusDot.tsx    ← dot + word status indicator
     │   ├── about/
@@ -96,12 +98,13 @@ Theme toggle persists to `localStorage`; an inline script in the root layout pre
 
 ## Content model
 
-Six document types. Three singletons (Profile, Availability, Site Settings) edited in place from the pinned top of the Studio nav. Three collections (Employer, Stack tag, Project) — Project references Employer and Stack tag.
+Seven document types. Four singletons (Profile, Availability, Site Settings, Empty states) edited in place from the pinned top of the Studio nav. Three collections (Employer, Stack tag, Project) — Project references Employer and Stack tag.
 
 ### Singletons
 - **Profile**: name (plain string, shown large on the homepage with the coral brand period), roleLine (i18n — one-line subtitle), filterIntro (i18n — invitation to explore the log), plus tagline, about headline, bio (portable text), portrait, beyond-code list, per-locale CV files (EN + NL), location, email, social links, VAT, copyright year. The `HomeLead` component (`components/home/HomeLead.tsx`) renders name/role/filterIntro on the homepage; about page uses bio/portrait/beyond-code.
 - **Availability**: status enum (`available` / `after-hours` / `unavailable`) plus a localized `message` shown next to the coloured dot. Rendered in the about page contact panel (green = available, amber = after-hours, red = full).
 - **Site Settings**: global email, ordered social links (platform + URL + label), localized meta description, OG image override. Social links render in the about page contact panel.
+- **Empty states**: an optional list of hand-written overrides for the project-log empty state. Each entry holds a set of filter keys (`apple`, `web`, `active`, `freelance`, `icapps`, `10to1`) plus a localized headline + body. When the active filter set matches an entry exactly (order-independent, first match wins), its copy replaces the universal dictionary copy. Keep the list short — two or three combos; everything else falls back.
 
 ### Collections
 - **Timeline entry** (`timelineEntry`): a single row on the About career list. Covers freelance, employed, and education entries, discriminated by `group`. Uses `startDate`/`endDate` (date, month precision) for tenure; ongoing entries (no `endDate`) get the coral live dot. Also referenced by Project via the `employer` field.
@@ -110,7 +113,7 @@ Six document types. Three singletons (Profile, Availability, Site Settings) edit
 
 ## Content layer (`lib/work.ts` + `lib/work-display.ts`)
 
-Typed `Project` interface backed by Sanity GROQ queries — `getProjects` / `getProject` / `getProjectSlugs` fetch and normalize Sanity data into the flat `Project` shape the components expect. Project `state`: active/maintained/archived/cancelled — only `active` gets the coral accent dot.
+Typed `Project` interface backed by Sanity GROQ queries — `getProjects` / `getProject` / `getProjectSlugs` fetch and normalize Sanity data into the flat `Project` shape the components expect. `getEmptyStates(locale)` fetches the optional empty-state overrides (resolving each entry's headline/body to the active locale). Project `state`: active/maintained/archived/cancelled — only `active` gets the coral accent dot.
 
 ### Filtering (`lib/work.ts`)
 
@@ -123,6 +126,8 @@ Six chips in three groups, multi-select. OR within a group, AND across groups:
 Stack-tag `category` has been removed. Stack chips use a single neutral style; hero and OG fallback backgrounds use a flat dark tone.
 
 Filter state is URL-backed via `useSearchParams` in `ProjectLog.tsx` (`?stack=apple&status=active&affiliation=freelance,icapps`). When filters are active, a row of soft coral pills appears above the chip bar with inline "Clear all"; the chip bar itself uses a coral wash (`bg-accent-soft` / `text-accent-deep`) on active chips. A filtered count is shown below the list.
+
+When active filters yield zero projects, the table/cards are replaced by the `EmptyState` component (`components/work/EmptyState.tsx`): the hairline `f.` brand mark, a headline + one-paragraph body, and "Clear filters →" plus a muted "or browse all projects" hint. Universal copy lives in the i18n dictionary (`empty.*` keys); per-combination overrides live in the Empty states singleton and win when the active filter set matches exactly. The empty state is only shown when filters are active — an empty list with no filters means the dataset itself is empty.
 
 `forLabel()` in `work-display.ts` derives the "For" column from employer + client: "employer → client" when both exist, a single name when one, or "Personal" as fallback. `projectDepth()` derives `full` / `gallery` / `none` from content — no manual field. The `Frame` component (`components/work/Frame.tsx`) renders minimal hairline device frames (phone/tablet/browser) around gallery screenshots.
 
@@ -160,6 +165,7 @@ Vercel Analytics (cookie-less, no consent banner). Mounted once in the locale la
 | `project_expand` | ProjectLog | slug, depth, locale |
 | `project_open` | ProjectLog (DepthLink) | slug, depth, target, locale |
 | `filter_select` | ProjectLog | filter, locale |
+| `empty_state_shown` | ProjectLog | filters, locale |
 | `locale_switch` | LocaleSwitch | from, to, path |
 | `theme_toggle` | ThemeToggle | to |
 | `outbound_click` | OutboundLink | kind, href, locale |
