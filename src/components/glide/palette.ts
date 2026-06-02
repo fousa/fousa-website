@@ -54,3 +54,24 @@ export function readPalette(): Palette {
   }
   return out;
 }
+
+/** Canvas-ready font-family stacks for the three site faces. */
+export type Fonts = { display: string; sans: string; mono: string };
+
+/**
+ * Reads the Next-generated font-family names from the `--font-*` variables so
+ * canvas text renders in the same faces as the rest of the site. Fonts don't
+ * change with theme, so this only needs reading once.
+ */
+export function readFonts(): Fonts {
+  const cs = getComputedStyle(document.documentElement);
+  const fam = (token: string, fallback: string) => {
+    const f = cs.getPropertyValue(token).trim();
+    return f ? `${f}, ${fallback}` : fallback;
+  };
+  return {
+    display: fam("--font-space-grotesk", "ui-sans-serif, system-ui, sans-serif"),
+    sans: fam("--font-inter", "ui-sans-serif, system-ui, sans-serif"),
+    mono: fam("--font-space-mono", "ui-monospace, monospace"),
+  };
+}

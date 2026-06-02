@@ -14,7 +14,17 @@
  * No mouse steering.
  */
 import { useEffect, useRef } from "react";
-import { createGlider, stepGlider, type Glider, type Input } from "./engine";
+import { t } from "@/i18n/messages";
+import type { Locale } from "@/i18n/config";
+import {
+  altitudeM,
+  createGlider,
+  stepGlider,
+  varioMs,
+  type Glider,
+  type Input,
+} from "./engine";
+import { drawInstruments, LOW_ALT } from "./instruments";
 import {
   createWorld,
   liftAt,
@@ -27,7 +37,7 @@ import {
   type Thermal,
   type World,
 } from "./world";
-import { readPalette, type Palette } from "./palette";
+import { readFonts, readPalette, type Fonts, type Palette } from "./palette";
 
 /** Glider screen anchor as a fraction of viewport width — the camera keeps the
  *  glider near here horizontally while the world scrolls past. */
@@ -203,7 +213,7 @@ function drawGlider(
   ctx.restore();
 }
 
-export function GlideCanvas() {
+export function GlideCanvas({ locale }: { locale: Locale }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -213,6 +223,8 @@ export function GlideCanvas() {
     if (!ctx) return;
 
     let pal = readPalette();
+    const fonts: Fonts = readFonts();
+    const lowLabel = t(locale, "glideLow");
     let dims = fitCanvas(canvas, ctx);
     let cameraX = -dims.w * ANCHOR_X;
     const glider: Glider = createGlider(dims.h);
@@ -254,6 +266,13 @@ export function GlideCanvas() {
         drawStorm(ctx!, sx, s.yFrac * dims.h, s, pal, clock);
       }
       drawGlider(ctx!, glider.x - cameraX, glider.y, glider.heading, pal);
+      drawInstruments(ctx!, dims.w, dims.h, pal, fonts, {
+        altM: altitudeM(glider),
+        varioMs: varioMs(glider),
+        speedKmh: glider.speed,
+        low: glider.alt < LOW_ALT,
+        lowLabel,
+      });
     }
 
     function frame(now: number) {
@@ -384,7 +403,7 @@ export function GlideCanvas() {
       document.removeEventListener("visibilitychange", onVisibility);
       reduceQuery.removeEventListener("change", onReduceChange);
     };
-  }, []);
+  }, [locale]);
 
   return (
     <canvas

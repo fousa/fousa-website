@@ -71,7 +71,7 @@ export function GlideGame({ locale }: { locale: Locale }) {
             aria-label={t(locale, "playGame")}
             className="fixed inset-0 z-[100] bg-bg text-ink"
           >
-            <GlideCanvas />
+            <GlideCanvas locale={locale} />
             <button
               ref={closeRef}
               type="button"
