@@ -35,9 +35,12 @@ export type Project = {
   stack: string
   role: string
   year: number
+  endYear?: number | null
   state: State
   engagement: Engagement
   tech: string[]
+  tagSlugs: string[]
+  employerSlug?: string | null
   summary: string
   depth: Depth
   gallery: GalleryShot[]
@@ -57,34 +60,81 @@ export function projectDepth(p: { hasBody?: boolean | null; galleryCount?: numbe
   return 'none'
 }
 
-export const FILTERS = [
-  'All',
-  'Freelance',
-  'Full-time',
-  'Mobile',
-  'Web',
-  'Other',
-] as const
+// ---------------------------------------------------------------------------
+// Three-group filter model
+// ---------------------------------------------------------------------------
 
-export type Filter = (typeof FILTERS)[number]
+export type StackFilter = 'apple'
+export type StatusFilter = 'active'
+export type AffiliationFilter = 'freelance' | 'icapps' | '10to1'
 
-/** Tech keys that have their own filter chip; everything else is "Other". */
-const KNOWN_TECH = ['mobile', 'web']
-const ENGAGEMENTS: string[] = ['freelance', 'full-time']
+export type Filters = {
+  stack: StackFilter[]
+  status: StatusFilter[]
+  affiliation: AffiliationFilter[]
+}
+
+export type FilterCounts = {
+  stack: Record<StackFilter, number>
+  status: Record<StatusFilter, number>
+  affiliation: Record<AffiliationFilter, number>
+}
+
+/** Stack-tag slugs that count as Apple-platform work (lowercase, no spaces). */
+const APPLE_TAGS = new Set(['ios', 'ipados', 'macos', 'watchos', 'swift', 'swiftui'])
+
+/** Normalize a tag slug for matching (lowercase, strip spaces). */
+function normTag(s: string): string {
+  return s.toLowerCase().replace(/\s+/g, '')
+}
+
+/** Project carries at least one Apple-platform stack tag. */
+function isApple(p: Project): boolean {
+  return p.tagSlugs.some((t) => APPLE_TAGS.has(normTag(t)))
+}
+
+/** Project is ongoing (no end year). */
+function isActive(p: Project): boolean {
+  return !p.endYear
+}
 
 /**
- * Test whether a project passes the given filter.
- *
- * @param p - project to test
- * @param f - active filter value
- * @returns true when the project should be visible
+ * Test whether a project passes the combined multi-select filters.
+ * OR within a group, AND across groups. Empty group = not applied.
  */
-export function matchesFilter(p: Project, f: Filter): boolean {
-  if (f === 'All') return true
-  const k = f.toLowerCase()
-  if (ENGAGEMENTS.includes(k)) return p.engagement === (k as Engagement)
-  if (k === 'other') return !p.tech.some((t) => KNOWN_TECH.includes(t))
-  return p.tech.includes(k)
+export function matchesFilters(p: Project, f: Filters): boolean {
+  if (f.stack.length && f.stack.includes('apple') && !isApple(p)) return false
+  if (f.status.includes('active') && !isActive(p)) return false
+  if (f.affiliation.length) {
+    const match = f.affiliation.some((a) =>
+      a === 'freelance'
+        ? p.engagement === 'freelance'
+        : (p.employerSlug ?? '') === a
+    )
+    if (!match) return false
+  }
+  return true
+}
+
+/**
+ * Compute per-chip counts from the FULL project list.
+ * Counts never drop to zero as you filter.
+ */
+export function deriveFilterCounts(projects: Project[]): FilterCounts {
+  const counts: FilterCounts = {
+    stack: { apple: 0 },
+    status: { active: 0 },
+    affiliation: { freelance: 0, icapps: 0, '10to1': 0 },
+  }
+  for (const p of projects) {
+    if (isApple(p)) counts.stack.apple++
+    if (isActive(p)) counts.status.active++
+    if (p.engagement === 'freelance') counts.affiliation.freelance++
+    const emp = p.employerSlug
+    if (emp === 'icapps') counts.affiliation.icapps++
+    if (emp === '10to1') counts.affiliation['10to1']++
+  }
+  return counts
 }
 
 /**
@@ -110,13 +160,16 @@ function toProject(
     slug: row.slug ?? '',
     name: row.name ?? '',
     employer: row.employer?.name ? { name: row.employer.name } : null,
+    employerSlug: row.employer?.slug ?? null,
     client: row.client ?? null,
     stack: stackTags.map((s) => s?.name).filter(Boolean).join(' · ') || '—',
     role: row.role ?? '',
     year: row.year ?? 0,
+    endYear: row.endYear ?? null,
     state: (row.state as State) ?? 'active',
     engagement: (row.engagement as Engagement) ?? 'freelance',
     tech: [...new Set(stackTags.map((s) => normalizeTech(s?.category)))],
+    tagSlugs: stackTags.map((s) => s?.slug).filter((s): s is string => Boolean(s)),
     summary:
       pickLocale(typeof row.summary === 'object' ? row.summary : null, locale) ??
       pickLocale(typeof row.deck === 'object' ? row.deck : null, locale) ??
