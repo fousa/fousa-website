@@ -10,6 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "seed:stack-tags": "tsx -r dotenv/config scripts/seed-stack-tags.ts dotenv_config_path=.env.local",
     "backup": "sanity dataset export production backups/dataset-$(date +%Y%m%d-%H%M%S).tar.gz",
     "migrate:content": "tsx -r dotenv/config scripts/migrate-content.ts dotenv_config_path=.env.local",
@@ -37,6 +39,7 @@
   },
   "devDependencies": {
     "@axe-core/cli": "^4.11.3",
+    "@playwright/test": "^1.60.0",
     "@sanity/codegen": "^6.1.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
