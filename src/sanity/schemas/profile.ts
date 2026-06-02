@@ -60,9 +60,23 @@ export const profile = defineType({
           fields: [
             i18nString('title', 'Title'),
             i18nText('body', 'Body'),
+            defineField({
+              name: 'image',
+              title: 'Image',
+              type: 'image',
+              options: {hotspot: true},
+              description: 'Square or 4:3 photo. Shown above the title.',
+              fields: [
+                i18nString(
+                  'alt',
+                  'Alt text',
+                  'Short description for screen readers and SEO.'
+                ),
+              ],
+            }),
           ],
           preview: {
-            select: {title: 'title.en'},
+            select: {title: 'title.en', media: 'image'},
           },
         },
       ],

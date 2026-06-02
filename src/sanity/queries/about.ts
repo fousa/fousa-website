@@ -17,7 +17,17 @@ export const ABOUT_QUERY = defineQuery(`
       tagline,
       aboutHeadline,
       bio,
-      beyondCode[]{ title, body },
+      beyondCode[]{
+        title,
+        body,
+        image{
+          "url": asset->url,
+          "lqip": asset->metadata.lqip,
+          "width": asset->metadata.dimensions.width,
+          "height": asset->metadata.dimensions.height,
+          alt
+        }
+      },
       location,
       email,
       socialLinks,
