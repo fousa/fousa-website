@@ -114,15 +114,15 @@ Typed `Project` interface backed by Sanity GROQ queries — `getProjects` / `get
 
 ### Filtering (`lib/work.ts`)
 
-Five chips in three groups, multi-select. OR within a group, AND across groups:
+Six chips in three groups, multi-select. OR within a group, AND across groups:
 
-- **stack** — `apple`: matches projects with any Apple-platform stack tag. The match set is a hardcoded list `APPLE_TAGS`: iOS, iPadOS, macOS, watchOS, Swift, SwiftUI (extend this set when a new Apple platform is added). Compared against the stack tag's `slug` field (case/space-insensitive).
+- **stack** — `apple` | `web`: matches projects with any tag in the corresponding set. `APPLE_TAGS`: iOS, iPadOS, macOS, watchOS, Swift, SwiftUI. `WEB_TAGS`: Website, Ruby on Rails, Node, API, Next.js. Extend these sets when a new platform is added. Compared against the stack tag's `slug` field (case/space-insensitive).
 - **status** — `active`: matches ongoing projects (no `endYear` set).
 - **affiliation** — `freelance` | `icapps` | `10to1`: mutually exclusive per project. `freelance` checks `engagement === 'freelance'`; `icapps` / `10to1` check `employerSlug` (projected as `lower(organisation)` from the employer `timelineEntry` in the GROQ query).
 
 Stack-tag `category` has been removed. Stack chips use a single neutral style; hero and OG fallback backgrounds use a flat dark tone.
 
-Filter state lives as React `useState` in `ProjectLog.tsx` (component state, not URL-backed).
+Filter state is URL-backed via `useSearchParams` in `ProjectLog.tsx` (`?stack=apple&status=active&affiliation=freelance,icapps`). When filters are active, a row of soft coral pills appears above the chip bar with inline "Clear all"; the chip bar itself uses a coral wash (`bg-accent-soft` / `text-accent-deep`) on active chips. A filtered count is shown below the list.
 
 `forLabel()` in `work-display.ts` derives the "For" column from employer + client: "employer → client" when both exist, a single name when one, or "Personal" as fallback. `projectDepth()` derives `full` / `gallery` / `none` from content — no manual field. The `Frame` component (`components/work/Frame.tsx`) renders minimal hairline device frames (phone/tablet/browser) around gallery screenshots.
 
