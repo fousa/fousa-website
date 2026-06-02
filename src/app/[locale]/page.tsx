@@ -4,6 +4,7 @@
  * interactivity. The lead (name, role, filter intro) comes from the Profile
  * singleton.
  */
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
@@ -45,7 +46,9 @@ export default async function Home({
   return (
     <main id="main">
       <HomeLead name={name} role={role} filterIntro={filterIntro} />
-      <ProjectLog projects={projects} locale={locale} />
+      <Suspense>
+        <ProjectLog projects={projects} locale={locale} />
+      </Suspense>
     </main>
   );
 }
