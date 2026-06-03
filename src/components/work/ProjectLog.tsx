@@ -14,6 +14,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   matchesFilters,
   sortProjects,
+  yearLabel,
   DEFAULT_SORT,
   type Filters,
   type StackFilter,
@@ -343,7 +344,7 @@ export function ProjectLog({
                   </div>
                   <div className="mt-[5px] text-[12.5px] text-muted">
                     <ForLabelInline f={forLabel(p, t(locale, "personal"))} /> ·{" "}
-                    {p.stack} · {p.year}
+                    {p.stack} · {yearLabel(p, t(locale, "present"))}
                   </div>
                 </button>
                 <div
@@ -503,7 +504,7 @@ function Row({
         </td>
         <td className="px-11 py-5 align-top">{p.stack}</td>
         <td className="px-11 py-5 align-top font-mono text-[13px] text-muted">
-          {p.year}
+          {yearLabel(p, t(locale, "present"))}
         </td>
         <td className="px-11 py-5 align-top">
           <StatusDot state={p.state} locale={locale} />

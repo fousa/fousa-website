@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
-import { getProject, getProjectSlugs } from "@/lib/work";
+import { getProject, getProjectSlugs, yearLabel } from "@/lib/work";
 import { forLabel } from "@/lib/work-display";
 import { fetchSanity } from "@/sanity/fetch";
 import { CASE_STUDY_QUERY } from "@/sanity/queries/case-study";
@@ -186,7 +186,7 @@ export default async function DetailPage({
           {[
             { label: t(locale, "stack"), value: project.stack },
             { label: t(locale, "role"), value: project.role },
-            { label: t(locale, "year"), value: String(project.year) },
+            { label: t(locale, "year"), value: yearLabel(project, t(locale, "present")) },
           ].map((m) => (
             <div key={m.label}>
               <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
