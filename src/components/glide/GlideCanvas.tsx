@@ -89,6 +89,36 @@ function drawGround(
   ctx.globalAlpha = 1;
 }
 
+/** Overlapping lobes (offset & radius as fractions of the thermal radius) that
+ *  together read as a billowing cumulus: a flatter base with a bumpy top. */
+const CLOUD_LOBES = [
+  { dx: 0, dy: 0.12, rr: 0.62 },
+  { dx: -0.52, dy: 0.18, rr: 0.44 },
+  { dx: 0.54, dy: 0.16, rr: 0.46 },
+  { dx: -0.26, dy: -0.3, rr: 0.42 },
+  { dx: 0.3, dy: -0.26, rr: 0.46 },
+  { dx: 0.02, dy: -0.46, rr: 0.34 },
+];
+
+/** Traces the union of the cloud lobes as a single sub-pathed shape, scaled by
+ *  `scale` toward the centre, ready for one fill. */
+function cloudPath(
+  ctx: CanvasRenderingContext2D,
+  sx: number,
+  sy: number,
+  r: number,
+  scale: number,
+) {
+  ctx.beginPath();
+  for (const l of CLOUD_LOBES) {
+    const cx = sx + l.dx * r * scale;
+    const cy = sy + l.dy * r * scale;
+    const rr = l.rr * r * scale;
+    ctx.moveTo(cx + rr, cy);
+    ctx.arc(cx, cy, rr, 0, Math.PI * 2);
+  }
+}
+
 /** A cumulus puff marking a thermal. The active thermal (currently lifting the
  *  glider) additionally gets a coral ring at its radius and a core dot. */
 function drawThermal(
@@ -101,13 +131,12 @@ function drawThermal(
 ) {
   ctx.save();
   ctx.fillStyle = pal.muted;
-  ctx.globalAlpha = 0.16;
-  ctx.beginPath();
-  ctx.arc(sx, sy, t.r, 0, Math.PI * 2);
+  // Soft full silhouette, then a denser inner mass for a touch of depth.
+  ctx.globalAlpha = 0.14;
+  cloudPath(ctx, sx, sy, t.r, 1);
   ctx.fill();
-  ctx.globalAlpha = 0.22;
-  ctx.beginPath();
-  ctx.arc(sx, sy, t.r * 0.62, 0, Math.PI * 2);
+  ctx.globalAlpha = 0.12;
+  cloudPath(ctx, sx, sy, t.r, 0.62);
   ctx.fill();
   ctx.restore();
 

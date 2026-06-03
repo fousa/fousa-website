@@ -8,8 +8,10 @@
  * derived at use time.
  *
  * Lift model: while circling (turning) within a thermal's radius and below its
- * top, climb is the reliable `strength × taper`. Flying straight through gives
- * only a weaker, core-weighted gaussian (× 0.6), so steady circling pays off.
+ * top, climb is `strength × taper × radial`, where the radial profile is
+ * strongest at the core and eases toward the rim (so the inside climbs fast and
+ * the outside slow, but never to nothing — circling still pays off). Flying
+ * straight through gives only a weaker, core-weighted gaussian (× 0.6).
  *
  * Two hazards share the same left-to-right generator: sink rivers (meandering
  * vertical bands of strong sink) and thunderstorms (big dark clouds that end
@@ -71,6 +73,8 @@ export type Lift = { value: number; active: Thermal | null };
 const SPAWN_BUFFER = 600;
 /** Altitude band over which climb tapers to zero approaching a thermal's top. */
 const TAPER_BAND = 0.1;
+/** Climb left at the rim while circling, as a fraction of the core climb. */
+const RIM_CLIMB = 0.4;
 /** Sink-river band width in px. */
 const RIVER_WIDTH = 72;
 /** River meander frequency, in radians per px of screen Y. */
@@ -203,7 +207,9 @@ export function liftAt(
     const taper = Math.min(1, (t.top - g.alt) / TAPER_BAND);
     let lift: number;
     if (turning) {
-      lift = t.strength * taper;
+      // Core climbs at full strength, easing linearly to RIM_CLIMB at the edge.
+      const radial = 1 - (1 - RIM_CLIMB) * (dist / t.r);
+      lift = t.strength * taper * radial;
     } else {
       const sigma = t.r * 0.5;
       const gauss = Math.exp(-(dist * dist) / (2 * sigma * sigma));
