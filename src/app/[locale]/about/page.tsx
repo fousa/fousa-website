@@ -28,6 +28,8 @@ import { CareerTimeline } from "@/components/about/career-section";
 import { localizedHref } from "@/lib/href";
 import { altMetadata } from "@/lib/seo";
 import { OutboundLink } from "@/components/layout/OutboundLink";
+import { SocialIcon } from "@/components/layout/SocialIcon";
+import { resolveSocialKind } from "@/lib/socials";
 
 export async function generateMetadata({
   params,
@@ -248,16 +250,16 @@ export default async function AboutPage({
         {socials.length > 0 && (
           <div className="mt-6 flex gap-6 text-sm text-panel-muted">
             {socials.map((s) => {
-              const kind = (s.platform?.toLowerCase() ?? "github") as
-                "github" | "linkedin" | "bluesky" | "instagram";
+              const kind = resolveSocialKind(s.platform);
               return (
                 <OutboundLink
                   key={s.platform}
                   kind={kind}
                   href={s.url ?? "#"}
                   locale={locale}
-                  className="transition-colors hover:text-panel-text"
+                  className="group inline-flex items-center gap-2 transition-colors hover:text-panel-text"
                 >
+                  <SocialIcon kind={kind} />
                   {s.label ?? s.platform}
                 </OutboundLink>
               );
