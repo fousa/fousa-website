@@ -37,7 +37,6 @@ export const PROJECTS_QUERY = defineQuery(`
       name,
       "slug": slug.current
     },
-    tooling,
     featureTooling,
     "hasBody": count(body.en) > 0,
     "galleryCount": count(gallery)

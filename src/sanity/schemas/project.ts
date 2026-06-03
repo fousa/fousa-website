@@ -141,11 +141,6 @@ export const project = defineType({
     }),
 
     // — Tooling
-    i18nString(
-      'tooling',
-      'Tooling / how it was built',
-      'Short, neutral line shown in the expanded case study. Example: "Cursor + Claude Code for the dashboard layer, hand-rolled ingest". Leave empty to hide.',
-    ),
     defineField({
       name: 'featureTooling',
       title: 'Show tooling as a chip in the log',

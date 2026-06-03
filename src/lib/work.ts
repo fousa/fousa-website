@@ -44,7 +44,6 @@ export type Project = {
   summary: string
   depth: Depth
   gallery: GalleryShot[]
-  tooling?: string | null
   featureTooling?: boolean | null
 }
 
@@ -219,7 +218,6 @@ type ProjectBaseRow = {
   stack: Array<{ name: string | null; slug: string | null }> | null
   summary: { en?: string; nl?: string } | null
   deck: { en?: string; nl?: string } | null
-  tooling: { en?: string; nl?: string } | null
   featureTooling: boolean | null
 }
 
@@ -245,7 +243,6 @@ function mapProjectBase(row: ProjectBaseRow, locale: Locale): Omit<Project, 'dep
     engagement: (row.engagement as Engagement) ?? 'freelance',
     tagSlugs: stackTags.map((s) => s?.slug).filter((s): s is string => Boolean(s)),
     summary: pickLocale(row.summary, locale) ?? pickLocale(row.deck, locale) ?? '',
-    tooling: pickLocale(row.tooling, locale),
     featureTooling: row.featureTooling ?? false,
   }
 }

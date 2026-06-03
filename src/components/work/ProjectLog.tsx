@@ -369,14 +369,6 @@ export function ProjectLog({
                             {p.role}
                           </p>
                         )}
-                        {p.tooling && (
-                          <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted">
-                            {t(locale, "toolingPrefix")} ·{" "}
-                            <span className="normal-case tracking-normal text-muted">
-                              {p.tooling}
-                            </span>
-                          </div>
-                        )}
                         <DepthLink
                           depth={p.depth}
                           slug={p.slug}
@@ -535,14 +527,6 @@ function Row({
                     <p className="mb-3 text-[14.5px] font-semibold text-ink">
                       {p.role}
                     </p>
-                  )}
-                  {p.tooling && (
-                    <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
-                      {t(locale, "toolingPrefix")} ·{" "}
-                      <span className="normal-case tracking-normal text-muted">
-                        {p.tooling}
-                      </span>
-                    </div>
                   )}
                   <DepthLink
                     depth={p.depth}

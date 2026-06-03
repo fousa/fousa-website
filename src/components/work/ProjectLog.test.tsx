@@ -31,7 +31,6 @@ const vulture: Project = {
   summary: "Self-hosted uptime.",
   depth: "full",
   gallery: [],
-  tooling: null,
   featureTooling: false,
 };
 
