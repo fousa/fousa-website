@@ -84,11 +84,15 @@ const STORM_HIT = 0.82;
 
 function spawnThermal(x: number): Thermal {
   const s = GLIDE.spawn;
+  const r = s.radiusBase + Math.random() * s.radiusRand;
+  // Tighter thermals punch harder: full bonus at the smallest radius, fading to
+  // none at the widest, so spotting a small cloud is worth the tighter circle.
+  const tightness = 1 - (r - s.radiusBase) / s.radiusRand;
   return {
     x,
     yFrac: 0.15 + Math.random() * 0.7,
-    r: s.radiusBase + Math.random() * s.radiusRand,
-    strength: s.strengthBase + Math.random() * s.strengthRand,
+    r,
+    strength: s.strengthBase + tightness * s.strengthRand,
     top: s.topBase + Math.random() * s.topRand,
   };
 }

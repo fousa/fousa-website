@@ -52,9 +52,9 @@ export const GLIDE = {
     radiusBase: 150,
     /** Additional random radius (0..radiusRand) in px. */
     radiusRand: 80,
-    /** Minimum thermal strength (altitude-units/second at the core). */
+    /** Core climb of the widest thermal (altitude-units/second). */
     strengthBase: 0.3,
-    /** Additional random strength (0..strengthRand). */
+    /** Extra core climb a tight (smallest) thermal gets over the widest. */
     strengthRand: 0.18,
     /** Minimum thermal top as an altitude fraction (climb tapers to it). */
     topBase: 0.38,

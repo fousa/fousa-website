@@ -62,7 +62,9 @@ function fitCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
 }
 
 /** Drifting field grid: verticals scroll with the camera, horizontals stay,
- *  together reading as forward flight over parcelled fields seen from above. */
+ *  together reading as forward flight over parcelled fields seen from above.
+ *  A faint half-step grid sits under a stronger field grid with survey dots at
+ *  its intersections, so the ground reads clearly without fighting the play. */
 function drawGround(
   ctx: CanvasRenderingContext2D,
   w: number,
@@ -73,20 +75,51 @@ function drawGround(
   ctx.fillStyle = pal.bg;
   ctx.fillRect(0, 0, w, h);
 
+  ctx.save();
+  const minor = GRID / 2;
+  const startMinor = -(((cameraX % minor) + minor) % minor);
+  const startMajor = -(((cameraX % GRID) + GRID) % GRID);
+
+  // Minor grid — faint and dense, for a sense of texture and speed.
   ctx.strokeStyle = pal.line;
   ctx.lineWidth = 1;
-  ctx.globalAlpha = 0.55;
+  ctx.globalAlpha = 0.6;
   ctx.beginPath();
-  for (let x = -(((cameraX % GRID) + GRID) % GRID); x < w; x += GRID) {
+  for (let x = startMinor; x < w; x += minor) {
     ctx.moveTo(x, 0);
     ctx.lineTo(x, h);
   }
-  for (let y = GRID; y < h; y += GRID) {
+  for (let y = 0; y < h; y += minor) {
     ctx.moveTo(0, y);
     ctx.lineTo(w, y);
   }
   ctx.stroke();
-  ctx.globalAlpha = 1;
+
+  // Major grid — stronger, parcelling the fields.
+  ctx.strokeStyle = pal.faint;
+  ctx.globalAlpha = 0.3;
+  ctx.beginPath();
+  for (let x = startMajor; x < w; x += GRID) {
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, h);
+  }
+  for (let y = 0; y < h; y += GRID) {
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+  }
+  ctx.stroke();
+
+  // Survey dots at the major intersections.
+  ctx.fillStyle = pal.faint;
+  ctx.globalAlpha = 0.45;
+  for (let x = startMajor; x < w; x += GRID) {
+    for (let y = 0; y < h; y += GRID) {
+      ctx.beginPath();
+      ctx.arc(x, y, 1.3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
 }
 
 /** Overlapping lobes (offset & radius as fractions of the thermal radius) that
@@ -182,7 +215,9 @@ function drawRiver(
   ctx.restore();
 }
 
-/** A big dark storm cloud with a periodic coral lightning bolt. */
+/** A big, dark, billowing storm cloud with a coral lightning bolt that flares
+ *  on a periodic flash. Drawn with the cumulus silhouette but heavier and in
+ *  the high-contrast ink token so it reads as a clear hazard. */
 function drawStorm(
   ctx: CanvasRenderingContext2D,
   sx: number,
@@ -191,35 +226,53 @@ function drawStorm(
   pal: Palette,
   clock: number,
 ) {
-  ctx.save();
-  ctx.fillStyle = pal.ink;
-  ctx.globalAlpha = 0.34;
-  ctx.beginPath();
-  ctx.arc(sx, sy, storm.r, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.globalAlpha = 0.22;
-  ctx.beginPath();
-  ctx.arc(sx, sy, storm.r * 0.66, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-
   // Flash for a short beat every ~1.8s, offset per storm.
   const flashing = (clock + storm.flashOffset) % 1.8 < 0.12;
+  const r = storm.r;
+
+  ctx.save();
+  // Heavy billowing mass, denser core, and a defined rim.
+  ctx.fillStyle = pal.ink;
+  ctx.globalAlpha = 0.5;
+  cloudPath(ctx, sx, sy, r, 1);
+  ctx.fill();
+  ctx.globalAlpha = 0.68;
+  cloudPath(ctx, sx, sy, r, 0.6);
+  ctx.fill();
+  ctx.globalAlpha = 0.85;
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = pal.ink;
+  cloudPath(ctx, sx, sy, r, 1);
+  ctx.stroke();
+  // A coral glow washes the cloud on the flash beat.
   if (flashing) {
-    ctx.save();
-    ctx.strokeStyle = pal.accent;
-    ctx.lineWidth = 2;
-    ctx.lineJoin = "round";
-    ctx.beginPath();
-    storm.bolt.forEach((p, i) => {
-      const x = sx + p.x;
-      const y = sy + p.y;
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-    ctx.restore();
+    ctx.fillStyle = pal.accent;
+    ctx.globalAlpha = 0.2;
+    cloudPath(ctx, sx, sy, r, 1);
+    ctx.fill();
   }
+  ctx.restore();
+
+  // Lightning bolt: a faint hint always, flaring bright with a glow on flash.
+  ctx.save();
+  ctx.strokeStyle = pal.accent;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.lineWidth = flashing ? 2.5 : 1.25;
+  ctx.globalAlpha = flashing ? 1 : 0.4;
+  if (flashing) {
+    ctx.shadowColor = pal.accent;
+    ctx.shadowBlur = 12;
+  }
+  ctx.beginPath();
+  storm.bolt.forEach((p, i) => {
+    const x = sx + p.x;
+    const y = sy + p.y;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.restore();
 }
 
 /** A small dart pointing along the heading, in the site accent. */
