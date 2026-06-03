@@ -138,18 +138,16 @@ export function effectiveEndYear(p: {year: number; endYear?: number | null; stat
 }
 
 /**
- * Display string for the year column. Uses an en-dash (–), not a hyphen.
- *   single year: "2022"
- *   range:       "2020–2022"
- *   ongoing:     "2020–present"   (presentLabel localized by the caller)
+ * The two ends of a project's displayed year span. `end` is null for a single
+ * year and for ongoing work (both shown as just the start year — the status dot
+ * already signals an ongoing project is still live); a number marks a closed range.
+ * Callers render the arrow between the two ends themselves.
  */
-export function yearLabel(
-  p: {year: number; endYear?: number | null; state: State},
-  presentLabel: string,
-): string {
-  if (isOngoing(p)) return `${p.year}–${presentLabel}`
-  if (p.endYear != null && p.endYear !== p.year) return `${p.year}–${p.endYear}`
-  return String(p.year)
+export function yearRange(p: {year: number; endYear?: number | null}): {
+  start: number
+  end: number | null
+} {
+  return {start: p.year, end: p.endYear != null && p.endYear !== p.year ? p.endYear : null}
 }
 
 // ---------------------------------------------------------------------------

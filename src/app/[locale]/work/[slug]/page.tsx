@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
-import { getProject, getProjectSlugs, yearLabel } from "@/lib/work";
+import { getProject, getProjectSlugs, yearRange } from "@/lib/work";
 import { forLabel } from "@/lib/work-display";
 import { fetchSanity } from "@/sanity/fetch";
 import { CASE_STUDY_QUERY } from "@/sanity/queries/case-study";
@@ -186,19 +186,34 @@ export default async function DetailPage({
           {[
             { label: t(locale, "stack"), value: project.stack },
             { label: t(locale, "role"), value: project.role },
-            { label: t(locale, "year"), value: yearLabel(project, t(locale, "present")) },
           ].map((m) => (
             <div key={m.label}>
               <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
                 {m.label}
               </p>
-              <p
-                className={`mt-1 text-[14.5px] ${m.label === t(locale, "year") ? "font-mono text-[13px] text-muted" : "text-text"}`}
-              >
-                {m.value}
-              </p>
+              <p className="mt-1 text-[14.5px] text-text">{m.value}</p>
             </div>
           ))}
+          <div>
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
+              {t(locale, "year")}
+            </p>
+            <p className="mt-1 font-mono text-[13px] text-muted">
+              {(() => {
+                const { start, end } = yearRange(project);
+                if (end == null) return start;
+                return (
+                  <>
+                    {start}
+                    <span className="mx-1 text-faint" aria-hidden>
+                      →
+                    </span>
+                    {end}
+                  </>
+                );
+              })()}
+            </p>
+          </div>
           <div>
             <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
               {t(locale, "state")}

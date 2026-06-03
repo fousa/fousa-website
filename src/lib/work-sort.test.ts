@@ -4,7 +4,7 @@ import {
   DEFAULT_SORT,
   isOngoing,
   effectiveEndYear,
-  yearLabel,
+  yearRange,
   type Project,
   type State,
 } from "./work";
@@ -131,31 +131,32 @@ describe("effectiveEndYear", () => {
   });
 });
 
-describe("yearLabel", () => {
-  it("shows a single year when there is no range", () => {
-    expect(
-      yearLabel({ year: 2022, endYear: null, state: "archived" }, "present"),
-    ).toBe("2022");
+describe("yearRange", () => {
+  it("has no end for a single year", () => {
+    expect(yearRange({ year: 2022, endYear: null })).toEqual({
+      start: 2022,
+      end: null,
+    });
   });
 
-  it("shows a range with an en-dash", () => {
-    expect(
-      yearLabel({ year: 2020, endYear: 2022, state: "archived" }, "present"),
-    ).toBe("2020–2022");
+  it("exposes start and end for a closed range", () => {
+    expect(yearRange({ year: 2020, endYear: 2022 })).toEqual({
+      start: 2020,
+      end: 2022,
+    });
   });
 
-  it("shows the present label for ongoing projects", () => {
-    expect(
-      yearLabel({ year: 2020, endYear: null, state: "active" }, "present"),
-    ).toBe("2020–present");
-    expect(
-      yearLabel({ year: 2020, endYear: null, state: "maintained" }, "heden"),
-    ).toBe("2020–heden");
+  it("has no end for ongoing projects (no recorded end year)", () => {
+    expect(yearRange({ year: 2020, endYear: null })).toEqual({
+      start: 2020,
+      end: null,
+    });
   });
 
-  it("collapses a range whose end equals its start to a single year", () => {
-    expect(
-      yearLabel({ year: 2021, endYear: 2021, state: "archived" }, "present"),
-    ).toBe("2021");
+  it("collapses a range whose end equals its start", () => {
+    expect(yearRange({ year: 2021, endYear: 2021 })).toEqual({
+      start: 2021,
+      end: null,
+    });
   });
 });

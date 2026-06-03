@@ -54,9 +54,11 @@ and three collections.
 - **Project** — the workhorse: one homepage log row *and* one detail page.
   `engagement` (freelance/full-time/internship/student) drives filters; `state`
   (active/maintained/archived/cancelled) drives the status dot (only `active` is
-  coral). `year` plus an optional `endYear` render a range in the log — `2020–2022`
-  for a closed range, `2022` for a single year, and `2020–present` (`–heden` in NL)
-  for *ongoing* work, derived (active/maintained with no `endYear`), not a manual flag.
+  coral). `year` plus an optional `endYear` render a range in the log — start and
+  end on one line with the same faint arrow the "For" column uses (`2020 → 2022`),
+  `2022` for a single year. Ongoing work (active/maintained with no `endYear`,
+  derived not flagged) shows just its start year; the status dot already signals
+  it's still live.
   Detail depth is derived from content — `body` → full case study,
   `gallery` → framed screenshots, neither → no detail page.
 

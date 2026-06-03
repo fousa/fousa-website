@@ -14,7 +14,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   matchesFilters,
   sortProjects,
-  yearLabel,
+  yearRange,
   DEFAULT_SORT,
   type Filters,
   type StackFilter,
@@ -344,7 +344,7 @@ export function ProjectLog({
                   </div>
                   <div className="mt-[5px] text-[12.5px] text-muted">
                     <ForLabelInline f={forLabel(p, t(locale, "personal"))} /> ·{" "}
-                    {p.stack} · {yearLabel(p, t(locale, "present"))}
+                    {p.stack} · <YearRangeInline p={p} />
                   </div>
                 </button>
                 <div
@@ -504,7 +504,7 @@ function Row({
         </td>
         <td className="px-11 py-5 align-top">{p.stack}</td>
         <td className="px-11 py-5 align-top font-mono text-[13px] text-muted">
-          {yearLabel(p, t(locale, "present"))}
+          <YearRangeInline p={p} />
         </td>
         <td className="px-11 py-5 align-top">
           <StatusDot state={p.state} locale={locale} />
@@ -598,6 +598,24 @@ function DepthLink({
 }
 
 /** Inline renderer for the structured for-label. */
+/**
+ * The year cell: a single year, or "start → end" for a closed range, with the
+ * same faint arrow the "For" column uses. Ongoing projects show just the start.
+ */
+function YearRangeInline({ p }: { p: Project }) {
+  const { start, end } = yearRange(p);
+  if (end == null) return <>{start}</>;
+  return (
+    <>
+      {start}
+      <span className="mx-1 text-faint" aria-hidden>
+        →
+      </span>
+      {end}
+    </>
+  );
+}
+
 function ForLabelInline({ f }: { f: ForLabel }) {
   if (f.kind === "via") {
     return (
