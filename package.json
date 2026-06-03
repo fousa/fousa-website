@@ -19,6 +19,8 @@
     "migrate:content:dry": "tsx -r dotenv/config scripts/migrate-content.ts dotenv_config_path=.env.local --dry-run",
     "publish:drafts": "tsx -r dotenv/config scripts/publish-drafts.ts dotenv_config_path=.env.local",
     "publish:drafts:dry": "tsx -r dotenv/config scripts/publish-drafts.ts dotenv_config_path=.env.local --dry-run",
+    "cleanup:project-fields": "tsx -r dotenv/config scripts/cleanup-project-fields.ts dotenv_config_path=.env.local",
+    "cleanup:project-fields:dry": "tsx -r dotenv/config scripts/cleanup-project-fields.ts dotenv_config_path=.env.local --dry-run",
     "schema:extract": "sanity schema extract --path=./schema.json",
     "typegen": "pnpm schema:extract && sanity typegen generate"
   },
