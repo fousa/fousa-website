@@ -26,7 +26,7 @@ import { OutboundLink } from "@/components/layout/OutboundLink";
 import { StatusDot } from "@/components/work/StatusDot";
 import { ToolingChip } from "@/components/work/ToolingChip";
 import { PortableTextRenderer } from "@/components/portable-text";
-import { Frame } from "@/components/work/Frame";
+import { Gallery } from "@/components/work/Gallery";
 import type { PROFILE_QUERY_RESULT } from "@/sanity.types";
 
 const SITE_URL = "https://fousa.be";
@@ -264,31 +264,9 @@ export default async function DetailPage({
 
       {/* Gallery: screenshots in device frames. Shown whenever shots exist —
           on a gallery-only project it's the main content, on a full case study
-          it sits after the body. */}
+          it sits after the body. Click a shot to open the lightbox carousel. */}
       {project.gallery.length > 0 && (
-        <div className="px-5 py-10 md:px-11">
-          <div className="flex flex-wrap items-end justify-center gap-8 md:gap-10">
-            {project.gallery.map((shot) => (
-              <div
-                key={shot.key}
-                className={
-                  shot.frame === "phone"
-                    ? "w-[180px]"
-                    : shot.frame === "tablet"
-                      ? "w-[280px]"
-                      : "w-full max-w-[560px]"
-                }
-              >
-                <Frame shot={shot} />
-                {shot.caption && (
-                  <p className="mt-2 text-center font-mono text-[11px] text-muted">
-                    {shot.caption}
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        <Gallery shots={project.gallery} locale={locale} />
       )}
 
       {/* Related work */}
