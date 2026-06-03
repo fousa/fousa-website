@@ -5,9 +5,8 @@
  * (so we can render chips by category). Ordered featured-first, then by year
  * descending — matches what the homepage table needs out of the box.
  *
- * Includes case study fields (deck, description, screenshots) because they're
- * cheap to ship and Phase 3b will need them for row expansion. ~65 documents,
- * the payload is small even with full case study content.
+ * Includes the lightweight case-study fields the expanded log row needs (deck,
+ * summary, links). ~65 documents, so the payload stays small.
  */
 import {defineQuery} from 'next-sanity'
 
@@ -25,8 +24,6 @@ export const PROJECTS_QUERY = defineQuery(`
     client,
     deck,
     summary,
-    description,
-    outcome,
     liveUrl,
     githubUrl,
     writeupUrl,
@@ -39,11 +36,6 @@ export const PROJECTS_QUERY = defineQuery(`
       _id,
       name,
       "slug": slug.current
-    },
-    "screenshots": screenshots[]{
-      _key,
-      alt,
-      "asset": asset->
     },
     tooling,
     featureTooling,

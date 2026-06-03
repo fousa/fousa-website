@@ -24,8 +24,6 @@ export const CASE_STUDY_QUERY = defineQuery(`
     client,
     deck,
     summary,
-    description,
-    outcome,
     body,
     liveUrl,
     githubUrl,
@@ -45,11 +43,6 @@ export const CASE_STUDY_QUERY = defineQuery(`
     },
     "coverUrl": cover.asset->url,
     "coverAlt": cover.alt,
-    "screenshots": screenshots[]{
-      _key,
-      alt,
-      "asset": asset->
-    },
     "gallery": gallery[]{
       _key,
       frame,

@@ -167,42 +167,9 @@ export const project = defineType({
       'One-line elevator pitch shown in italic at the top of the expanded panel. Skip to hide the expand.'
     ),
     i18nPortableText(
-      'description',
-      'Description',
-      'Two short paragraphs of context — problem and approach.'
-    ),
-    defineField({
-      name: 'screenshots',
-      title: 'Screenshots',
-      type: 'array',
-      group: 'caseStudy',
-      description: 'Two or three images shown in the expanded panel. Hotspot determines the focal point for thumbnails.',
-      of: [
-        {
-          type: 'image',
-          options: {hotspot: true},
-          fields: [
-            defineField({
-              name: 'alt',
-              title: 'Alt text',
-              type: 'string',
-              description: 'Required for accessibility.',
-              validation: (Rule) => Rule.required(),
-            }),
-          ],
-        },
-      ],
-      validation: (Rule) => Rule.max(6),
-    }),
-    i18nText(
-      'outcome',
-      'Outcome',
-      'Optional metric or sentence (e.g. "Several million daily users"). Shown in bold in the panel.'
-    ),
-    i18nPortableText(
       'body',
       'Case study body',
-      'Full case study narrative — context, approach, outcome. Shown on the dedicated /work/<slug> page.'
+      'Full case study narrative — context, approach, outcome (use an "Outcome" heading). Shown on the dedicated /work/<slug> page.'
     ),
     defineField({
       name: 'gallery',
