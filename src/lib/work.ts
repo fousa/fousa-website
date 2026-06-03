@@ -119,6 +119,40 @@ export function matchesFilters(p: Project, f: Filters): boolean {
 }
 
 // ---------------------------------------------------------------------------
+// Year range (start / end / ongoing)
+// ---------------------------------------------------------------------------
+
+/** A project is ongoing when it's actively developed/maintained with no recorded end. */
+export function isOngoing(p: {state: State; endYear?: number | null}): boolean {
+  return (p.state === 'active' || p.state === 'maintained') && p.endYear == null
+}
+
+/**
+ * The year used for sorting: explicit endYear if present; +Infinity for ongoing
+ * (so they sort newest); otherwise the start year.
+ */
+export function effectiveEndYear(p: {year: number; endYear?: number | null; state: State}): number {
+  if (p.endYear != null) return p.endYear
+  if (isOngoing(p)) return Number.POSITIVE_INFINITY
+  return p.year
+}
+
+/**
+ * Display string for the year column. Uses an en-dash (–), not a hyphen.
+ *   single year: "2022"
+ *   range:       "2020–2022"
+ *   ongoing:     "2020–present"   (presentLabel localized by the caller)
+ */
+export function yearLabel(
+  p: {year: number; endYear?: number | null; state: State},
+  presentLabel: string,
+): string {
+  if (isOngoing(p)) return `${p.year}–${presentLabel}`
+  if (p.endYear != null && p.endYear !== p.year) return `${p.year}–${p.endYear}`
+  return String(p.year)
+}
+
+// ---------------------------------------------------------------------------
 // Sort model
 // ---------------------------------------------------------------------------
 
