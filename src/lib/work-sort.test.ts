@@ -1,14 +1,28 @@
 import { describe, it, expect } from "vitest";
-import { sortProjects, DEFAULT_SORT, type Project, type State } from "./work";
+import {
+  sortProjects,
+  DEFAULT_SORT,
+  isOngoing,
+  effectiveEndYear,
+  yearLabel,
+  type Project,
+  type State,
+} from "./work";
 
 /** Minimal Project for sort tests — only the keys the comparator reads matter. */
-function makeProject(name: string, year: number, state: State): Project {
+function makeProject(
+  name: string,
+  year: number,
+  state: State,
+  endYear?: number | null,
+): Project {
   return {
     slug: name.toLowerCase(),
     name,
     stack: "—",
     role: "Lead",
     year,
+    endYear: endYear ?? null,
     state,
     engagement: "freelance",
     tagSlugs: [],
@@ -68,5 +82,80 @@ describe("sortProjects", () => {
     const copy = [...list];
     sortProjects(list, { key: "project", dir: "asc" });
     expect(list).toEqual(copy);
+  });
+
+  it("an ongoing project sorts above an explicit later end year", () => {
+    const list = [
+      makeProject("Done", 2024, "archived", 2024),
+      makeProject("Live", 2020, "active"), // ongoing → effective +Infinity
+    ];
+    expect(
+      sortProjects(list, DEFAULT_SORT).map((x) => x.name),
+    ).toEqual(["Live", "Done"]);
+  });
+});
+
+describe("isOngoing", () => {
+  it("is true for active/maintained with no end year", () => {
+    expect(isOngoing({ state: "active", endYear: null })).toBe(true);
+    expect(isOngoing({ state: "maintained", endYear: null })).toBe(true);
+  });
+
+  it("is false when an end year is set", () => {
+    expect(isOngoing({ state: "active", endYear: 2024 })).toBe(false);
+  });
+
+  it("is false for archived/cancelled regardless of end year", () => {
+    expect(isOngoing({ state: "archived", endYear: null })).toBe(false);
+    expect(isOngoing({ state: "cancelled", endYear: null })).toBe(false);
+  });
+});
+
+describe("effectiveEndYear", () => {
+  it("uses the explicit end year when present", () => {
+    expect(
+      effectiveEndYear({ year: 2020, endYear: 2022, state: "archived" }),
+    ).toBe(2022);
+  });
+
+  it("is +Infinity for ongoing projects", () => {
+    expect(
+      effectiveEndYear({ year: 2020, endYear: null, state: "active" }),
+    ).toBe(Number.POSITIVE_INFINITY);
+  });
+
+  it("falls back to the start year otherwise", () => {
+    expect(
+      effectiveEndYear({ year: 2019, endYear: null, state: "archived" }),
+    ).toBe(2019);
+  });
+});
+
+describe("yearLabel", () => {
+  it("shows a single year when there is no range", () => {
+    expect(
+      yearLabel({ year: 2022, endYear: null, state: "archived" }, "present"),
+    ).toBe("2022");
+  });
+
+  it("shows a range with an en-dash", () => {
+    expect(
+      yearLabel({ year: 2020, endYear: 2022, state: "archived" }, "present"),
+    ).toBe("2020–2022");
+  });
+
+  it("shows the present label for ongoing projects", () => {
+    expect(
+      yearLabel({ year: 2020, endYear: null, state: "active" }, "present"),
+    ).toBe("2020–present");
+    expect(
+      yearLabel({ year: 2020, endYear: null, state: "maintained" }, "heden"),
+    ).toBe("2020–heden");
+  });
+
+  it("collapses a range whose end equals its start to a single year", () => {
+    expect(
+      yearLabel({ year: 2021, endYear: 2021, state: "archived" }, "present"),
+    ).toBe("2021");
   });
 });
