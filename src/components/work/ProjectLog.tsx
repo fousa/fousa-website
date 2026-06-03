@@ -226,8 +226,9 @@ export function ProjectLog({
       const qs = sp.toString();
       const hash = typeof window !== "undefined" ? window.location.hash : "";
       router.replace(`${pathname}${qs ? `?${qs}` : ""}${hash}`, { scroll: false });
+      track("sort_change", { key, dir: nextDir, locale });
     },
-    [sort, params, pathname, router],
+    [sort, params, pathname, router, locale],
   );
 
   const toggleRow = (slug: string) => {
