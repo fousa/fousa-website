@@ -1,11 +1,12 @@
 "use client";
 /**
- * Hidden "Glide" mini-game — footer entry point + fullscreen overlay shell.
+ * Hidden "Glide" mini-game — nav entry point + fullscreen overlay shell.
  *
- * Renders a quiet "▶ Play a game" link styled like the other footer controls.
- * Activating it opens a fullscreen overlay portalled to <body> so it escapes
- * the footer's stacking context. The overlay matches the live site theme by
- * using the same tokens (bg / ink / muted / line) the rest of the UI uses.
+ * Renders a quiet "Play a game" link (with a small airplane glyph) that the
+ * header styles to match the other nav items. Activating it opens a fullscreen
+ * overlay portalled to <body> so it escapes the header's stacking context. The
+ * overlay matches the live site theme by using the same tokens (bg / ink /
+ * muted / line) the rest of the UI uses.
  *
  * Owns the overlay lifecycle (open/close, Escape, scroll lock, focus return)
  * and the end-of-flight state: when the canvas reports a landing or a storm,
@@ -22,7 +23,36 @@ import type { Locale } from "@/i18n/config";
 
 type EndState = { reason: EndReason; distance: number };
 
-export function GlideGame({ locale }: { locale: Locale }) {
+/** Small upward airplane glyph in the site accent (coral) tint. */
+function PlaneIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width="11"
+      height="11"
+      fill="currentColor"
+      aria-hidden
+      className="-mt-px text-accent"
+    >
+      <path d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568.14-1.271.428-1.849Z" />
+    </svg>
+  );
+}
+
+export function GlideGame({
+  locale,
+  triggerClassName = "transition-colors hover:text-ink",
+  iconOnly = false,
+  onLaunch,
+}: {
+  locale: Locale;
+  /** Tailwind classes for the trigger so each nav can match its own styling. */
+  triggerClassName?: string;
+  /** Render just the airplane glyph; the label becomes screen-reader only. */
+  iconOnly?: boolean;
+  /** Called when the game opens — lets a mobile menu close itself. */
+  onLaunch?: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [end, setEnd] = useState<EndState | null>(null);
   // Bumping this remounts the canvas, resetting the whole simulation.
@@ -34,7 +64,8 @@ export function GlideGame({ locale }: { locale: Locale }) {
     track("glide_open", { locale });
     setEnd(null);
     setOpen(true);
-  }, [locale]);
+    onLaunch?.();
+  }, [locale, onLaunch]);
 
   const close = useCallback(() => setOpen(false), []);
 
@@ -75,10 +106,12 @@ export function GlideGame({ locale }: { locale: Locale }) {
         ref={triggerRef}
         type="button"
         onClick={launch}
-        className="font-mono text-xs text-muted transition-colors hover:text-ink"
+        className={`inline-flex items-center gap-1.5 ${triggerClassName}`}
       >
-        <span aria-hidden>▶ </span>
-        {t(locale, "playGame")}
+        <PlaneIcon />
+        <span className={iconOnly ? "sr-only" : undefined}>
+          {t(locale, "playGame")}
+        </span>
       </button>
 
       {open &&

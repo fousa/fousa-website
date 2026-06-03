@@ -3,7 +3,6 @@
  *  Privacy info lives in an inline info tip next to the copyright. */
 import { LocaleSwitch } from "./LocaleSwitch";
 import { InfoTip } from "./InfoTip";
-import { GlideGame } from "@/components/glide/GlideGame";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { t } from "@/i18n/messages";
@@ -21,8 +20,6 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           </InfoTip>
         </span>
         <div className="flex items-center gap-4">
-          <GlideGame locale={locale} />
-          <span className="h-3 w-px bg-line" aria-hidden />
           <LocaleSwitch />
           <span className="h-3 w-px bg-line" aria-hidden />
           <ThemeToggle locale={locale} />
