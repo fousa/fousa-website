@@ -244,6 +244,7 @@ export default async function DetailPage({
                 alt={coverAlt}
                 width={1200}
                 height={600}
+                priority
                 className="h-auto w-full rounded object-cover"
               />
             </div>
