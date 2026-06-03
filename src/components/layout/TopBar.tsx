@@ -10,7 +10,6 @@ import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 import { localizedHref } from "@/lib/href";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { GlideGame } from "@/components/glide/GlideGame";
 import { useScrolled } from "./use-scrolled";
 
 export function TopBar({ locale }: { locale: Locale }) {
@@ -60,19 +59,12 @@ export function TopBar({ locale }: { locale: Locale }) {
         ].join(" ")}
       >
       <div className="flex items-center justify-between px-5 py-5 md:px-11">
-        <div className="flex items-center gap-2">
-          <GlideGame
-            locale={locale}
-            iconOnly
-            triggerClassName="-m-2 rounded p-2 outline-none transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          />
-          <Link
-            href={localizedHref(locale, "/")}
-            className="font-display text-[19px] font-bold tracking-[-0.02em]"
-          >
-            <Wordmark />
-          </Link>
-        </div>
+        <Link
+          href={localizedHref(locale, "/")}
+          className="font-display text-[19px] font-bold tracking-[-0.02em]"
+        >
+          <Wordmark />
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-7 text-sm font-medium text-muted md:flex">
