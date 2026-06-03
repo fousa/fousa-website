@@ -94,7 +94,13 @@ Grouped by domain under `src/components/`:
 The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDepth`,
 `matchesFilters`, plus the sort model `compareProjects` / `sortProjects`) plus
 `lib/work-display.ts` (`forLabel` — the single source for the "For" label from
-employer + client). Filtering is six chips in three groups — **stack**
+employer + client). `mapProjectBase` is the one mapper for the fields the log row
+and the detail page share (slug/name/employer/stack/year/locale-resolved summary…),
+so the two never drift. `getProjects` builds log `Project`s from it; the detail page
+calls one `getProjectDetail(slug, locale)` that returns a `ProjectDetail` (the base
+plus `body`, `cover`, `deck`, external `links`, and `related`) — no second raw fetch.
+The detail page renders any present live / GitHub / write-up links via `OutboundLink`
+(`outbound_click` kinds `live` / `github` / `writeup`). Filtering is six chips in three groups — **stack**
 (`apple` | `web`), **status** (`active`), **affiliation**
 (`freelance` | `icapps` | `10to1`) — OR within a group, AND across groups, all
 URL-backed via `useSearchParams`. The per-helper rules live in their JSDoc.
