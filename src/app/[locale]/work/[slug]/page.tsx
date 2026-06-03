@@ -262,8 +262,10 @@ export default async function DetailPage({
         </>
       )}
 
-      {/* Gallery: screenshots in device frames */}
-      {project.depth === "gallery" && project.gallery.length > 0 && (
+      {/* Gallery: screenshots in device frames. Shown whenever shots exist —
+          on a gallery-only project it's the main content, on a full case study
+          it sits after the body. */}
+      {project.gallery.length > 0 && (
         <div className="px-5 py-10 md:px-11">
           <div className="flex flex-wrap items-end justify-center gap-8 md:gap-10">
             {project.gallery.map((shot) => (
