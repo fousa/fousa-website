@@ -182,12 +182,19 @@ export function compareProjects(a: Project, b: Project, sort: Sort): number {
   // Primary key chosen by the user.
   let primary = 0
   if (sort.key === 'project') primary = a.name.localeCompare(b.name) * dir
-  else if (sort.key === 'year') primary = (a.year - b.year) * dir
-  else if (sort.key === 'state') primary = (STATE_RANK[a.state] - STATE_RANK[b.state]) * dir
+  else if (sort.key === 'year') {
+    // Compare on the effective end year so ongoing projects (+Infinity) lead.
+    // Subtraction would yield Infinity − Infinity = NaN, so compare by sign.
+    const ay = effectiveEndYear(a)
+    const by = effectiveEndYear(b)
+    primary = (ay === by ? 0 : ay < by ? -1 : 1) * dir
+  } else if (sort.key === 'state') primary = (STATE_RANK[a.state] - STATE_RANK[b.state]) * dir
   if (primary !== 0) return primary
 
   // Deterministic tie-break: the default chain, independent of `dir`.
-  if (a.year !== b.year) return b.year - a.year // newer first
+  const ay = effectiveEndYear(a)
+  const by = effectiveEndYear(b)
+  if (ay !== by) return ay < by ? 1 : -1 // newer (larger effective end) first
   if (a.state !== b.state) return STATE_RANK[a.state] - STATE_RANK[b.state]
   return a.name.localeCompare(b.name)
 }
