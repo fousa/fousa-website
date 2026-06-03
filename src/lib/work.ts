@@ -118,6 +118,51 @@ export function matchesFilters(p: Project, f: Filters): boolean {
   return true
 }
 
+// ---------------------------------------------------------------------------
+// Sort model
+// ---------------------------------------------------------------------------
+
+export type SortKey = 'project' | 'year' | 'state'
+export type SortDir = 'asc' | 'desc'
+export type Sort = {key: SortKey; dir: SortDir}
+
+/** Page default: newest projects first (year ties break on state, then name). */
+export const DEFAULT_SORT: Sort = {key: 'year', dir: 'desc'}
+
+/** State ordering for sort purposes: active first, then maintained, archived, cancelled. */
+const STATE_RANK: Record<State, number> = {
+  active: 0,
+  maintained: 1,
+  archived: 2,
+  cancelled: 3,
+}
+
+/**
+ * Compare two projects for a given sort. Ties always fall back to the default
+ * priority chain (year desc → state rank → name asc) so ordering is
+ * deterministic regardless of the chosen key/direction.
+ */
+export function compareProjects(a: Project, b: Project, sort: Sort): number {
+  const dir = sort.dir === 'asc' ? 1 : -1
+
+  // Primary key chosen by the user.
+  let primary = 0
+  if (sort.key === 'project') primary = a.name.localeCompare(b.name) * dir
+  else if (sort.key === 'year') primary = (a.year - b.year) * dir
+  else if (sort.key === 'state') primary = (STATE_RANK[a.state] - STATE_RANK[b.state]) * dir
+  if (primary !== 0) return primary
+
+  // Deterministic tie-break: the default chain, independent of `dir`.
+  if (a.year !== b.year) return b.year - a.year // newer first
+  if (a.state !== b.state) return STATE_RANK[a.state] - STATE_RANK[b.state]
+  return a.name.localeCompare(b.name)
+}
+
+/** Sort a copy of the list; never mutate the input. */
+export function sortProjects(list: Project[], sort: Sort): Project[] {
+  return [...list].sort((a, b) => compareProjects(a, b, sort))
+}
+
 /**
  * Map a Sanity project row into the flat Project interface.
  */
