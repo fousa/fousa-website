@@ -54,7 +54,10 @@ and three collections.
 - **Project** — the workhorse: one homepage log row *and* one detail page.
   `engagement` (freelance/full-time/internship/student) drives filters; `state`
   (active/maintained/archived/cancelled) drives the status dot (only `active` is
-  coral). Detail depth is derived from content — `body` → full case study,
+  coral). `year` plus an optional `endYear` render a range in the log — `2020–2022`
+  for a closed range, `2022` for a single year, and `2020–present` (`–heden` in NL)
+  for *ongoing* work, derived (active/maintained with no `endYear`), not a manual flag.
+  Detail depth is derived from content — `body` → full case study,
   `gallery` → framed screenshots, neither → no detail page.
 
 Translatable fields are `{ en, nl }` objects (helpers in `sanity/fields/i18n.ts`),
@@ -98,9 +101,12 @@ URL-backed via `useSearchParams`. The per-helper rules live in their JSDoc.
 toggle asc⇄desc, persisted as `?s=<key>-<dir>` (omitted when it equals the default).
 `DEFAULT_SORT` is `year` desc, and `compareProjects` always falls back to the same
 deterministic chain — year desc → state rank → name (`localeCompare`) — so ties are
-stable and "no sort" equals that chain with no special casing. `sortProjects` never
-mutates its input. Rows are filtered first, then sorted. Mobile renders the same
-sorted `rows` with no sort UI, so a shared `?s=` link still orders correctly.
+stable and "no sort" equals that chain with no special casing. The Year sort keys off
+`effectiveEndYear` (explicit `endYear`, else `+Infinity` for ongoing, else start year),
+so ongoing projects lead; comparisons use sign rather than subtraction to dodge the
+`Infinity − Infinity = NaN` trap. `sortProjects` never mutates its input. Rows are
+filtered first, then sorted. Mobile renders the same sorted `rows` with no sort UI, so
+a shared `?s=` link still orders correctly.
 
 ## Accessibility decisions
 
