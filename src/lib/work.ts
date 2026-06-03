@@ -203,12 +203,33 @@ export function sortProjects(list: Project[], sort: Sort): Project[] {
 }
 
 /**
- * Map a Sanity project row into the flat Project interface.
+ * The fields the log row and the case-study detail share. A structural subset
+ * both query results satisfy, so a single mapper can serve both.
  */
-function toProject(
-  row: NonNullable<PROJECTS_QUERY_RESULT>[number],
-  locale: Locale,
-): Project {
+type ProjectBaseRow = {
+  slug: string | null
+  name: string | null
+  employer: { name: string | null; slug: string | null } | null
+  client: string | null
+  role: string | null
+  year: number | null
+  endYear: number | null
+  state: string | null
+  engagement: string | null
+  stack: Array<{ name: string | null; slug: string | null }> | null
+  summary: { en?: string; nl?: string } | null
+  deck: { en?: string; nl?: string } | null
+  tooling: { en?: string; nl?: string } | null
+  featureTooling: boolean | null
+}
+
+/**
+ * Map the fields shared by the log row and the detail page into the flat
+ * Project base (everything except depth and gallery, which each caller derives
+ * from its own query shape). Single source of truth so the log and detail never
+ * drift on naming or locale resolution.
+ */
+function mapProjectBase(row: ProjectBaseRow, locale: Locale): Omit<Project, 'depth' | 'gallery'> {
   const stackTags = row.stack ?? []
   return {
     slug: row.slug ?? '',
@@ -223,14 +244,24 @@ function toProject(
     state: (row.state as State) ?? 'active',
     engagement: (row.engagement as Engagement) ?? 'freelance',
     tagSlugs: stackTags.map((s) => s?.slug).filter((s): s is string => Boolean(s)),
-    summary:
-      pickLocale(typeof row.summary === 'object' ? row.summary : null, locale) ??
-      pickLocale(typeof row.deck === 'object' ? row.deck : null, locale) ??
-      '',
+    summary: pickLocale(row.summary, locale) ?? pickLocale(row.deck, locale) ?? '',
+    tooling: pickLocale(row.tooling, locale),
+    featureTooling: row.featureTooling ?? false,
+  }
+}
+
+/**
+ * Map a Sanity log row into the flat Project interface. The log never shows
+ * galleries, so depth is derived from cheap counts and gallery stays empty.
+ */
+function toProject(
+  row: NonNullable<PROJECTS_QUERY_RESULT>[number],
+  locale: Locale,
+): Project {
+  return {
+    ...mapProjectBase(row, locale),
     depth: projectDepth(row),
     gallery: [],
-    tooling: pickLocale(typeof row.tooling === 'object' ? row.tooling : null, locale),
-    featureTooling: row.featureTooling ?? false,
   }
 }
 
@@ -246,24 +277,35 @@ export async function getProjects(locale: Locale = 'en'): Promise<Project[]> {
 }
 
 /**
- * Fetch a single project by slug for the case-study page.
+ * The full case-study payload: the shared Project base plus the detail-only
+ * fields the /work/<slug> page renders — portable-text body, cover image,
+ * deck, external links, and related projects.
+ */
+export type ProjectDetail = Project & {
+  body: unknown[] | null
+  cover: { url: string; alt: string | null } | null
+  deck: string | null
+  links: { live: string | null; github: string | null; writeup: string | null }
+  related: { slug: string; name: string; year: number | null }[]
+}
+
+/**
+ * Fetch a single project by slug for the case-study page. One query, one mapped
+ * object — the page reads cover, body, links and related straight off this,
+ * with no second raw fetch.
  *
  * @param slug - project slug
  * @param locale - active locale for resolving i18n fields
  */
-export async function getProject(
+export async function getProjectDetail(
   slug: string,
   locale: Locale = 'en',
-): Promise<Project | undefined> {
+): Promise<ProjectDetail | null> {
   const row = await fetchSanity<CASE_STUDY_QUERY_RESULT>(CASE_STUDY_QUERY, {slug})
-  if (!row) return undefined
-  const stackTags = row.stack ?? []
+  if (!row) return null
 
-  const bodyObj = typeof row.body === 'object' && row.body !== null ? row.body as Record<string, unknown> : null
-  const hasBody = bodyObj && Array.isArray(bodyObj.en) && bodyObj.en.length > 0
-
-  const rawGallery = row.gallery ?? []
-  const gallery: GalleryShot[] = rawGallery
+  const hasBody = Array.isArray(row.body?.en) && row.body.en.length > 0
+  const gallery: GalleryShot[] = (row.gallery ?? [])
     .filter((g) => g.imageUrl)
     .map((g) => ({
       key: g._key,
@@ -274,27 +316,27 @@ export async function getProject(
       caption: pickLocale(typeof g.caption === 'object' ? g.caption : null, locale),
     }))
 
+  const body = hasBody
+    ? locale === 'nl' && Array.isArray(row.body?.nl) && row.body.nl.length > 0
+      ? row.body.nl
+      : (row.body?.en ?? null)
+    : null
+
   return {
-    slug: row.slug ?? '',
-    name: row.name ?? '',
-    employer: row.employer?.name ? { name: row.employer.name } : null,
-    employerSlug: null,
-    client: row.client ?? null,
-    stack: stackTags.map((s) => s?.name).filter(Boolean).join(' · ') || '—',
-    role: row.role ?? '',
-    year: row.year ?? 0,
-    endYear: row.endYear ?? null,
-    state: (row.state as State) ?? 'active',
-    engagement: (row.engagement as Engagement) ?? 'freelance',
-    tagSlugs: stackTags.map((s) => s?.slug).filter((s): s is string => Boolean(s)),
-    summary:
-      pickLocale(typeof row.summary === 'object' ? row.summary : null, locale) ??
-      pickLocale(typeof row.deck === 'object' ? row.deck : null, locale) ??
-      '',
+    ...mapProjectBase(row, locale),
     depth: hasBody ? 'full' : gallery.length > 0 ? 'gallery' : 'none',
     gallery,
-    tooling: pickLocale(typeof row.tooling === 'object' ? row.tooling : null, locale),
-    featureTooling: row.featureTooling ?? false,
+    body: body ?? null,
+    cover: row.coverUrl ? { url: row.coverUrl, alt: row.coverAlt ?? null } : null,
+    deck: pickLocale(row.deck, locale),
+    links: {
+      live: row.liveUrl ?? null,
+      github: row.githubUrl ?? null,
+      writeup: row.writeupUrl ?? null,
+    },
+    related: (row.related ?? [])
+      .filter((r) => r.slug)
+      .map((r) => ({ slug: r.slug as string, name: r.name ?? '', year: r.year ?? null })),
   }
 }
 

@@ -14,10 +14,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
-import { getProject, getProjectSlugs, yearRange } from "@/lib/work";
+import { getProjectDetail, getProjectSlugs, yearRange } from "@/lib/work";
 import { forLabel } from "@/lib/work-display";
 import { fetchSanity } from "@/sanity/fetch";
-import { CASE_STUDY_QUERY } from "@/sanity/queries/case-study";
 import { PROFILE_QUERY } from "@/sanity/queries/profile";
 import { localizedHref } from "@/lib/href";
 import { altMetadata } from "@/lib/seo";
@@ -27,10 +26,7 @@ import { StatusDot } from "@/components/work/StatusDot";
 import { ToolingChip } from "@/components/work/ToolingChip";
 import { PortableTextRenderer } from "@/components/portable-text";
 import { Frame } from "@/components/work/Frame";
-import type {
-  CASE_STUDY_QUERY_RESULT,
-  PROFILE_QUERY_RESULT,
-} from "@/sanity.types";
+import type { PROFILE_QUERY_RESULT } from "@/sanity.types";
 
 const SITE_URL = "https://fousa.be";
 
@@ -47,7 +43,7 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
 
-  const project = await getProject(slug, locale);
+  const project = await getProjectDetail(slug, locale);
   if (!project || project.depth === "none")
     return { title: t(locale, "notFoundTitle") };
 
@@ -87,42 +83,26 @@ export default async function DetailPage({
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
 
-  const project = await getProject(slug, locale);
-  if (!project || project.depth === "none") notFound();
-
-  const [raw, profile] = await Promise.all([
-    fetchSanity<CASE_STUDY_QUERY_RESULT>(CASE_STUDY_QUERY, { slug }),
+  const [project, profile] = await Promise.all([
+    getProjectDetail(slug, locale),
     fetchSanity<PROFILE_QUERY_RESULT>(PROFILE_QUERY),
   ]);
+  if (!project || project.depth === "none") notFound();
 
   // CreativeWork structured data, pointing at this page's canonical URL so it
   // agrees with the sitemap and hreflang alternates.
-  const jsonLd = raw
-    ? buildProjectJsonLd({
-        project: raw,
-        locale,
-        siteUrl: SITE_URL,
-        url: altMetadata(locale, `/work/${slug}`).alternates
-          ?.canonical as string,
-        authorName: profile?.name ?? "Jelle Vandebeeck",
-      })
-    : null;
+  const jsonLd = buildProjectJsonLd({
+    project,
+    locale,
+    siteUrl: SITE_URL,
+    url: altMetadata(locale, `/work/${slug}`).alternates?.canonical as string,
+    authorName: profile?.name ?? "Jelle Vandebeeck",
+  });
 
-  const coverUrl = raw?.coverUrl ?? null;
-  const coverAlt = raw?.coverAlt ?? project.name;
-  const related = raw?.related ?? [];
-
-  const body =
-    project.depth === "full" && typeof raw?.body === "object" && raw.body !== null
-      ? (() => {
-          const b = raw.body as Record<string, unknown>;
-          return locale === "nl" &&
-            Array.isArray(b.nl) &&
-            (b.nl as unknown[]).length > 0
-            ? b.nl
-            : b.en;
-        })() ?? null
-      : null;
+  const coverUrl = project.cover?.url ?? null;
+  const coverAlt = project.cover?.alt ?? project.name;
+  const related = project.related;
+  const body = project.body;
 
   return (
     <>

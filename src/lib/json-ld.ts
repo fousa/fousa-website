@@ -7,8 +7,6 @@
  * Inject the returned object into a <script type="application/ld+json">
  * tag in the page's head via dangerouslySetInnerHTML.
  */
-import type {CASE_STUDY_QUERY_RESULT} from '@/sanity.types'
-
 export function buildProjectJsonLd({
   project,
   locale,
@@ -16,23 +14,18 @@ export function buildProjectJsonLd({
   url,
   authorName,
 }: {
-  project: NonNullable<CASE_STUDY_QUERY_RESULT>
+  project: {name: string; slug: string; year: number; deck: string | null}
   locale: 'en' | 'nl'
   siteUrl: string
   /** Canonical URL of the page this script is embedded in. */
   url: string
   authorName: string
 }) {
-  const deck =
-    (typeof project.deck === 'object' && project.deck?.[locale]) ||
-    (typeof project.deck === 'object' && project.deck?.en) ||
-    project.name
-
   return {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
     name: project.name,
-    description: deck,
+    description: project.deck ?? project.name,
     image: `${siteUrl}/og/${project.slug}`,
     url,
     inLanguage: locale,
