@@ -131,7 +131,11 @@ export function GlideGame({
               aria-label={t(locale, "closeRow")}
               className="absolute right-4 top-4 z-10 rounded font-mono text-xs text-muted outline-none transition-colors hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
-              {t(locale, "escapeToClose")}
+              {/* No Esc key on touch, so show a plain Close there. */}
+              <span className="md:hidden">{t(locale, "closeRow")}</span>
+              <span className="hidden md:inline">
+                {t(locale, "escapeToClose")}
+              </span>
             </button>
 
             {end && (
