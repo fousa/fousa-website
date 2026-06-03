@@ -11,7 +11,7 @@
  * top, climb is `strength × taper × radial`, where the radial profile is
  * strongest at the core and eases toward the rim (so the inside climbs fast and
  * the outside slow, but never to nothing — circling still pays off). Flying
- * straight through gives only a weaker, core-weighted gaussian (× 0.6).
+ * straight through gives only a weaker, core-weighted gaussian (× STRAIGHT_LIFT).
  *
  * Two hazards share the same left-to-right generator: sink rivers (meandering
  * vertical bands of strong sink) and thunderstorms (big dark clouds that end
@@ -75,6 +75,8 @@ const SPAWN_BUFFER = 600;
 const TAPER_BAND = 0.1;
 /** Climb left at the rim while circling, as a fraction of the core climb. */
 const RIM_CLIMB = 0.4;
+/** Fraction of the core climb you get flying straight through (vs circling). */
+const STRAIGHT_LIFT = 0.3;
 /** Sink-river band width in px. */
 const RIVER_WIDTH = 72;
 /** River meander frequency, in radians per px of screen Y. */
@@ -217,7 +219,7 @@ export function liftAt(
     } else {
       const sigma = t.r * 0.5;
       const gauss = Math.exp(-(dist * dist) / (2 * sigma * sigma));
-      lift = t.strength * taper * gauss * 0.6;
+      lift = t.strength * taper * gauss * STRAIGHT_LIFT;
     }
 
     if (dist < bestDist) {

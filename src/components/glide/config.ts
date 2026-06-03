@@ -13,7 +13,7 @@ export const GLIDE = {
   /** Turn rate in radians/second at full steering input. */
   TURN: 3.0,
   /** Baseline sink applied every frame, in altitude-units/second. */
-  SINK_U: 0.018,
+  SINK_U: 0.012,
   /** Extra sink (altitude-units/second) while inside a sink river. */
   RIVER_SINK: 0.5,
   /** Metres at cloudbase — altitude 1.0 maps to this for the altimeter. */
@@ -33,7 +33,7 @@ export const GLIDE = {
   /** Reference airspeed (km/h) at which the speed-sink penalty is zero-based. */
   SREF: 100,
   /** Sink penalty coefficient: faster than SREF sinks more. */
-  SPEEDSINK: 0.0003,
+  SPEEDSINK: 0.00045,
   /** Horizontal world speed in px/frame per km/h of airspeed. */
   PX_PER_KMH: 1.5,
   /** Lateral meander amplitude of sink rivers, in pixels. */
