@@ -13,10 +13,15 @@ import { useMemo, useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   matchesFilters,
+  sortProjects,
+  DEFAULT_SORT,
   type Filters,
   type StackFilter,
   type StatusFilter,
   type AffiliationFilter,
+  type Sort,
+  type SortKey,
+  type SortDir,
   type Project,
   type Depth,
   type EmptyStateOverride,
@@ -82,6 +87,23 @@ function filterCount(f: Filters): number {
   return f.stack.length + f.status.length + f.affiliation.length;
 }
 
+// ---------------------------------------------------------------------------
+// URL ↔ Sort helpers
+// ---------------------------------------------------------------------------
+
+const SORT_KEYS: SortKey[] = ["project", "year", "state"];
+
+/** Parse the `?s=<key>-<dir>` param; anything invalid falls back to default. */
+function parseSort(raw: string | null): Sort {
+  if (!raw) return DEFAULT_SORT;
+  const [key, dir] = raw.split("-");
+  const validKey = (SORT_KEYS as string[]).includes(key);
+  const validDir = dir === "asc" || dir === "desc";
+  return validKey && validDir
+    ? { key: key as SortKey, dir: dir as SortDir }
+    : DEFAULT_SORT;
+}
+
 /** Flatten the active filter values across all groups into one list. */
 function activeValues(f: Filters): string[] {
   return [...f.stack, ...f.status, ...f.affiliation];
@@ -119,12 +141,14 @@ export function ProjectLog({
 
   const filters = useMemo(() => filtersFromParams(params), [params]);
   const hasAnyFilter = filterCount(filters) > 0;
+  const sort = useMemo(() => parseSort(params.get("s")), [params]);
 
   const [open, setOpen] = useState<string | null>(null);
 
+  // Filter first, then sort the smaller list — order is identical either way.
   const rows = useMemo(
-    () => projects.filter((p) => matchesFilters(p, filters)),
-    [projects, filters],
+    () => sortProjects(projects.filter((p) => matchesFilters(p, filters)), sort),
+    [projects, filters, sort],
   );
 
   // Only an empty state when filters are active — an empty list with no
