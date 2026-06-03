@@ -275,25 +275,37 @@ function drawStorm(
   ctx.restore();
 }
 
-/** A small dart pointing along the heading, in the site accent. */
+/**
+ * Top-down glider silhouette, taken from the Glider.pdf vector asset. The path
+ * is in the PDF's own units (40×19, Y up) with the nose at the bottom; we draw
+ * it centred on its bounding box and rotated a quarter-turn so the nose points
+ * along the heading (+X). Built as a Path2D once (browser only) in the effect.
+ */
+const GLIDER_PATH_D =
+  "M 39.552 13.3644 L 31.166 13.5548 L 20.9528 13.5548 C 20.966 13.6992 20.948 14.4332 20.8756 16.1956 C 20.794 18.1832 19.9772 18.9996 19.9772 18.9996 C 19.9772 18.9996 19.1604 18.1828 19.0788 16.1956 C 19.006 14.4332 18.9876 13.6992 19.0012 13.5548 L 8.7872 13.5548 L 0.402 13.3644 C 0.402 13.3644 0.0208 13.31 0.0208 13.0104 C 0.0208 12.7108 0.0208 12.3024 0.0208 12.3024 L 7.5012 11.6764 L 13.9328 11.3224 C 13.9328 11.3224 18.6556 11.05 18.9152 11.05 C 19.11 11.05 19.1684 10.9248 19.1856 10.7596 L 19.1928 10.5852 L 19.1928 10.5852 C 19.1928 10.5808 19.1928 10.5764 19.1932 10.572 L 19.5092 2.4264 L 16.9548 2.0656 C 16.9548 2.0656 16.5468 1.9296 16.5468 1.6304 C 16.5468 1.3308 16.5468 1.1392 16.5468 1.1392 L 19.5096 0.8396 L 19.7428 1.1824 L 19.9032 0.7096 L 19.9768 0.568 L 20.0504 0.7096 L 20.2104 1.1824 L 20.444 0.84 L 23.4072 1.1396 C 23.4072 1.1396 23.4072 1.3312 23.4072 1.6308 C 23.4072 1.93 22.998 2.066 22.998 2.066 L 20.4448 2.4268 L 20.7608 10.5724 C 20.7612 10.5764 20.7612 10.5808 20.7612 10.5856 L 20.7612 10.5856 L 20.7684 10.76 C 20.7852 10.9252 20.8436 11.0504 21.0384 11.0504 C 21.2976 11.0504 26.0212 11.3228 26.0212 11.3228 L 32.4524 11.6768 L 39.9324 12.3028 C 39.9324 12.3028 39.9324 12.7112 39.9324 13.0108 C 39.9324 13.3096 39.552 13.3644 39.552 13.3644 Z";
+/** Bounding-box centre of the path, in PDF units. */
+const GLIDER_CX = 19.9766;
+const GLIDER_CY = 9.7838;
+/** Scale from PDF units to screen px (≈80px wingspan). */
+const GLIDER_SCALE = 2.0;
+
+/** Draws the vector glider, centred at (sx,sy) and rotated to the heading. */
 function drawGlider(
   ctx: CanvasRenderingContext2D,
   sx: number,
   sy: number,
   heading: number,
   pal: Palette,
+  path: Path2D,
 ) {
   ctx.save();
   ctx.translate(sx, sy);
-  ctx.rotate(heading);
+  ctx.rotate(heading + Math.PI);
+  ctx.scale(GLIDER_SCALE, GLIDER_SCALE);
+  // Map PDF coords (Y up, nose at bottom) → local (centred, nose at +X).
+  ctx.transform(0, 1, -1, 0, GLIDER_CY, -GLIDER_CX);
   ctx.fillStyle = pal.accent;
-  ctx.beginPath();
-  ctx.moveTo(13, 0);
-  ctx.lineTo(-8, -7);
-  ctx.lineTo(-3, 0);
-  ctx.lineTo(-8, 7);
-  ctx.closePath();
-  ctx.fill();
+  ctx.fill(path);
   ctx.restore();
 }
 
@@ -314,6 +326,7 @@ export function GlideCanvas({
 
     let pal = readPalette();
     const fonts: Fonts = readFonts();
+    const gliderPath = new Path2D(GLIDER_PATH_D);
     const lowLabel = t(locale, "glideLow");
     const distanceLabel = t(locale, "glideDistance");
     let dims = fitCanvas(canvas, ctx);
@@ -356,7 +369,7 @@ export function GlideCanvas({
         if (sx + s.r < 0 || sx - s.r > dims.w) continue;
         drawStorm(ctx!, sx, s.yFrac * dims.h, s, pal, clock);
       }
-      drawGlider(ctx!, glider.x - cameraX, glider.y, glider.heading, pal);
+      drawGlider(ctx!, glider.x - cameraX, glider.y, glider.heading, pal, gliderPath);
       drawInstruments(ctx!, dims.w, dims.h, pal, fonts, {
         altM: altitudeM(glider),
         varioMs: varioMs(glider),
