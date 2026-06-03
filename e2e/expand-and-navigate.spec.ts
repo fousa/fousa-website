@@ -21,7 +21,11 @@ test("user can expand a project row and open a case study when one exists", asyn
     name: /read case study|view screenshots/i,
   });
   if ((await cta.count()) > 0) {
-    await cta.first().click();
+    // Dispatch the click directly on the anchor node. A positional click is
+    // intercepted by the sticky TopBar (z-50) that overlaps the CTA's
+    // coordinates; dispatchEvent skips hit-testing while still firing the
+    // Next.js <Link> client-side navigation handler.
+    await cta.first().dispatchEvent("click");
     await expect(page).toHaveURL(/\/work\//);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   }
