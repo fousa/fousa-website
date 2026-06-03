@@ -64,7 +64,7 @@ export function TopBar({ locale }: { locale: Locale }) {
           <GlideGame
             locale={locale}
             iconOnly
-            triggerClassName="-m-2 p-2 transition-opacity hover:opacity-70"
+            triggerClassName="-m-2 rounded p-2 outline-none transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           />
           <Link
             href={localizedHref(locale, "/")}

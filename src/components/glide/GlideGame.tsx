@@ -129,7 +129,7 @@ export function GlideGame({
               type="button"
               onClick={close}
               aria-label={t(locale, "closeRow")}
-              className="absolute right-4 top-4 z-10 font-mono text-xs text-muted transition-colors hover:text-ink"
+              className="absolute right-4 top-4 z-10 rounded font-mono text-xs text-muted outline-none transition-colors hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {t(locale, "escapeToClose")}
             </button>
@@ -151,7 +151,7 @@ export function GlideGame({
                     type="button"
                     autoFocus
                     onClick={relaunch}
-                    className="mt-6 font-display text-[14px] font-semibold text-ink"
+                    className="mt-6 rounded font-display text-[14px] font-semibold text-ink outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
                     {t(locale, "glideLaunchAgain")}
                     <span aria-hidden className="text-accent"> →</span>
