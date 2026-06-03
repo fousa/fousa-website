@@ -275,9 +275,6 @@ export function ProjectLog({
                     >
                       {p.name}
                     </span>
-                    {p.featureTooling && (
-                      <ToolingChip label={t(locale, "toolingChip")} />
-                    )}
                     <StatusDot state={p.state} locale={locale} />
                   </div>
                   <div className="mt-[5px] text-[12.5px] text-muted">
@@ -294,6 +291,11 @@ export function ProjectLog({
                       className={`px-5 pb-5 transition-opacity delay-[80ms] duration-150 ${open === p.slug ? "opacity-100" : "opacity-0"}`}
                     >
                       <div className="border-l-2 border-accent pl-4">
+                        {p.featureTooling && (
+                          <div className="mb-[10px] -ml-2">
+                            <ToolingChip label={t(locale, "toolingChip")} />
+                          </div>
+                        )}
                         <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
                           {p.summary}
                         </p>
@@ -374,17 +376,13 @@ function Row({
           </span>
           {p.depth !== "none" && (
             // Coral arrow hint for navigable rows: hidden until row hover,
-            // then fades + slides in 4px. Reserves its own width so the
-            // tooling chip never shifts.
+            // then fades + slides in 4px.
             <span
               aria-hidden
               className="ml-1.5 inline-block -translate-x-1 text-accent opacity-0 transition duration-[180ms] ease-out group-hover:translate-x-0 group-hover:opacity-100"
             >
               →
             </span>
-          )}
-          {p.featureTooling && (
-            <ToolingChip label={t(locale, "toolingChip")} />
           )}
         </td>
         <td className="px-11 py-5 align-top">
@@ -412,6 +410,11 @@ function Row({
                 className={`px-11 pb-7 transition-opacity delay-[80ms] duration-150 ${open ? "opacity-100" : "opacity-0"}`}
               >
                 <div className="max-w-[580px] border-l-2 border-accent pl-5">
+                  {p.featureTooling && (
+                    <div className="mb-[14px] -ml-2">
+                      <ToolingChip label={t(locale, "toolingChip")} />
+                    </div>
+                  )}
                   <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
                     {p.summary}
                   </p>

@@ -24,6 +24,7 @@ import { altMetadata } from "@/lib/seo";
 import { buildProjectJsonLd } from "@/lib/json-ld";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { StatusDot } from "@/components/work/StatusDot";
+import { ToolingChip } from "@/components/work/ToolingChip";
 import { PortableTextRenderer } from "@/components/portable-text";
 import { Frame } from "@/components/work/Frame";
 import type {
@@ -145,6 +146,11 @@ export default async function DetailPage({
         <p className="mt-3 max-w-[520px] text-[15px] leading-[1.6] text-text">
           {project.summary}
         </p>
+        {project.featureTooling && (
+          <div className="mt-4 -ml-2">
+            <ToolingChip label={t(locale, "toolingChip")} />
+          </div>
+        )}
 
         <div className="mt-8 grid grid-cols-2 gap-6 md:flex md:gap-12">
           <div>

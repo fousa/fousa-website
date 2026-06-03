@@ -209,6 +209,8 @@ export async function getProject(
       '',
     depth: hasBody ? 'full' : gallery.length > 0 ? 'gallery' : 'none',
     gallery,
+    tooling: pickLocale(typeof row.tooling === 'object' ? row.tooling : null, locale),
+    featureTooling: row.featureTooling ?? false,
   }
 }
 
