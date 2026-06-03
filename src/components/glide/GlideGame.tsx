@@ -43,6 +43,7 @@ export function GlideGame({
   locale,
   triggerClassName = "transition-colors hover:text-ink",
   iconOnly = false,
+  withArrow = false,
   onLaunch,
 }: {
   locale: Locale;
@@ -50,6 +51,8 @@ export function GlideGame({
   triggerClassName?: string;
   /** Render just the airplane glyph; the label becomes screen-reader only. */
   iconOnly?: boolean;
+  /** Render as a text link with the coral arrow (matches the "Hire me" link). */
+  withArrow?: boolean;
   /** Called when the game opens — lets a mobile menu close itself. */
   onLaunch?: () => void;
 }) {
@@ -106,12 +109,22 @@ export function GlideGame({
         ref={triggerRef}
         type="button"
         onClick={launch}
-        className={`inline-flex items-center gap-1.5 ${triggerClassName}`}
+        className={
+          withArrow
+            ? triggerClassName
+            : `inline-flex items-center gap-1.5 ${triggerClassName}`
+        }
       >
-        <PlaneIcon />
-        <span className={iconOnly ? "sr-only" : undefined}>
+        {!withArrow && <PlaneIcon />}
+        <span className={iconOnly && !withArrow ? "sr-only" : undefined}>
           {t(locale, "playGame")}
         </span>
+        {withArrow && (
+          <span aria-hidden className="text-accent">
+            {" "}
+            →
+          </span>
+        )}
       </button>
 
       {open &&
