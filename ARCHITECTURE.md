@@ -87,11 +87,20 @@ Grouped by domain under `src/components/`:
 - **home/** `HomeLead` · **theme/** `ThemeToggle` · **brand/** `Wordmark` · **seo/** `JsonLd`.
 
 The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDepth`,
-`matchesFilters`) plus `lib/work-display.ts` (`forLabel` — the single source for the
-"For" label from employer + client). Filtering is six chips in three groups —
-**stack** (`apple` | `web`), **status** (`active`), **affiliation**
+`matchesFilters`, plus the sort model `compareProjects` / `sortProjects`) plus
+`lib/work-display.ts` (`forLabel` — the single source for the "For" label from
+employer + client). Filtering is six chips in three groups — **stack**
+(`apple` | `web`), **status** (`active`), **affiliation**
 (`freelance` | `icapps` | `10to1`) — OR within a group, AND across groups, all
 URL-backed via `useSearchParams`. The per-helper rules live in their JSDoc.
+
+**Sorting** is desktop-only: the **Project**, **Year**, and **State** column headers
+toggle asc⇄desc, persisted as `?s=<key>-<dir>` (omitted when it equals the default).
+`DEFAULT_SORT` is `year` desc, and `compareProjects` always falls back to the same
+deterministic chain — year desc → state rank → name (`localeCompare`) — so ties are
+stable and "no sort" equals that chain with no special casing. `sortProjects` never
+mutates its input. Rows are filtered first, then sorted. Mobile renders the same
+sorted `rows` with no sort UI, so a shared `?s=` link still orders correctly.
 
 ## Accessibility decisions
 
@@ -106,6 +115,9 @@ than formal WCAG certification:
   out of the tab order. Both desktop and mobile toggles expose `aria-expanded`.
 - **Live regions**: the filtered-count line and empty state use
   `role="status" aria-live="polite"` so filter changes are announced.
+- **Sortable headers**: each sortable `<th>` carries `aria-sort`
+  (`ascending`/`descending` on the active column, `none` otherwise); the ↑/↓/↕ caret
+  is `aria-hidden`, and the header button shares the rows' `focus-visible` ring.
 - **Decorative glyphs** (arrows, dots) are `aria-hidden`; the label/word carries meaning.
 - **Focus management**: the mobile menu traps + restores focus, closes on Escape,
   and is wired with `aria-controls` + a localized label.
@@ -152,5 +164,5 @@ both on push and PR.
   as repository secrets for build + E2E.
 - **Analytics** — Vercel Analytics (cookie-less), mounted once in the locale layout.
   Custom events go through the typed `track()` wrapper (`lib/analytics.ts`):
-  `project_expand`, `project_open`, `filter_select`, `empty_state_shown`,
-  `locale_switch`, `theme_toggle`, `outbound_click`.
+  `project_expand`, `project_open`, `filter_select`, `sort_change`,
+  `empty_state_shown`, `locale_switch`, `theme_toggle`, `outbound_click`.
