@@ -52,7 +52,7 @@ const CHIPS: ChipDef[] = [
 ];
 
 /** Map table column headers to i18n keys. */
-const COLUMNS = ["project", "for", "stack", "role", "year", "state"] as const;
+const COLUMNS = ["project", "for", "stack", "year", "state"] as const;
 
 // ---------------------------------------------------------------------------
 // URL ↔ Filters helpers
@@ -363,6 +363,11 @@ export function ProjectLog({
                         <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
                           {p.summary}
                         </p>
+                        {p.role && (
+                          <p className="mb-2 text-[13px] font-semibold text-ink">
+                            {p.role}
+                          </p>
+                        )}
                         {p.tooling && (
                           <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted">
                             {t(locale, "toolingPrefix")} ·{" "}
@@ -497,7 +502,6 @@ function Row({
           <ForLabelInline f={forLabel(p, t(locale, "personal"))} />
         </td>
         <td className="px-11 py-5 align-top">{p.stack}</td>
-        <td className="px-11 py-5 align-top">{p.role}</td>
         <td className="px-11 py-5 align-top font-mono text-[13px] text-muted">
           {p.year}
         </td>
@@ -508,7 +512,7 @@ function Row({
       {/* Expansion stays mounted so the 0fr→1fr grid track can animate height;
           `inert` keeps the collapsed body out of the tab order. */}
       <tr className={open ? "[&>td]:bg-hover" : ""}>
-        <td colSpan={6} className="p-0">
+        <td colSpan={5} className="p-0">
           <div
             className={`grid transition-[grid-template-rows] duration-[220ms] ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
           >
@@ -526,6 +530,11 @@ function Row({
                   <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
                     {p.summary}
                   </p>
+                  {p.role && (
+                    <p className="mb-3 text-[14.5px] font-semibold text-ink">
+                      {p.role}
+                    </p>
+                  )}
                   {p.tooling && (
                     <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
                       {t(locale, "toolingPrefix")} ·{" "}
