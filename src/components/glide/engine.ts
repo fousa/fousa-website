@@ -78,14 +78,19 @@ export function altitudeM(g: Glider): number {
   return g.alt * GLIDE.CLOUDBASE_M;
 }
 
-/** Fresh glider at cruise, mid-screen, with some height to play with. */
+/**
+ * Fresh glider at cruise, mid-screen. Launch altitude sits below almost every
+ * thermal's top (tops range 0.38–0.95) so circling a thermal reliably climbs
+ * up to that thermal's top — otherwise most early thermals would already be
+ * topped out and give no lift.
+ */
 export function createGlider(viewH: number): Glider {
   return {
     x: 0,
     y: viewH * 0.5,
     heading: 0,
     speed: GLIDE.CRUISE,
-    alt: 0.7,
+    alt: 0.45,
     vario: 0,
     maxX: 0,
   };
