@@ -77,7 +77,8 @@ export const project = defineType({
       title: 'End year',
       type: 'number',
       group: 'basics',
-      description: 'Leave empty for ongoing projects.',
+      description:
+        'Leave empty for a single-year project, or for an ongoing one — active/maintained projects with no end year show as “–present”.',
       validation: (Rule) =>
         Rule.min(1990)
           .max(new Date().getFullYear() + 1)
