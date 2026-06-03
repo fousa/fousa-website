@@ -22,6 +22,7 @@ import { localizedHref } from "@/lib/href";
 import { altMetadata } from "@/lib/seo";
 import { buildProjectJsonLd } from "@/lib/json-ld";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { OutboundLink } from "@/components/layout/OutboundLink";
 import { StatusDot } from "@/components/work/StatusDot";
 import { ToolingChip } from "@/components/work/ToolingChip";
 import { PortableTextRenderer } from "@/components/portable-text";
@@ -203,6 +204,34 @@ export default async function DetailPage({
             </div>
           </div>
         </div>
+
+        {/* External links — only render the ones that exist. */}
+        {(project.links.live ||
+          project.links.github ||
+          project.links.writeup) && (
+          <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+            {(
+              [
+                { href: project.links.live, kind: "live", label: t(locale, "linkLive") },
+                { href: project.links.github, kind: "github", label: t(locale, "linkSource") },
+                { href: project.links.writeup, kind: "writeup", label: t(locale, "linkWriteup") },
+              ] as const
+            )
+              .filter((l) => l.href)
+              .map((l) => (
+                <OutboundLink
+                  key={l.kind}
+                  kind={l.kind}
+                  href={l.href as string}
+                  locale={locale}
+                  className="font-display text-sm font-semibold text-ink transition-colors hover:text-accent"
+                >
+                  {l.label}
+                  <span aria-hidden className="text-accent"> →</span>
+                </OutboundLink>
+              ))}
+          </div>
+        )}
       </header>
 
       {/* Full case study: cover + body */}
