@@ -205,6 +205,31 @@ export function ProjectLog({
     writeUrl({ stack: [], status: [], affiliation: [] });
   }, [filters, writeUrl, locale]);
 
+  /**
+   * Sort a column: toggle asc⇄desc on the active column, else apply that
+   * column's natural default (year → newest-first, others → ascending). The
+   * `?s=` param is omitted entirely when it equals the page default.
+   */
+  const setSort = useCallback(
+    (key: SortKey) => {
+      const nextDir: SortDir =
+        sort.key === key
+          ? sort.dir === "asc"
+            ? "desc"
+            : "asc"
+          : key === "year"
+            ? "desc"
+            : "asc";
+      const sp = new URLSearchParams(params);
+      if (key === DEFAULT_SORT.key && nextDir === DEFAULT_SORT.dir) sp.delete("s");
+      else sp.set("s", `${key}-${nextDir}`);
+      const qs = sp.toString();
+      const hash = typeof window !== "undefined" ? window.location.hash : "";
+      router.replace(`${pathname}${qs ? `?${qs}` : ""}${hash}`, { scroll: false });
+    },
+    [sort, params, pathname, router],
+  );
+
   const toggleRow = (slug: string) => {
     setOpen((c) => (c === slug ? null : slug));
     if (open !== slug) {
@@ -261,11 +286,25 @@ export function ProjectLog({
           <table className="hidden w-full border-collapse md:table">
             <thead>
               <tr className="text-left font-mono text-[11px] uppercase tracking-[0.09em] text-faint">
-                {COLUMNS.map((h) => (
-                  <th key={h} className="px-11 py-[18px] align-top font-semibold">
-                    {t(locale, h)}
-                  </th>
-                ))}
+                {COLUMNS.map((h) =>
+                  (SORT_KEYS as string[]).includes(h) ? (
+                    <SortHeader
+                      key={h}
+                      label={t(locale, h)}
+                      columnKey={h as SortKey}
+                      sort={sort}
+                      onSort={setSort}
+                    />
+                  ) : (
+                    <th
+                      key={h}
+                      scope="col"
+                      className="px-11 py-[18px] align-top font-semibold"
+                    >
+                      {t(locale, h)}
+                    </th>
+                  ),
+                )}
               </tr>
             </thead>
             <tbody>
@@ -362,6 +401,50 @@ export function ProjectLog({
         </div>
       )}
     </section>
+  );
+}
+
+/**
+ * Clickable desktop column header. `aria-sort` on the `<th>` carries the
+ * meaning for assistive tech; the caret is decorative (active column shows
+ * ↑/↓, others reveal a faint ↕ on hover to hint they're sortable).
+ */
+function SortHeader({
+  label,
+  columnKey,
+  sort,
+  onSort,
+}: {
+  label: string;
+  columnKey: SortKey;
+  sort: Sort;
+  onSort: (key: SortKey) => void;
+}) {
+  const active = sort.key === columnKey;
+  return (
+    <th
+      scope="col"
+      aria-sort={
+        active ? (sort.dir === "asc" ? "ascending" : "descending") : "none"
+      }
+      className="px-11 py-[18px] align-top font-semibold"
+    >
+      <button
+        type="button"
+        onClick={() => onSort(columnKey)}
+        className="group inline-flex cursor-pointer items-center gap-1 font-mono text-[11px] uppercase tracking-[0.09em] text-faint transition-colors hover:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+      >
+        {label}
+        <span
+          aria-hidden
+          className={`text-[10px] transition-opacity ${
+            active ? "text-ink opacity-100" : "opacity-0 group-hover:opacity-40"
+          }`}
+        >
+          {active ? (sort.dir === "asc" ? "↑" : "↓") : "↕"}
+        </span>
+      </button>
+    </th>
   );
 }
 
