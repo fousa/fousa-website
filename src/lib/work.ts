@@ -10,6 +10,7 @@ import {fetchSanity} from '@/sanity/fetch'
 import {PROJECTS_QUERY} from '@/sanity/queries/projects'
 import {CASE_STUDY_QUERY, CASE_STUDY_SLUGS_QUERY} from '@/sanity/queries/case-study'
 import {EMPTY_STATES_QUERY} from '@/sanity/queries/empty-states'
+import {isToolProject} from '@/lib/work-display'
 import {pickLocale} from '@/i18n/pick-locale'
 import type {Locale} from '@/i18n/config'
 import type {PROJECTS_QUERY_RESULT, CASE_STUDY_QUERY_RESULT, CASE_STUDY_SLUGS_QUERY_RESULT, EMPTY_STATES_QUERY_RESULT} from '@/sanity.types'
@@ -74,11 +75,18 @@ export function projectDepth(p: { hasBody?: boolean | null; galleryCount?: numbe
 export type StackFilter = 'apple' | 'web'
 export type StatusFilter = 'active'
 export type AffiliationFilter = 'freelance' | 'icapps' | '10to1'
+export type ToolFilter = 'tools'
 
 export type Filters = {
   stack: StackFilter[]
   status: StatusFilter[]
   affiliation: AffiliationFilter[]
+  /**
+   * Personal utilities — projects that read as "Tool" in the For column. A
+   * single-value axis (the only key is `tools`); it carries the same definition
+   * as the label via `isToolProject`, so the chip and the label can't disagree.
+   */
+  tool: ToolFilter[]
   /**
    * Arbitrary stack-tag keys (slugs) from the About "Skills" deep-links, e.g.
    * `swift` or `ruby-on-rails`. Unlike the curated groups this has no fixed
@@ -130,6 +138,7 @@ function hasSkill(p: Project, key: string): boolean {
 export function matchesFilters(p: Project, f: Filters): boolean {
   if (f.stack.length && !f.stack.some((s) => hasTag(p, STACK_TAG_SETS[s]))) return false
   if (f.status.includes('active') && !isActive(p)) return false
+  if (f.tool.includes('tools') && !isToolProject(p)) return false
   if (f.affiliation.length) {
     const match = f.affiliation.some((a) =>
       a === 'freelance'
