@@ -10,6 +10,7 @@ import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 import { localizedHref } from "@/lib/href";
 import { Wordmark } from "@/components/brand/Wordmark";
+import { GlideGame } from "@/components/glide/GlideGame";
 import { useScrolled } from "./use-scrolled";
 
 export function TopBar({ locale }: { locale: Locale }) {
@@ -59,12 +60,22 @@ export function TopBar({ locale }: { locale: Locale }) {
         ].join(" ")}
       >
       <div className="flex items-center justify-between px-5 py-5 md:px-11">
-        <Link
-          href={localizedHref(locale, "/")}
-          className="font-display text-[19px] font-bold tracking-[-0.02em]"
-        >
-          <Wordmark />
-        </Link>
+        {/* The Glide game hides here: the plane glyph fades in only when the
+            wordmark group is hovered or the trigger is focused. The trigger
+            sits beside the home link (not nested) to keep valid anchor markup. */}
+        <div className="group inline-flex items-center gap-1.5">
+          <Link
+            href={localizedHref(locale, "/")}
+            className="font-display text-[19px] font-bold tracking-[-0.02em]"
+          >
+            <Wordmark />
+          </Link>
+          <GlideGame
+            locale={locale}
+            iconOnly
+            triggerClassName="rounded text-muted opacity-0 transition-[opacity,color] duration-200 hover:text-ink focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent group-hover:opacity-100 motion-reduce:transition-none"
+          />
+        </div>
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-7 text-sm font-medium text-muted md:flex">
