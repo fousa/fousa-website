@@ -206,12 +206,12 @@ export default async function DetailPage({
         </div>
 
         {/* External links — only render the ones that exist. */}
-        {(project.links.live || project.links.github) && (
+        {(project.links?.live || project.links?.github) && (
           <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
             {(
               [
-                { href: project.links.live, kind: "live", label: t(locale, "linkLive") },
-                { href: project.links.github, kind: "github", label: t(locale, "linkSource") },
+                { href: project.links?.live, kind: "live", label: t(locale, "linkLive") },
+                { href: project.links?.github, kind: "github", label: t(locale, "linkSource") },
               ] as const
             )
               .filter((l) => l.href)

@@ -45,6 +45,12 @@ export type Project = {
   depth: Depth
   gallery: GalleryShot[]
   featureTooling?: boolean | null
+  /**
+   * External links carried on every project (not just the detail page) so the
+   * log row can surface them on case-study-less "tool" rows. Absent only on
+   * hand-built fixtures; mapped rows always set both to a value or null.
+   */
+  links?: { live: string | null; github: string | null }
 }
 
 /**
@@ -219,6 +225,8 @@ type ProjectBaseRow = {
   summary: { en?: string; nl?: string } | null
   deck: { en?: string; nl?: string } | null
   featureTooling: boolean | null
+  liveUrl: string | null
+  githubUrl: string | null
 }
 
 /**
@@ -244,6 +252,10 @@ function mapProjectBase(row: ProjectBaseRow, locale: Locale): Omit<Project, 'dep
     tagSlugs: stackTags.map((s) => s?.slug).filter((s): s is string => Boolean(s)),
     summary: pickLocale(row.summary, locale) ?? pickLocale(row.deck, locale) ?? '',
     featureTooling: row.featureTooling ?? false,
+    links: {
+      live: row.liveUrl ?? null,
+      github: row.githubUrl ?? null,
+    },
   }
 }
 
@@ -282,7 +294,6 @@ export type ProjectDetail = Project & {
   body: unknown[] | null
   cover: { url: string; alt: string | null } | null
   deck: string | null
-  links: { live: string | null; github: string | null }
   related: { slug: string; name: string; year: number | null }[]
 }
 
@@ -326,10 +337,6 @@ export async function getProjectDetail(
     body: body ?? null,
     cover: row.coverUrl ? { url: row.coverUrl, alt: row.coverAlt ?? null } : null,
     deck: pickLocale(row.deck, locale),
-    links: {
-      live: row.liveUrl ?? null,
-      github: row.githubUrl ?? null,
-    },
     related: (row.related ?? [])
       .filter((r) => r.slug)
       .map((r) => ({ slug: r.slug as string, name: r.name ?? '', year: r.year ?? null })),
