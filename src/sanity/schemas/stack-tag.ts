@@ -29,6 +29,23 @@ export const stackTag = defineType({
       options: {source: 'name', maxLength: 32},
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: 'category',
+      title: 'Category',
+      type: 'string',
+      description: 'Groups this skill on the About page. Leave empty to park it under “Other”.',
+      options: {
+        list: [
+          {title: 'Language', value: 'language'},
+          {title: 'Framework', value: 'framework'},
+          {title: 'Platform', value: 'platform'},
+          {title: 'Apple capability', value: 'apple'},
+          {title: 'Service / integration', value: 'service'},
+          {title: 'Infrastructure', value: 'infra'},
+        ],
+        layout: 'dropdown',
+      },
+    }),
   ],
   orderings: [
     {
