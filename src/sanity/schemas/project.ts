@@ -139,6 +139,14 @@ export const project = defineType({
       description: 'Featured projects appear higher in the log and on the about page "selected work" section.',
       initialValue: false,
     }),
+    defineField({
+      name: 'isTool',
+      title: 'Personal tool/utility?',
+      type: 'boolean',
+      group: 'basics',
+      description: 'Tick for a personal utility (e.g. an nvim config) — its "For" column reads "Tool" instead of "Personal". Only applies to projects with no employer/client.',
+      initialValue: false,
+    }),
 
     // — Tooling
     defineField({

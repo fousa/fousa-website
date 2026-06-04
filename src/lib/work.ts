@@ -45,6 +45,8 @@ export type Project = {
   depth: Depth
   gallery: GalleryShot[]
   featureTooling?: boolean | null
+  /** Manually flagged in Studio: a personal utility, so the "For" column reads "Tool". */
+  isTool?: boolean | null
   /**
    * External links carried on every project (not just the detail page) so the
    * log row can surface them on case-study-less "tool" rows. Absent only on
@@ -225,6 +227,7 @@ type ProjectBaseRow = {
   summary: { en?: string; nl?: string } | null
   deck: { en?: string; nl?: string } | null
   featureTooling: boolean | null
+  isTool: boolean | null
   liveUrl: string | null
   githubUrl: string | null
 }
@@ -252,6 +255,7 @@ function mapProjectBase(row: ProjectBaseRow, locale: Locale): Omit<Project, 'dep
     tagSlugs: stackTags.map((s) => s?.slug).filter((s): s is string => Boolean(s)),
     summary: pickLocale(row.summary, locale) ?? pickLocale(row.deck, locale) ?? '',
     featureTooling: row.featureTooling ?? false,
+    isTool: row.isTool ?? false,
     links: {
       live: row.liveUrl ?? null,
       github: row.githubUrl ?? null,

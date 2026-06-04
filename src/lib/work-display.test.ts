@@ -37,44 +37,25 @@ describe("forLabel", () => {
 
 const base = { employer: null, client: null };
 
-describe("forLabel — Tool derivation", () => {
-  it("is Tool when personal + no case study + has a link", () => {
-    expect(
-      forLabel({ ...base, depth: "none", links: { github: "https://gh/x" } }),
-    ).toEqual({ kind: "tool" });
+describe("forLabel — Tool flag", () => {
+  it("is Tool when personal + the isTool flag is set", () => {
+    expect(forLabel({ ...base, isTool: true })).toEqual({ kind: "tool" });
   });
 
-  it("is NOT Tool when it has a case study (depth full), even with a link", () => {
-    expect(
-      forLabel({ ...base, depth: "full", links: { github: "https://gh/x" } }),
-    ).toEqual({ kind: "personal" });
+  it("is NOT Tool when the flag is unset, even for a personal project", () => {
+    expect(forLabel({ ...base, isTool: false })).toEqual({ kind: "personal" });
+    expect(forLabel({ ...base })).toEqual({ kind: "personal" });
   });
 
-  it("is NOT Tool when personal + no link (just an un-writtenup personal project)", () => {
-    expect(forLabel({ ...base, depth: "none", links: {} })).toEqual({
-      kind: "personal",
-    });
-  });
-
-  it("keeps the client relationship even when case-study-less with a link", () => {
+  it("keeps the client relationship over the Tool flag", () => {
     expect(
-      forLabel({
-        employer: null,
-        client: "Telenet",
-        depth: "none",
-        links: { live: "https://x" },
-      }),
+      forLabel({ employer: null, client: "Telenet", isTool: true }),
     ).toEqual({ kind: "single", text: "Telenet" });
   });
 
-  it("keeps employer → client over Tool", () => {
+  it("keeps employer → client over the Tool flag", () => {
     expect(
-      forLabel({
-        employer: { name: "icapps" },
-        client: "Telenet",
-        depth: "none",
-        links: { github: "https://x" },
-      }),
+      forLabel({ employer: { name: "icapps" }, client: "Telenet", isTool: true }),
     ).toEqual({ kind: "via", employer: "icapps", client: "Telenet" });
   });
 });

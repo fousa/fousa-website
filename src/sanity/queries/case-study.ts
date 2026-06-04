@@ -29,6 +29,7 @@ export const CASE_STUDY_QUERY = defineQuery(`
     githubUrl,
     featured,
     featureTooling,
+    isTool,
     "employer": employer->{
       _id,
       "name": organisation,

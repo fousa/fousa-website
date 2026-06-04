@@ -20,6 +20,7 @@ export const PROJECTS_QUERY = defineQuery(`
     state,
     engagement,
     featured,
+    isTool,
     role,
     client,
     deck,

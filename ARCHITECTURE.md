@@ -61,10 +61,11 @@ and three collections.
   it's still live.
   Detail depth is derived from content — `body` → full case study,
   `gallery` → framed screenshots, neither → no detail page. A depth-`none`
-  project that carries an external link (`githubUrl` / `liveUrl`) is a **tool**:
-  no case study, but its log row surfaces "Source ↗" / "Open ↗" out to the link
-  instead of an internal CTA. No `isTool` flag — like depth, the behaviour
-  derives from the data shape.
+  project that carries an external link (`githubUrl` / `liveUrl`) surfaces
+  "Source ↗" / "Open ↗" in its log row instead of an internal CTA — derived from
+  depth + links, no flag. The "Tool" *label* in the "For" column is separate and
+  is a manual `isTool` boolean (see below): too many case-study-less personal
+  projects carry a link without being a tool, so the call is the editor's.
 
 Translatable fields are `{ en, nl }` objects (helpers in `sanity/fields/i18n.ts`),
 so both locales sit side by side in one document and Dutch falls back to English
@@ -98,11 +99,12 @@ Grouped by domain under `src/components/`:
 The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDepth`,
 `matchesFilters`, plus the sort model `compareProjects` / `sortProjects`) plus
 `lib/work-display.ts` (`forLabel` — the single source for the "For" label from
-employer + client). When a project has neither, `forLabel` reads "Tool" if it's a
-case-study-less project with an external link (`isTool`: depth `none` + github/live),
-else "Personal" — derived, no flag. This is **stricter** than the Source-↗ rule:
-employer/client are checked first, so a client product with a link keeps its
-relationship label (and still shows its Source link on expand). All three render
+employer + client). When a project has neither, `forLabel` reads "Tool" if the
+manual `isTool` Studio flag is set, else "Personal". Employer/client are checked
+first, so a client product keeps its relationship label even if `isTool` is ticked
+(and still shows its Source link on expand). The Tool *label* is deliberately
+manual — separate from the derived Source-↗ link rule — because too many
+case-study-less personal projects carry a link without being a tool. All three render
 sites (desktop row, mobile meta, case-study meta) go through the shared `ForCell`
 (`components/work/ForCell.tsx`) so the label never drifts. `mapProjectBase` is the one mapper for the fields the log row
 and the detail page share (slug/name/employer/stack/year/locale-resolved summary…,
