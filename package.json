@@ -14,6 +14,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "seed:stack-tags": "tsx -r dotenv/config scripts/seed-stack-tags.ts dotenv_config_path=.env.local",
+    "seed:skill-categories": "tsx -r dotenv/config scripts/seed-skill-categories.ts dotenv_config_path=.env.local",
+    "seed:skill-categories:dry": "tsx -r dotenv/config scripts/seed-skill-categories.ts dotenv_config_path=.env.local --dry-run",
     "backup": "sanity dataset export production backups/dataset-$(date +%Y%m%d-%H%M%S).tar.gz",
     "migrate:content": "tsx -r dotenv/config scripts/migrate-content.ts dotenv_config_path=.env.local",
     "migrate:content:dry": "tsx -r dotenv/config scripts/migrate-content.ts dotenv_config_path=.env.local --dry-run",
