@@ -29,8 +29,10 @@
   "dependencies": {
     "@portabletext/react": "^6.2.0",
     "@sanity/client": "^7.22.0",
+    "@sanity/orderable-document-list": "^1.5.1",
     "@sanity/vision": "^5.26.0",
     "@vercel/analytics": "^2.0.1",
+    "lexorank": "^1.0.5",
     "next": "16.2.6",
     "next-sanity": "^13.0.3",
     "react": "19.2.4",
