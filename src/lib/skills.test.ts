@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { sizeSkills, driftOffset, displayOrder, meaningful } from "./skills";
+import { sizeSkills, driftOffset, displayOrder } from "./skills";
 
 const mk = (key: string, count: number) => ({ key, name: key, count });
 
@@ -32,14 +32,5 @@ describe("displayOrder", () => {
     const o2 = displayOrder(s).map((x) => x.key);
     expect(o1).toEqual(o2);
     expect([...o1].sort()).toEqual(["a", "b", "c"]);
-  });
-});
-
-describe("meaningful", () => {
-  it("keeps only count ≥ 2", () => {
-    expect(meaningful([mk("a", 1), mk("b", 2), mk("c", 5)]).map((x) => x.key)).toEqual([
-      "b",
-      "c",
-    ]);
   });
 });

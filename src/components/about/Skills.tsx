@@ -2,26 +2,17 @@
 /**
  * Type-scaled skills cloud for the About page. Size encodes how many projects
  * use each skill (five quantile steps), monochrome, with gentle deterministic
- * drift so the baseline reads organic rather than gridded. Skills used in ≥2
- * projects show by default; a "show all" toggle reveals the single-use tail.
+ * drift so the baseline reads organic rather than gridded. Every skill is shown.
  * Each skill links into the work log filtered by that skill (`?skill=<key>`).
  *
- * Sizing is computed over the FULL set, so a tag never changes size when the
- * tail toggles — tags only appear or disappear. Drift and order derive from a
- * stable key hash, so server and client render identically (no hydration
- * mismatch, no jitter).
+ * Drift and order derive from a stable key hash, so server and client render
+ * identically (no hydration mismatch, no jitter).
  */
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { localizedHref } from "@/lib/href";
 import { track } from "@/lib/analytics";
-import {
-  sizeSkills,
-  driftOffset,
-  displayOrder,
-  meaningful,
-  type Skill,
-} from "@/lib/skills";
+import { sizeSkills, driftOffset, displayOrder, type Skill } from "@/lib/skills";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 
@@ -41,14 +32,8 @@ export function Skills({
   skills: Skill[];
   locale: Locale;
 }) {
-  const [showAll, setShowAll] = useState(false);
-
-  const steps = useMemo(() => sizeSkills(skills), [skills]); // over the FULL set
-  const visible = useMemo(
-    () => displayOrder(showAll ? skills : meaningful(skills)),
-    [skills, showAll],
-  );
-  const hiddenCount = skills.length - meaningful(skills).length;
+  const steps = useMemo(() => sizeSkills(skills), [skills]);
+  const visible = useMemo(() => displayOrder(skills), [skills]);
 
   return (
     <div className="mt-4">
@@ -69,24 +54,6 @@ export function Skills({
           </Link>
         ))}
       </div>
-
-      {hiddenCount > 0 && (
-        <div className="pt-5">
-          <button
-            type="button"
-            onClick={() => setShowAll((v) => !v)}
-            aria-expanded={showAll}
-            className="font-mono text-[12px] tracking-[0.04em] text-muted transition-colors hover:text-accent cursor-pointer"
-          >
-            {showAll
-              ? t(locale, "skills.showFewer")
-              : t(locale, "skills.showAll").replace("{n}", String(skills.length))}
-            <span className="text-accent" aria-hidden>
-              {showAll ? " ←" : " →"}
-            </span>
-          </button>
-        </div>
-      )}
     </div>
   );
 }

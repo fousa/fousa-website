@@ -87,17 +87,6 @@ export function displayOrder(skills: Skill[]): Skill[] {
 }
 
 /**
- * The skills shown by default: those used in 2+ projects. The single-use tail
- * is hidden until the "show all" toggle reveals it.
- *
- * @param skills - the complete skill set
- * @returns only the skills with count ≥ 2
- */
-export function meaningful(skills: Skill[]): Skill[] {
-  return skills.filter((s) => s.count >= 2)
-}
-
-/**
  * Fetch every stack tag used by at least one project, most-used first.
  * Rows missing a slug or name are dropped — a skill with no filter key can't
  * be linked, and one with no display name has nothing to show.
