@@ -4,12 +4,17 @@ import {visionTool} from '@sanity/vision'
 import {apiVersion, dataset, projectId} from '@/sanity/env'
 import {structure, SINGLETONS} from '@/sanity/structure'
 import {schemaTypes} from '@/sanity/schemas'
+import {StudioLayout} from '@/sanity/components/StudioLayout'
 
 export default defineConfig({
   basePath: '/studio',
   projectId,
   dataset,
   schema: {types: schemaTypes},
+  studio: {
+    // Filter invalid DOM props (silences styled-components forwarding warnings).
+    components: {layout: StudioLayout},
+  },
   document: {
     /**
      * Hide "create" and "delete" actions for singleton document types.

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@emotion/is-prop-valid':
+        specifier: ^1.4.0
+        version: 1.4.0
       '@portabletext/react':
         specifier: ^6.2.0
         version: 6.2.0(react@19.2.4)
