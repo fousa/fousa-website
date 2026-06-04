@@ -101,3 +101,29 @@ describe("matchesFilters", () => {
     expect(matchesFilters(ended, makeFilters({ skill: ["swift"], status: ["active"] }))).toBe(false);
   });
 });
+
+describe("Tools filter", () => {
+  // The Tools axis matches via isToolProject (forLabel kind === "tool"): a
+  // personal utility with no employer or client and the manual isTool flag set.
+  it("matches a personal utility (reads as Tool)", () => {
+    const tool = makeProject({ isTool: true });
+    expect(matchesFilters(tool, makeFilters({ tool: ["tools"] }))).toBe(true);
+  });
+
+  it("does NOT match a client product, even with the isTool flag set", () => {
+    const clientP = makeProject({ client: "Telenet", isTool: true });
+    expect(matchesFilters(clientP, makeFilters({ tool: ["tools"] }))).toBe(false);
+  });
+
+  it("does NOT match a personal project without the isTool flag", () => {
+    const personal = makeProject({ isTool: false });
+    expect(matchesFilters(personal, makeFilters({ tool: ["tools"] }))).toBe(false);
+  });
+
+  it("ANDs with another axis (Tools + active)", () => {
+    const active = makeProject({ isTool: true, endYear: null });
+    expect(matchesFilters(active, makeFilters({ tool: ["tools"], status: ["active"] }))).toBe(true);
+    const ended = makeProject({ isTool: true, endYear: 2019 });
+    expect(matchesFilters(ended, makeFilters({ tool: ["tools"], status: ["active"] }))).toBe(false);
+  });
+});
