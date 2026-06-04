@@ -1,7 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { sizeSkills, groupByCategory } from "./skills";
+import { sizeSkills, groupByCategory, type SkillCategory } from "./skills";
 
-const mk = (key: string, count: number, category: string | null = null) => ({
+const cat = (key: string, order: number): SkillCategory => ({
+  key,
+  title: { en: key, nl: null },
+  order,
+});
+
+const mk = (key: string, count: number, category: SkillCategory | null = null) => ({
   key,
   name: key,
   count,
@@ -22,24 +28,28 @@ describe("sizeSkills", () => {
 });
 
 describe("groupByCategory", () => {
-  it("orders groups by the fixed category order and omits empties", () => {
-    const out = groupByCategory([mk("rails", 5, "framework"), mk("swift", 9, "language")]);
-    expect(out.map((g) => g.category)).toEqual(["language", "framework"]);
+  it("orders groups by each category's order field", () => {
+    const out = groupByCategory([
+      mk("rails", 5, cat("framework", 2)),
+      mk("swift", 9, cat("language", 1)),
+    ]);
+    expect(out.map((g) => g.key)).toEqual(["language", "framework"]);
   });
   it("sorts within a group by count desc then name", () => {
-    const out = groupByCategory([mk("php", 3, "language"), mk("swift", 9, "language"), mk("ruby", 9, "language")]);
+    const lang = cat("language", 1);
+    const out = groupByCategory([mk("php", 3, lang), mk("swift", 9, lang), mk("ruby", 9, lang)]);
     expect(out[0].skills.map((s) => s.key)).toEqual(["ruby", "swift", "php"]);
   });
-  it("buckets null/unknown category into 'other', placed last", () => {
-    const out = groupByCategory([mk("swift", 9, "language"), mk("weird", 2, null), mk("x", 2, "nope")]);
-    expect(out.at(-1)!.category).toBe("other");
+  it("buckets uncategorized skills into 'other', placed last", () => {
+    const out = groupByCategory([mk("swift", 9, cat("language", 1)), mk("weird", 2, null), mk("x", 2, null)]);
+    expect(out.at(-1)!.key).toBe("other");
     expect(out.at(-1)!.skills.map((s) => s.key).sort()).toEqual(["weird", "x"]);
   });
 });
 
 describe("sizeSkills stays global", () => {
   it("a high-count language outsizes a low-count service", () => {
-    const steps = sizeSkills([mk("swift", 28, "language"), mk("garmin", 1, "service")]);
+    const steps = sizeSkills([mk("swift", 28, cat("language", 1)), mk("garmin", 1, cat("service", 5))]);
     expect(steps.get("swift")!).toBeLessThan(steps.get("garmin")!);
   });
 });

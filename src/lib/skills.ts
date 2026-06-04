@@ -3,22 +3,32 @@
  *
  * One stack tag that's actually used by a project, normalized into a flat
  * `Skill` the component renders directly: a filter `key` (the tag slug), a
- * display `name`, and the `count` of projects using it. Backed by SKILLS_QUERY.
+ * display `name`, the `count` of projects using it, and its `category` — the
+ * skillCategory it references (with its own key, translatable title, and display
+ * order) or null when unclassified. Backed by SKILLS_QUERY.
  */
 import {fetchSanity} from '@/sanity/fetch'
 import {SKILLS_QUERY} from '@/sanity/queries/skills'
 import type {SKILLS_QUERY_RESULT} from '@/sanity.types'
 
+/** Translatable label, EN always present, NL optional (falls back to EN). */
+export type I18nTitle = {en: string; nl: string | null}
+
+/**
+ * The editor-managed skillCategory a skill belongs to: a stable `key` (slug),
+ * its translatable `title`, and the `order` that fixes where the group appears.
+ */
+export type SkillCategory = {key: string; title: I18nTitle; order: number}
+
 /**
  * A technology used by ≥1 project, with its filter key, usage count, and the
- * grouping `category` set in Studio (null when unclassified → renders under
- * "Other").
+ * category it references (null when unclassified → renders under "Other").
  */
 export type Skill = {
   key: string
   name: string
   count: number
-  category: string | null
+  category: SkillCategory | null
 }
 
 /**
@@ -51,55 +61,61 @@ export function sizeSkills(skills: Skill[]): Map<string, 1 | 2 | 3 | 4 | 5> {
   return out
 }
 
-/**
- * Fixed display order of the skill categories on the About page. A tag's
- * `category` slug maps to one of these; anything null or unrecognised falls
- * into the trailing `other` bucket so a freshly-added, unclassified tag still
- * shows up instead of silently vanishing.
- */
-export const CATEGORY_ORDER = [
-  'language',
-  'framework',
-  'platform',
-  'apple',
-  'service',
-  'infra',
-  'other',
-] as const
+/** Key of the synthetic bucket for tags with no category reference. */
+export const OTHER_KEY = 'other'
 
-/** One of the fixed skill categories (`other` is the catch-all). */
-export type Category = (typeof CATEGORY_ORDER)[number]
+/** One rendered group: a category key, its title (null for "Other"), and skills. */
+export type SkillGroup = {key: string; title: I18nTitle | null; skills: Skill[]}
 
 /**
- * Group skills into the fixed category order; a null or unknown category lands
- * in `other`. Within each group, sort by count desc then name asc. Empty groups
- * are omitted, so only categories with at least one skill render.
+ * Group skills by their referenced category. Group order follows each category's
+ * editor-set `order` (ties broken by English title); skills with no category
+ * collect into the synthetic `OTHER_KEY` bucket, always rendered last. Within
+ * each group, skills sort by count desc then name asc. Empty groups can't occur
+ * — a group exists only because a skill landed in it.
  *
  * @param skills - the full skill set
- * @returns groups in CATEGORY_ORDER, each with its sorted skills (input not mutated)
+ * @returns groups in display order, each with its sorted skills (input not mutated)
  */
-export function groupByCategory(skills: Skill[]): {category: Category; skills: Skill[]}[] {
-  const buckets = new Map<Category, Skill[]>()
+export function groupByCategory(skills: Skill[]): SkillGroup[] {
+  const buckets = new Map<
+    string,
+    {title: I18nTitle | null; order: number; skills: Skill[]}
+  >()
   for (const s of skills) {
-    const c = (CATEGORY_ORDER as readonly string[]).includes(s.category ?? '')
-      ? (s.category as Category)
-      : 'other'
-    const bucket = buckets.get(c)
-    if (bucket) bucket.push(s)
-    else buckets.set(c, [s])
+    const key = s.category?.key ?? OTHER_KEY
+    const bucket = buckets.get(key)
+    if (bucket) bucket.skills.push(s)
+    else
+      buckets.set(key, {
+        title: s.category?.title ?? null,
+        order: s.category?.order ?? Number.MAX_SAFE_INTEGER,
+        skills: [s],
+      })
   }
-  return CATEGORY_ORDER.map((category) => ({
-    category,
-    skills: (buckets.get(category) ?? []).sort(
-      (a, b) => b.count - a.count || a.name.localeCompare(b.name),
-    ),
-  })).filter((g) => g.skills.length > 0)
+  return [...buckets.entries()]
+    .map(([key, b]) => ({
+      key,
+      title: b.title,
+      order: b.order,
+      skills: b.skills.sort(
+        (a, c) => c.count - a.count || a.name.localeCompare(c.name),
+      ),
+    }))
+    .sort((a, c) => {
+      if (a.key === OTHER_KEY) return 1
+      if (c.key === OTHER_KEY) return -1
+      return a.order - c.order || (a.title?.en ?? '').localeCompare(c.title?.en ?? '')
+    })
+    .map(({key, title, skills}) => ({key, title, skills}))
 }
 
 /**
  * Fetch every stack tag used by at least one project, most-used first.
  * Rows missing a slug or name are dropped — a skill with no filter key can't
- * be linked, and one with no display name has nothing to show.
+ * be linked, and one with no display name has nothing to show. A category
+ * reference is kept only when it resolves to a key; otherwise the skill is
+ * treated as uncategorized.
  *
  * @returns the usable skills, ordered count desc then name asc
  */
@@ -110,5 +126,16 @@ export async function getSkills(): Promise<Skill[]> {
     .filter((r): r is (typeof rows)[number] & {key: string; name: string} =>
       Boolean(r.key) && Boolean(r.name),
     )
-    .map((r) => ({key: r.key, name: r.name, count: r.count ?? 0, category: r.category ?? null}))
+    .map((r) => {
+      const cat = r.category
+      const category: SkillCategory | null =
+        cat && cat.key
+          ? {
+              key: cat.key,
+              title: {en: cat.title?.en ?? cat.key, nl: cat.title?.nl ?? null},
+              order: cat.order ?? Number.MAX_SAFE_INTEGER,
+            }
+          : null
+      return {key: r.key, name: r.name, count: r.count ?? 0, category}
+    })
 }

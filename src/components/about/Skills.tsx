@@ -4,14 +4,15 @@
  * (desktop) / above (mobile), with that category's tags on the right — sized by
  * GLOBAL usage (the most-used skill overall is biggest, regardless of category)
  * and ordered most-used first. Every tag links into the work log filtered by
- * that skill (`?skill=<key>`). Categories render in a fixed order; empty ones
- * are skipped, and unclassified tags collect under "Other".
+ * that skill (`?skill=<key>`). Categories and their order are editor-managed in
+ * Sanity; the trailing "Other" group collects tags with no category set.
  */
 import Link from "next/link";
 import { localizedHref } from "@/lib/href";
 import { track } from "@/lib/analytics";
-import { sizeSkills, groupByCategory, type Skill, type Category } from "@/lib/skills";
-import { t, type MessageKey } from "@/i18n/messages";
+import { sizeSkills, groupByCategory, type Skill } from "@/lib/skills";
+import { t } from "@/i18n/messages";
+import { pickLocale } from "@/i18n/pick-locale";
 import type { Locale } from "@/i18n/config";
 
 /**
@@ -27,30 +28,19 @@ const SIZE: Record<number, string> = {
   5: "text-[12px] md:text-[12.5px] text-faint",
 };
 
-/** Category → i18n key, so the dynamic label stays type-checked against MessageKey. */
-const CATEGORY_LABEL: Record<Category, MessageKey> = {
-  language: "skills.cat.language",
-  framework: "skills.cat.framework",
-  platform: "skills.cat.platform",
-  apple: "skills.cat.apple",
-  service: "skills.cat.service",
-  infra: "skills.cat.infra",
-  other: "skills.cat.other",
-};
-
 export function Skills({ skills, locale }: { skills: Skill[]; locale: Locale }) {
   const steps = sizeSkills(skills); // global, over the full set
   const groups = groupByCategory(skills);
 
   return (
     <div className="mt-4">
-      {groups.map(({ category, skills: group }) => (
+      {groups.map(({ key, title, skills: group }) => (
         <div
-          key={category}
+          key={key}
           className="grid grid-cols-1 gap-2 border-t border-line py-4 first:border-t-0 md:grid-cols-[150px_1fr] md:gap-6"
         >
           <div className="font-mono text-[11px] uppercase tracking-[0.09em] text-faint md:pt-[7px]">
-            {t(locale, CATEGORY_LABEL[category])}
+            {title ? pickLocale(title, locale) ?? title.en : t(locale, "skills.cat.other")}
           </div>
           <div className="flex flex-wrap items-baseline gap-x-[14px] gap-y-[5px]">
             {group.map((s) => (
