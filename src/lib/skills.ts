@@ -62,6 +62,22 @@ export function sizeSkills(skills: Skill[]): Map<string, 1 | 2 | 3 | 4 | 5> {
   return out
 }
 
+/**
+ * The subset of skills emphasized in ink ("core") versus dimmed. Core = global
+ * frequency tier 1–2 from {@link sizeSkills} (its rank quantiles over the full
+ * set), so the most-used skills across every category read as ink and the long
+ * tail dims — a quiet frequency hint with no size jumps.
+ *
+ * @param skills - the complete skill set
+ * @returns the set of core skill keys (O(1) membership lookup)
+ */
+export function coreKeys(skills: Skill[]): Set<string> {
+  const steps = sizeSkills(skills)
+  return new Set(
+    skills.filter((s) => (steps.get(s.key) ?? 5) <= 2).map((s) => s.key),
+  )
+}
+
 /** Key of the synthetic bucket for tags with no category reference. */
 export const OTHER_KEY = 'other'
 
