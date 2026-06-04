@@ -98,7 +98,13 @@ Grouped by domain under `src/components/`:
 The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDepth`,
 `matchesFilters`, plus the sort model `compareProjects` / `sortProjects`) plus
 `lib/work-display.ts` (`forLabel` — the single source for the "For" label from
-employer + client). `mapProjectBase` is the one mapper for the fields the log row
+employer + client). When a project has neither, `forLabel` reads "Tool" if it's a
+case-study-less project with an external link (`isTool`: depth `none` + github/live),
+else "Personal" — derived, no flag. This is **stricter** than the Source-↗ rule:
+employer/client are checked first, so a client product with a link keeps its
+relationship label (and still shows its Source link on expand). All three render
+sites (desktop row, mobile meta, case-study meta) go through the shared `ForCell`
+(`components/work/ForCell.tsx`) so the label never drifts. `mapProjectBase` is the one mapper for the fields the log row
 and the detail page share (slug/name/employer/stack/year/locale-resolved summary…,
 plus the external `links` so a tool row can surface them), so the two never drift.
 `getProjects` builds log `Project`s from it; the detail page calls one
