@@ -9,11 +9,16 @@ import {fetchSanity} from '@/sanity/fetch'
 import {SKILLS_QUERY} from '@/sanity/queries/skills'
 import type {SKILLS_QUERY_RESULT} from '@/sanity.types'
 
-/** A technology used by ≥1 project, with its filter key and usage count. */
+/**
+ * A technology used by ≥1 project, with its filter key, usage count, and the
+ * grouping `category` set in Studio (null when unclassified → renders under
+ * "Other").
+ */
 export type Skill = {
   key: string
   name: string
   count: number
+  category: string | null
 }
 
 /**
@@ -83,8 +88,8 @@ export async function getSkills(): Promise<Skill[]> {
   const rows = await fetchSanity<SKILLS_QUERY_RESULT>(SKILLS_QUERY)
   if (!rows) return []
   return rows
-    .filter((r): r is {key: string; name: string; count: number} =>
+    .filter((r): r is (typeof rows)[number] & {key: string; name: string} =>
       Boolean(r.key) && Boolean(r.name),
     )
-    .map((r) => ({key: r.key, name: r.name, count: r.count ?? 0}))
+    .map((r) => ({key: r.key, name: r.name, count: r.count ?? 0, category: r.category ?? null}))
 }

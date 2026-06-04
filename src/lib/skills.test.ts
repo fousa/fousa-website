@@ -1,7 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { sizeSkills, displayOrder } from "./skills";
 
-const mk = (key: string, count: number) => ({ key, name: key, count });
+const mk = (key: string, count: number, category: string | null = null) => ({
+  key,
+  name: key,
+  count,
+  category,
+});
 
 describe("sizeSkills", () => {
   it("most-used gets step 1, least-used the largest step", () => {
