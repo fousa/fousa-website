@@ -93,7 +93,8 @@ Grouped by domain under `src/components/`:
   `EmptyState`, `Frame` (hairline device frames for galleries), `StatusDot`, `ToolingChip`.
 - **layout/** — `TopBar` (scroll-revealed hairline + blur), `SiteFooter`, `LocaleSwitch`,
   `InfoTip`, `OutboundLink`, `use-scrolled`.
-- **about/** — `CareerTimeline`, `AvailabilityBadge`.
+- **about/** — `CareerTimeline`, `AvailabilityBadge`, `Skills` (three-column
+  technology list, most-used first, each row deep-linking into the filtered log).
 - **home/** `HomeLead` · **theme/** `ThemeToggle` · **brand/** `Wordmark` · **seo/** `JsonLd`.
 
 The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDepth`,
@@ -114,10 +115,19 @@ plus the external `links` so a tool row can surface them), so the two never drif
 `body`, `cover`, `deck`, and `related`) — no second raw fetch, and `links` ride
 along on the base. Both the detail page and tool rows render any present live /
 GitHub links via `OutboundLink` (`outbound_click` kinds `live` / `github`).
-Filtering is six chips in three groups — **stack**
+Filtering is six curated chips in three groups — **stack**
 (`apple` | `web`), **status** (`active`), **affiliation**
-(`freelance` | `icapps` | `10to1`) — OR within a group, AND across groups, all
-URL-backed via `useSearchParams`. The per-helper rules live in their JSDoc.
+(`freelance` | `icapps` | `10to1`) — plus a fourth, open-ended **skill** axis
+(`?skill=swift,ruby-on-rails`): any stack-tag slug, no allowlist, matched against
+each project's `tagSlugs`. OR within a group, AND across groups, all URL-backed via
+`useSearchParams` (one param per group). The per-helper rules live in their JSDoc.
+The skill axis powers the About **Skills** section: `lib/skills.ts` / `getSkills`
+(query `sanity/queries/skills.ts`) returns every tag used by ≥1 project with its
+usage count, and each row links to `/?skill=<key>#work`. Unlike the curated chips,
+an active skill surfaces as a removable "Filtering by <label> ×" pill above the
+chip bar — `ProjectLog` takes a `skillLabels` key→name map so the pill reads
+"PostgreSQL", not the slug. The log section carries `id="work"` + `scroll-mt-20`
+so the `#work` hash lands on the filtered list below the sticky header.
 
 **Sorting** is desktop-only: the **Project**, **Year**, and **State** column headers
 toggle asc⇄desc, persisted as `?s=<key>-<dir>` (omitted when it equals the default).

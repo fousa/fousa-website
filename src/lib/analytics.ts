@@ -17,6 +17,7 @@ type Events = {
     locale: string;
   };
   filter_select: { filter: string; locale: string };
+  skill_click: { key: string; count: number; locale: string };
   clear_filters: { count: number; locale: string };
   sort_change: {
     key: "project" | "year" | "state";

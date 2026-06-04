@@ -82,4 +82,22 @@ describe("matchesFilters", () => {
     expect(matchesFilters(employed, makeFilters({ affiliation: ["freelance"] }))).toBe(false);
     expect(matchesFilters(employed, makeFilters({ affiliation: ["icapps"] }))).toBe(true);
   });
+
+  it("matches a project by an arbitrary stack key", () => {
+    const p = makeProject({ tagSlugs: ["swift", "swiftui", "postgresql"] });
+    expect(matchesFilters(p, makeFilters({ skill: ["postgresql"] }))).toBe(true);
+    expect(matchesFilters(p, makeFilters({ skill: ["rails"] }))).toBe(false);
+  });
+
+  it("ORs within the skill group", () => {
+    const p = makeProject({ tagSlugs: ["swift"] });
+    expect(matchesFilters(p, makeFilters({ skill: ["rails", "swift"] }))).toBe(true);
+  });
+
+  it("ANDs a skill key with a curated axis", () => {
+    const p = makeProject({ tagSlugs: ["swift"], endYear: null });
+    expect(matchesFilters(p, makeFilters({ skill: ["swift"], status: ["active"] }))).toBe(true);
+    const ended = makeProject({ tagSlugs: ["swift"], endYear: 2019 });
+    expect(matchesFilters(ended, makeFilters({ skill: ["swift"], status: ["active"] }))).toBe(false);
+  });
 });

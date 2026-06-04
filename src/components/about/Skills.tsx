@@ -1,12 +1,16 @@
+"use client";
 /**
  * The About "Skills" section: every technology used by ≥1 project, laid out in
  * three columns of "name … count ↗", most-used first (column one holds the
  * heaviest hitters). Each row is a real link to the homepage log filtered by
  * that skill (`/?skill=<key>#work`), so a reader can jump straight from a skill
- * to the projects that used it.
+ * to the projects that used it. Clicking one fires `skill_click`; the log's own
+ * `filter_select` fires too when the filter applies — they answer different
+ * questions (clicked on About vs. a filter became active).
  */
 import Link from "next/link";
 import { localizedHref } from "@/lib/href";
+import { track } from "@/lib/analytics";
 import type { Skill } from "@/lib/skills";
 import type { Locale } from "@/i18n/config";
 
@@ -38,6 +42,9 @@ export function Skills({
             <Link
               key={s.key}
               href={`${localizedHref(locale, "/")}?skill=${encodeURIComponent(s.key)}#work`}
+              onClick={() =>
+                track("skill_click", { key: s.key, count: s.count, locale })
+              }
               className="group flex items-baseline justify-between gap-3 border-t border-line py-[10px] first:border-t-0"
             >
               <span className="font-display text-[14.5px] font-semibold text-ink transition-colors group-hover:text-accent">
