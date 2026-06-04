@@ -164,7 +164,7 @@ export const project = defineType({
     i18nPortableText(
       'body',
       'Case study body',
-      'Full case study narrative — context, approach, outcome (use an "Outcome" heading). Shown on the dedicated /work/<slug> page.'
+      'Full case study narrative — context, approach, outcome (use an "Outcome" heading). Shown on the dedicated /work/<slug> page. Leave empty for a tool/utility — the log row will instead link out to the source/live URL.'
     ),
     defineField({
       name: 'gallery',
@@ -239,7 +239,8 @@ export const project = defineType({
       title: 'GitHub URL',
       type: 'url',
       group: 'links',
-      description: 'Source repo, if open source.',
+      description:
+        'Source repository. For utilities/tools with no case study, this becomes the row\u2019s "Source \u2197" link in the log.',
     }),
   ],
   orderings: [
