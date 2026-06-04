@@ -1,18 +1,13 @@
 /**
  * Homepage lead: prominent name (with the coral brand period), role line, and a
  * friendly invitation to filter the log below. Copy comes from Profile. The
- * role line carries the hidden Glide game entry — a small tilted plane glyph.
+ * Glide game entry lives quietly in the footer wordmark, not here.
  */
-import { GlideGame } from "@/components/glide/GlideGame";
-import type { Locale } from "@/i18n/config";
-
 export function HomeLead({
-  locale,
   name,
   role,
   filterIntro,
 }: {
-  locale: Locale;
   name: string;
   role: string;
   filterIntro: string;
@@ -27,11 +22,6 @@ export function HomeLead({
       <p className="mt-[18px] max-w-[520px] text-[15px] leading-[1.6] text-muted">
         {filterIntro}
       </p>
-      <GlideGame
-        locale={locale}
-        withArrow
-        triggerClassName="mt-5 inline-block rounded text-[15px] font-semibold text-ink outline-none transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-      />
     </div>
   );
 }

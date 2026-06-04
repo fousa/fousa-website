@@ -52,12 +52,7 @@ export default async function Home({
 
   return (
     <main id="main">
-      <HomeLead
-        locale={locale}
-        name={name}
-        role={role}
-        filterIntro={filterIntro}
-      />
+      <HomeLead name={name} role={role} filterIntro={filterIntro} />
       <Suspense>
         <ProjectLog
           projects={projects}
