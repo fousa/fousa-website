@@ -78,6 +78,51 @@ export function displayOrder(skills: Skill[]): Skill[] {
 }
 
 /**
+ * Fixed display order of the skill categories on the About page. A tag's
+ * `category` slug maps to one of these; anything null or unrecognised falls
+ * into the trailing `other` bucket so a freshly-added, unclassified tag still
+ * shows up instead of silently vanishing.
+ */
+export const CATEGORY_ORDER = [
+  'language',
+  'framework',
+  'platform',
+  'apple',
+  'service',
+  'infra',
+  'other',
+] as const
+
+/** One of the fixed skill categories (`other` is the catch-all). */
+export type Category = (typeof CATEGORY_ORDER)[number]
+
+/**
+ * Group skills into the fixed category order; a null or unknown category lands
+ * in `other`. Within each group, sort by count desc then name asc. Empty groups
+ * are omitted, so only categories with at least one skill render.
+ *
+ * @param skills - the full skill set
+ * @returns groups in CATEGORY_ORDER, each with its sorted skills (input not mutated)
+ */
+export function groupByCategory(skills: Skill[]): {category: Category; skills: Skill[]}[] {
+  const buckets = new Map<Category, Skill[]>()
+  for (const s of skills) {
+    const c = (CATEGORY_ORDER as readonly string[]).includes(s.category ?? '')
+      ? (s.category as Category)
+      : 'other'
+    const bucket = buckets.get(c)
+    if (bucket) bucket.push(s)
+    else buckets.set(c, [s])
+  }
+  return CATEGORY_ORDER.map((category) => ({
+    category,
+    skills: (buckets.get(category) ?? []).sort(
+      (a, b) => b.count - a.count || a.name.localeCompare(b.name),
+    ),
+  })).filter((g) => g.skills.length > 0)
+}
+
+/**
  * Fetch every stack tag used by at least one project, most-used first.
  * Rows missing a slug or name are dropped — a skill with no filter key can't
  * be linked, and one with no display name has nothing to show.
