@@ -32,7 +32,12 @@ export const skillCategory = defineType({
   ],
   orderings: [orderRankOrdering],
   preview: {
-    select: {title: 'title.en'},
-    prepare: ({title}) => ({title}),
+    select: {en: 'title.en', nl: 'title.nl'},
+    // Show the Dutch translation as the subtitle so the EN/NL split is visible
+    // straight from the list (— when NL is empty or identical to EN).
+    prepare: ({en, nl}) => ({
+      title: en,
+      subtitle: nl && nl !== en ? `NL: ${nl}` : 'NL: —',
+    }),
   },
 })
