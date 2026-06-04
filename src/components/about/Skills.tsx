@@ -1,28 +1,38 @@
 "use client";
 /**
- * The About "Skills" section: every technology used by ≥1 project, laid out in
- * three columns of "name … count ↗", most-used first (column one holds the
- * heaviest hitters). Each row is a real link to the homepage log filtered by
- * that skill (`/?skill=<key>#work`), so a reader can jump straight from a skill
- * to the projects that used it. Clicking one fires `skill_click`; the log's own
- * `filter_select` fires too when the filter applies — they answer different
- * questions (clicked on About vs. a filter became active).
+ * Type-scaled skills cloud for the About page. Size encodes how many projects
+ * use each skill (five quantile steps), monochrome, with gentle deterministic
+ * drift so the baseline reads organic rather than gridded. Skills used in ≥2
+ * projects show by default; a "show all" toggle reveals the single-use tail.
+ * Each skill links into the work log filtered by that skill (`?skill=<key>`).
+ *
+ * Sizing is computed over the FULL set, so a tag never changes size when the
+ * tail toggles — tags only appear or disappear. Drift and order derive from a
+ * stable key hash, so server and client render identically (no hydration
+ * mismatch, no jitter).
  */
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { localizedHref } from "@/lib/href";
 import { track } from "@/lib/analytics";
-import type { Skill } from "@/lib/skills";
+import {
+  sizeSkills,
+  driftOffset,
+  displayOrder,
+  meaningful,
+  type Skill,
+} from "@/lib/skills";
+import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 
-/** Split a list into three contiguous columns; the first holds the most-used. */
-function toColumns(skills: Skill[]): [Skill[], Skill[], Skill[]] {
-  const per = Math.ceil(skills.length / 3);
-  return [
-    skills.slice(0, per),
-    skills.slice(per, per * 2),
-    skills.slice(per * 2),
-  ];
-}
+/** Tailwind size + tone per quantile step (1 = largest/most-used … 5 = smallest). */
+const SIZE: Record<number, string> = {
+  1: "text-[40px] text-ink",
+  2: "text-[31px] text-ink",
+  3: "text-[23px] text-text",
+  4: "text-[17px] text-muted",
+  5: "text-[14px] text-faint",
+};
 
 export function Skills({
   skills,
@@ -31,35 +41,52 @@ export function Skills({
   skills: Skill[];
   locale: Locale;
 }) {
-  if (skills.length === 0) return null;
-  const columns = toColumns(skills);
+  const [showAll, setShowAll] = useState(false);
+
+  const steps = useMemo(() => sizeSkills(skills), [skills]); // over the FULL set
+  const visible = useMemo(
+    () => displayOrder(showAll ? skills : meaningful(skills)),
+    [skills, showAll],
+  );
+  const hiddenCount = skills.length - meaningful(skills).length;
 
   return (
-    <div className="mt-6 grid grid-cols-1 gap-x-10 md:grid-cols-3">
-      {columns.map((col, i) => (
-        <div key={i}>
-          {col.map((s) => (
-            <Link
-              key={s.key}
-              href={`${localizedHref(locale, "/")}?skill=${encodeURIComponent(s.key)}#work`}
-              onClick={() =>
-                track("skill_click", { key: s.key, count: s.count, locale })
-              }
-              className="group flex items-baseline justify-between gap-3 border-t border-line py-[10px] first:border-t-0"
-            >
-              <span className="font-display text-[14.5px] font-semibold text-ink transition-colors group-hover:text-accent">
-                {s.name}
-              </span>
-              <span className="shrink-0 font-mono text-[12px] text-muted">
-                {s.count}
-                <span className="text-accent" aria-hidden>
-                  {" ↗"}
-                </span>
-              </span>
-            </Link>
-          ))}
+    <div className="mt-4">
+      <p className="pb-2 text-[13px] text-muted">{t(locale, "skills.sub")}</p>
+
+      <div className="flex flex-wrap items-baseline gap-x-[18px] gap-y-[6px] pt-2">
+        {visible.map((s) => (
+          <Link
+            key={s.key}
+            href={`${localizedHref(locale, "/")}?skill=${encodeURIComponent(s.key)}#work`}
+            onClick={() =>
+              track("skill_click", { key: s.key, count: s.count, locale })
+            }
+            style={{ top: `${driftOffset(s.key)}px` }}
+            className={`relative font-display font-semibold leading-none tracking-[-0.015em] transition-colors hover:text-accent ${SIZE[steps.get(s.key) ?? 5]}`}
+          >
+            {s.name}
+          </Link>
+        ))}
+      </div>
+
+      {hiddenCount > 0 && (
+        <div className="pt-5">
+          <button
+            type="button"
+            onClick={() => setShowAll((v) => !v)}
+            aria-expanded={showAll}
+            className="font-mono text-[12px] tracking-[0.04em] text-muted transition-colors hover:text-accent cursor-pointer"
+          >
+            {showAll
+              ? t(locale, "skills.showFewer")
+              : t(locale, "skills.showAll").replace("{n}", String(skills.length))}
+            <span className="text-accent" aria-hidden>
+              {showAll ? " ←" : " →"}
+            </span>
+          </button>
         </div>
-      ))}
+      )}
     </div>
   );
 }
