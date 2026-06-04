@@ -22,24 +22,59 @@ describe("forLabel", () => {
     });
   });
 
-  it("returns 'personal' with the fallback label when both are missing", () => {
+  it("returns 'personal' when both are missing", () => {
     expect(forLabel({ employer: null, client: null })).toEqual({
       kind: "personal",
-      text: "Personal",
-    });
-  });
-
-  it("honours a custom personal label", () => {
-    expect(forLabel({ employer: null, client: null }, "Persoonlijk")).toEqual({
-      kind: "personal",
-      text: "Persoonlijk",
     });
   });
 
   it("treats whitespace-only values as empty", () => {
     expect(forLabel({ employer: { name: "  " }, client: "  " })).toEqual({
       kind: "personal",
-      text: "Personal",
     });
+  });
+});
+
+const base = { employer: null, client: null };
+
+describe("forLabel — Tool derivation", () => {
+  it("is Tool when personal + no case study + has a link", () => {
+    expect(
+      forLabel({ ...base, depth: "none", links: { github: "https://gh/x" } }),
+    ).toEqual({ kind: "tool" });
+  });
+
+  it("is NOT Tool when it has a case study (depth full), even with a link", () => {
+    expect(
+      forLabel({ ...base, depth: "full", links: { github: "https://gh/x" } }),
+    ).toEqual({ kind: "personal" });
+  });
+
+  it("is NOT Tool when personal + no link (just an un-writtenup personal project)", () => {
+    expect(forLabel({ ...base, depth: "none", links: {} })).toEqual({
+      kind: "personal",
+    });
+  });
+
+  it("keeps the client relationship even when case-study-less with a link", () => {
+    expect(
+      forLabel({
+        employer: null,
+        client: "Telenet",
+        depth: "none",
+        links: { live: "https://x" },
+      }),
+    ).toEqual({ kind: "single", text: "Telenet" });
+  });
+
+  it("keeps employer → client over Tool", () => {
+    expect(
+      forLabel({
+        employer: { name: "icapps" },
+        client: "Telenet",
+        depth: "none",
+        links: { github: "https://x" },
+      }),
+    ).toEqual({ kind: "via", employer: "icapps", client: "Telenet" });
   });
 });
