@@ -60,7 +60,11 @@ and three collections.
   derived not flagged) shows just its start year; the status dot already signals
   it's still live.
   Detail depth is derived from content — `body` → full case study,
-  `gallery` → framed screenshots, neither → no detail page.
+  `gallery` → framed screenshots, neither → no detail page. A depth-`none`
+  project that carries an external link (`githubUrl` / `liveUrl`) is a **tool**:
+  no case study, but its log row surfaces "Source ↗" / "Open ↗" out to the link
+  instead of an internal CTA. No `isTool` flag — like depth, the behaviour
+  derives from the data shape.
 
 Translatable fields are `{ en, nl }` objects (helpers in `sanity/fields/i18n.ts`),
 so both locales sit side by side in one document and Dutch falls back to English
@@ -95,12 +99,14 @@ The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDept
 `matchesFilters`, plus the sort model `compareProjects` / `sortProjects`) plus
 `lib/work-display.ts` (`forLabel` — the single source for the "For" label from
 employer + client). `mapProjectBase` is the one mapper for the fields the log row
-and the detail page share (slug/name/employer/stack/year/locale-resolved summary…),
-so the two never drift. `getProjects` builds log `Project`s from it; the detail page
-calls one `getProjectDetail(slug, locale)` that returns a `ProjectDetail` (the base
-plus `body`, `cover`, `deck`, external `links`, and `related`) — no second raw fetch.
-The detail page renders any present live / GitHub / write-up links via `OutboundLink`
-(`outbound_click` kinds `live` / `github` / `writeup`). Filtering is six chips in three groups — **stack**
+and the detail page share (slug/name/employer/stack/year/locale-resolved summary…,
+plus the external `links` so a tool row can surface them), so the two never drift.
+`getProjects` builds log `Project`s from it; the detail page calls one
+`getProjectDetail(slug, locale)` that returns a `ProjectDetail` (the base plus
+`body`, `cover`, `deck`, and `related`) — no second raw fetch, and `links` ride
+along on the base. Both the detail page and tool rows render any present live /
+GitHub links via `OutboundLink` (`outbound_click` kinds `live` / `github`).
+Filtering is six chips in three groups — **stack**
 (`apple` | `web`), **status** (`active`), **affiliation**
 (`freelance` | `icapps` | `10to1`) — OR within a group, AND across groups, all
 URL-backed via `useSearchParams`. The per-helper rules live in their JSDoc.
