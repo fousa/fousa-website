@@ -259,7 +259,7 @@ export function ProjectLog({
   };
 
   return (
-    <section>
+    <section id="work" className="scroll-mt-20">
       {/* Active skill pills — only the open-ended `skill` axis surfaces here;
           curated selections already light up their own chip below. */}
       {filters.skill.length > 0 && (
