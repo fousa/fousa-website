@@ -164,7 +164,7 @@ export default async function AboutPage({
 
         {/* Skills */}
         {skills.length > 0 && (
-          <section className="border-t border-line px-5 py-10 md:px-11">
+          <section id="skills" className="scroll-mt-20 border-t border-line px-5 py-10 md:px-11">
             <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
               {t(locale, "skills")}
             </h2>
