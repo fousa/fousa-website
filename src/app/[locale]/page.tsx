@@ -12,6 +12,7 @@ import { pickLocale } from "@/i18n/pick-locale";
 import { ProjectLog } from "@/components/work/ProjectLog";
 import { HomeLead } from "@/components/home/HomeLead";
 import { getProjects, getEmptyStates } from "@/lib/work";
+import { getSkills } from "@/lib/skills";
 import { fetchSanity } from "@/sanity/fetch";
 import { PROFILE_QUERY } from "@/sanity/queries/profile";
 import type { PROFILE_QUERY_RESULT } from "@/sanity.types";
@@ -24,11 +25,16 @@ export default async function Home({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  const [projects, profile, overrides] = await Promise.all([
+  const [projects, profile, overrides, skills] = await Promise.all([
     getProjects(locale),
     fetchSanity<PROFILE_QUERY_RESULT>(PROFILE_QUERY),
     getEmptyStates(locale),
+    getSkills(),
   ]);
+
+  // Map each skill key to its display name so the log's "Filtering by" pills
+  // render "PostgreSQL", not the raw slug.
+  const skillLabels = Object.fromEntries(skills.map((s) => [s.key, s.name]));
 
   const name = profile?.name ?? "Jelle Vandebeeck";
 
@@ -53,7 +59,12 @@ export default async function Home({
         filterIntro={filterIntro}
       />
       <Suspense>
-        <ProjectLog projects={projects} locale={locale} overrides={overrides} />
+        <ProjectLog
+          projects={projects}
+          locale={locale}
+          overrides={overrides}
+          skillLabels={skillLabels}
+        />
       </Suspense>
     </main>
   );

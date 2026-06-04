@@ -142,10 +142,17 @@ export function ProjectLog({
   projects,
   locale,
   overrides = [],
+  skillLabels = {},
 }: {
   projects: Project[];
   locale: Locale;
   overrides?: EmptyStateOverride[];
+  /**
+   * Display name for each arbitrary skill key (tag slug → label), so the
+   * "Filtering by …" pills show "PostgreSQL", not "postgresql". A key with no
+   * entry falls back to the raw slug.
+   */
+  skillLabels?: Record<string, string>;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -253,6 +260,27 @@ export function ProjectLog({
 
   return (
     <section>
+      {/* Active skill pills — only the open-ended `skill` axis surfaces here;
+          curated selections already light up their own chip below. */}
+      {filters.skill.length > 0 && (
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-2 px-5 pt-3 md:px-11">
+          <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-faint">
+            {t(locale, "filteringBy")}
+          </span>
+          {filters.skill.map((key) => (
+            <button
+              key={key}
+              onClick={() => toggle("skill", key)}
+              aria-label={`${t(locale, "clearAll")} — ${skillLabels[key] ?? key}`}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-transparent bg-accent-soft px-3 py-[5px] text-[12.5px] font-semibold text-accent-deep transition-colors hover:text-accent cursor-pointer"
+            >
+              {skillLabels[key] ?? key}
+              <span aria-hidden>×</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Chip bar */}
       <div className="flex flex-wrap gap-x-2 gap-y-2 border-b border-line px-5 pb-3 pt-3 md:flex-nowrap md:px-11">
         {CHIPS.map(({ group, value, labelKey }) => {
