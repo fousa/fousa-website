@@ -93,8 +93,8 @@ Grouped by domain under `src/components/`:
   `EmptyState`, `Frame` (hairline device frames for galleries), `StatusDot`, `ToolingChip`.
 - **layout/** — `TopBar` (scroll-revealed hairline + blur), `SiteFooter`, `LocaleSwitch`,
   `InfoTip`, `OutboundLink`, `use-scrolled`.
-- **about/** — `CareerTimeline`, `AvailabilityBadge`, `Skills` (type-scaled
-  technology cloud, each tag deep-linking into the filtered log).
+- **about/** — `CareerTimeline`, `AvailabilityBadge`, `Skills` (numbered
+  category index, each tag deep-linking into the filtered log).
 - **home/** `HomeLead` · **theme/** `ThemeToggle` · **brand/** `Wordmark` · **seo/** `JsonLd`.
 
 The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDepth`,
@@ -133,7 +133,7 @@ The skill axis powers the About **Skills** section: `lib/skills.ts` / `getSkills
 (query `sanity/queries/skills.ts`) returns every tag used by ≥1 project with its
 usage count and its grouping category — a **reference** to a `skillCategory`
 document, dereferenced to its key, translatable title, and `orderRank`. Each tag
-links to `/?skill=<key>#work`. It renders **grouped by category** (layout C,
+links to `/?skill=<key>#work`. It renders as a **numbered category index** (layout B,
 `components/about/Skills.tsx`): `groupByCategory` buckets tags by their category,
 orders groups by each category's `orderRank` (a lexorank string compared
 lexically; English title breaks ties), and parks tags with no category reference
@@ -143,10 +143,15 @@ adding or renaming one is pure Studio work, and the order is set by **dragging
 the rows** in the Studio "Skill categories" list (via
 `@sanity/orderable-document-list`, which stores a hidden `orderRank` and renders
 the orderable desk item in `sanity/structure.ts`). Only the "Other" label stays
-in i18n (`skills.cat.other`), since that bucket has no document. Each row shows a mono category label (left on
-desktop, above on mobile) beside its tags, ordered most-used first. `sizeSkills` still buckets tags into five quantile size
-steps by count, computed **globally** over the full set — so a high-count
-language outsizes a low-count service even across categories. Every tag is shown.
+in i18n (`skills.cat.other`), since that bucket has no document. Each category is a
+hairline row with a **mono numeral in the left gutter** (`01`, `02`, …); on mobile the
+label sits on the first line beside the number and the tags wrap **indented under the
+label** (not under the number), while at `md` the row becomes number · label · tags side
+by side. Tags are **uniform-size**, ordered most-used first; emphasis is by tone, not
+size — `coreKeys` marks the global frequency tier 1–2 (reusing `sizeSkills`' quantiles
+over the full set) so the most-used skills render in ink and the long tail dims. Every
+tag is shown; the `·` separators are real text (so they wrap with the tags) but
+`aria-hidden`.
 In the log, an active skill rides **alongside the curated chips** as an extra `Skill ×` chip
 (it has no off-state of its own, so clicking removes it); `ProjectLog` takes a
 `skillLabels` key→name map so the chip reads "PostgreSQL", not the slug. The log
