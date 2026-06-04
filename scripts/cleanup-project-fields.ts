@@ -2,10 +2,11 @@
  * One-off cleanup: unset orphaned fields on every `project` document.
  *
  * The schema no longer declares `tooling`, `description`, `outcome`,
- * `screenshots`, or `writeupUrl`, but Sanity keeps the stored values around —
- * the Studio shows them as "unknown fields". Removing a field from the schema
- * does NOT delete its data; only an explicit `unset` does. This script patches
- * every project (published and draft) to drop those fields for good.
+ * `screenshots`, `writeupUrl`, or `featured`, but Sanity keeps the stored
+ * values around — the Studio shows them as "unknown fields". Removing a field
+ * from the schema does NOT delete its data; only an explicit `unset` does. This
+ * script patches every project (published and draft) to drop those fields for
+ * good.
  *
  * Run with:  pnpm cleanup:project-fields
  * Dry run:   pnpm cleanup:project-fields:dry
@@ -17,7 +18,7 @@
 import {createClient} from '@sanity/client'
 import {apiVersion, dataset, projectId} from '../src/sanity/env'
 
-const FIELDS = ['tooling', 'description', 'outcome', 'screenshots', 'writeupUrl'] as const
+const FIELDS = ['tooling', 'description', 'outcome', 'screenshots', 'writeupUrl', 'featured'] as const
 
 const token = process.env.SANITY_API_TOKEN
 if (!token) {
