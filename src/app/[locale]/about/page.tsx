@@ -25,6 +25,8 @@ import type {
   SITE_SETTINGS_QUERY_RESULT,
 } from "@/sanity.types";
 import { CareerTimeline } from "@/components/about/career-section";
+import { Skills } from "@/components/about/Skills";
+import { getSkills } from "@/lib/skills";
 import { localizedHref } from "@/lib/href";
 import { altMetadata } from "@/lib/seo";
 import { OutboundLink } from "@/components/layout/OutboundLink";
@@ -66,10 +68,11 @@ export default async function AboutPage({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  const [about, availability, settings] = await Promise.all([
+  const [about, availability, settings, skills] = await Promise.all([
     fetchSanity<ABOUT_QUERY_RESULT>(ABOUT_QUERY),
     fetchSanity<AVAILABILITY_QUERY_RESULT>(AVAILABILITY_QUERY),
     fetchSanity<SITE_SETTINGS_QUERY_RESULT>(SITE_SETTINGS_QUERY),
+    getSkills(),
   ]);
 
   const profile = about?.profile;
@@ -158,6 +161,16 @@ export default async function AboutPage({
             )}
           </div>
         </section>
+
+        {/* Skills */}
+        {skills.length > 0 && (
+          <section className="border-t border-line px-5 py-10 md:px-11">
+            <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.09em] text-faint">
+              {t(locale, "skills")}
+            </h2>
+            <Skills skills={skills} locale={locale} />
+          </section>
+        )}
 
         {/* Career */}
         <section className="border-t border-line px-5 py-10 md:px-11">
