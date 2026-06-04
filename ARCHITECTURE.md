@@ -128,15 +128,18 @@ in their JSDoc.
 The skill axis powers the About **Skills** section: `lib/skills.ts` / `getSkills`
 (query `sanity/queries/skills.ts`) returns every tag used by ≥1 project with its
 usage count and its grouping category — a **reference** to a `skillCategory`
-document, dereferenced to its key, translatable title, and `order`. Each tag
+document, dereferenced to its key, translatable title, and `orderRank`. Each tag
 links to `/?skill=<key>#work`. It renders **grouped by category** (layout C,
 `components/about/Skills.tsx`): `groupByCategory` buckets tags by their category,
-orders groups by each category's editor-set `order` (English title breaks ties),
-and parks tags with no category reference under the code-side "Other" bucket
-(always last) so nothing silently disappears. Categories, their labels, and their
-order are therefore **editor-managed** — adding, renaming, reordering, or removing
-one is pure Studio work; only the "Other" label stays in i18n (`skills.cat.other`),
-since that bucket has no document. Each row shows a mono category label (left on
+orders groups by each category's `orderRank` (a lexorank string compared
+lexically; English title breaks ties), and parks tags with no category reference
+under the code-side "Other" bucket (always last) so nothing silently disappears.
+Categories, their labels, and their order are therefore **editor-managed** —
+adding or renaming one is pure Studio work, and the order is set by **dragging
+the rows** in the Studio "Skill categories" list (via
+`@sanity/orderable-document-list`, which stores a hidden `orderRank` and renders
+the orderable desk item in `sanity/structure.ts`). Only the "Other" label stays
+in i18n (`skills.cat.other`), since that bucket has no document. Each row shows a mono category label (left on
 desktop, above on mobile) beside its tags, ordered most-used first. `sizeSkills` still buckets tags into five quantile size
 steps by count, computed **globally** over the full set — so a high-count
 language outsizes a low-count service even across categories. Every tag is shown.
