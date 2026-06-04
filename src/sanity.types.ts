@@ -183,7 +183,7 @@ export type SkillCategory = {
     nl?: string;
   };
   slug?: Slug;
-  order?: number;
+  orderRank?: string;
 };
 
 export type TimelineEntry = {
@@ -1054,7 +1054,7 @@ export type SITEMAP_SLUGS_QUERY_RESULT = Array<{
 
 // Source: src/sanity/queries/skills.ts
 // Variable: SKILLS_QUERY
-// Query: *[_type == "stackTag" && count(*[_type == "project" && references(^._id)]) > 0]{    "key": slug.current,    "name": name,    "category": category->{      "key": slug.current,      "title": title,      "order": order    },    "count": count(*[_type == "project" && references(^._id)])  } | order(count desc, name asc)
+// Query: *[_type == "stackTag" && count(*[_type == "project" && references(^._id)]) > 0]{    "key": slug.current,    "name": name,    "category": category->{      "key": slug.current,      "title": title,      "order": orderRank    },    "count": count(*[_type == "project" && references(^._id)])  } | order(count desc, name asc)
 export type SKILLS_QUERY_RESULT = Array<{
   key: string | null;
   name: string | null;
@@ -1064,7 +1064,7 @@ export type SKILLS_QUERY_RESULT = Array<{
       en?: string;
       nl?: string;
     } | null;
-    order: number | null;
+    order: string | null;
   } | null;
   count: number;
 }>;
@@ -1082,6 +1082,6 @@ declare module "@sanity/client" {
     '\n  *[_type == "project"] | order(year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    isTool,\n    role,\n    client,\n    deck,\n    summary,\n    liveUrl,\n    githubUrl,\n    "employer": employer->{\n      _id,\n      "name": organisation,\n      "slug": lower(organisation)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current\n    },\n    featureTooling,\n    "hasBody": count(body.en) > 0,\n    "galleryCount": count(gallery)\n  }\n': PROJECTS_QUERY_RESULT;
     '\n  *[_id == "siteSettings"][0]{\n    email,\n    socials[]{\n      platform,\n      url,\n      label\n    },\n    metaDescription,\n    "ogImageUrl": ogImage.asset->url\n  }\n': SITE_SETTINGS_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current) && (count(body.en) > 0 || count(gallery) > 0)]{\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': SITEMAP_SLUGS_QUERY_RESULT;
-    '\n  *[_type == "stackTag" && count(*[_type == "project" && references(^._id)]) > 0]{\n    "key": slug.current,\n    "name": name,\n    "category": category->{\n      "key": slug.current,\n      "title": title,\n      "order": order\n    },\n    "count": count(*[_type == "project" && references(^._id)])\n  } | order(count desc, name asc)\n': SKILLS_QUERY_RESULT;
+    '\n  *[_type == "stackTag" && count(*[_type == "project" && references(^._id)]) > 0]{\n    "key": slug.current,\n    "name": name,\n    "category": category->{\n      "key": slug.current,\n      "title": title,\n      "order": orderRank\n    },\n    "count": count(*[_type == "project" && references(^._id)])\n  } | order(count desc, name asc)\n': SKILLS_QUERY_RESULT;
   }
 }

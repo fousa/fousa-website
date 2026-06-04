@@ -16,6 +16,7 @@
  * BEFORE RUNNING: take a dataset backup with `pnpm backup`.
  */
 import {createClient} from '@sanity/client'
+import {LexoRank} from 'lexorank'
 import {apiVersion, dataset, projectId} from '../src/sanity/env'
 
 const token = process.env.SANITY_API_TOKEN
@@ -28,17 +29,29 @@ const client = createClient({projectId, dataset, apiVersion, token, useCdn: fals
 
 const dryRun = process.argv.includes('--dry-run')
 
-type CategorySeed = {slug: string; en: string; nl: string; order: number}
+type CategorySeed = {slug: string; en: string; nl: string}
 
-// Mirrors the original hardcoded labels and display order.
+// Mirrors the original hardcoded labels; array order becomes the initial
+// drag order via the lexorank ranks assigned below.
 const CATEGORIES: CategorySeed[] = [
-  {slug: 'language', en: 'Languages', nl: 'Talen', order: 1},
-  {slug: 'framework', en: 'Frameworks', nl: 'Frameworks', order: 2},
-  {slug: 'platform', en: 'Platforms', nl: 'Platformen', order: 3},
-  {slug: 'apple', en: 'Apple capabilities', nl: 'Apple-mogelijkheden', order: 4},
-  {slug: 'service', en: 'Services & integrations', nl: 'Services & integraties', order: 5},
-  {slug: 'infra', en: 'Infrastructure', nl: 'Infrastructuur', order: 6},
+  {slug: 'language', en: 'Languages', nl: 'Talen'},
+  {slug: 'framework', en: 'Frameworks', nl: 'Frameworks'},
+  {slug: 'platform', en: 'Platforms', nl: 'Platformen'},
+  {slug: 'apple', en: 'Apple capabilities', nl: 'Apple-mogelijkheden'},
+  {slug: 'service', en: 'Services & integrations', nl: 'Services & integraties'},
+  {slug: 'infra', en: 'Infrastructure', nl: 'Infrastructuur'},
 ]
+
+// Sequential lexorank values, matching how the plugin seeds a fresh list.
+function ranks(n: number): string[] {
+  const out: string[] = []
+  let rank = LexoRank.min()
+  for (let i = 0; i < n; i++) {
+    rank = rank.genNext().genNext()
+    out.push(rank.toString())
+  }
+  return out
+}
 
 const docId = (slug: string) => `skillCategory.${slug}`
 const validSlugs = new Set(CATEGORIES.map((c) => c.slug))
@@ -48,16 +61,17 @@ async function run() {
     `Seeding ${CATEGORIES.length} skill categories into "${dataset}"${dryRun ? ' (dry run)' : ''}…`,
   )
   if (!dryRun) {
+    const orderRanks = ranks(CATEGORIES.length)
     const tx = client.transaction()
-    for (const c of CATEGORIES) {
+    CATEGORIES.forEach((c, i) => {
       tx.createIfNotExists({
         _id: docId(c.slug),
         _type: 'skillCategory',
         title: {_type: 'object', en: c.en, nl: c.nl},
         slug: {_type: 'slug', current: c.slug},
-        order: c.order,
+        orderRank: orderRanks[i],
       })
-    }
+    })
     await tx.commit()
   }
 

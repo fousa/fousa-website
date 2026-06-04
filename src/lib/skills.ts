@@ -16,9 +16,10 @@ export type I18nTitle = {en: string; nl: string | null}
 
 /**
  * The editor-managed skillCategory a skill belongs to: a stable `key` (slug),
- * its translatable `title`, and the `order` that fixes where the group appears.
+ * its translatable `title`, and the drag-ordered `order` (a lexorank string)
+ * that fixes where the group appears.
  */
-export type SkillCategory = {key: string; title: I18nTitle; order: number}
+export type SkillCategory = {key: string; title: I18nTitle; order: string}
 
 /**
  * A technology used by ≥1 project, with its filter key, usage count, and the
@@ -67,12 +68,16 @@ export const OTHER_KEY = 'other'
 /** One rendered group: a category key, its title (null for "Other"), and skills. */
 export type SkillGroup = {key: string; title: I18nTitle | null; skills: Skill[]}
 
+/** Sorts after any lexorank value, so a category missing one lands near the end. */
+const ORDER_LAST = '~'
+
 /**
  * Group skills by their referenced category. Group order follows each category's
- * editor-set `order` (ties broken by English title); skills with no category
- * collect into the synthetic `OTHER_KEY` bucket, always rendered last. Within
- * each group, skills sort by count desc then name asc. Empty groups can't occur
- * — a group exists only because a skill landed in it.
+ * drag-ordered `order` (a lexorank string, compared lexically; ties broken by
+ * English title); skills with no category collect into the synthetic `OTHER_KEY`
+ * bucket, always rendered last. Within each group, skills sort by count desc then
+ * name asc. Empty groups can't occur — a group exists only because a skill landed
+ * in it.
  *
  * @param skills - the full skill set
  * @returns groups in display order, each with its sorted skills (input not mutated)
@@ -80,7 +85,7 @@ export type SkillGroup = {key: string; title: I18nTitle | null; skills: Skill[]}
 export function groupByCategory(skills: Skill[]): SkillGroup[] {
   const buckets = new Map<
     string,
-    {title: I18nTitle | null; order: number; skills: Skill[]}
+    {title: I18nTitle | null; order: string; skills: Skill[]}
   >()
   for (const s of skills) {
     const key = s.category?.key ?? OTHER_KEY
@@ -89,7 +94,7 @@ export function groupByCategory(skills: Skill[]): SkillGroup[] {
     else
       buckets.set(key, {
         title: s.category?.title ?? null,
-        order: s.category?.order ?? Number.MAX_SAFE_INTEGER,
+        order: s.category?.order ?? ORDER_LAST,
         skills: [s],
       })
   }
@@ -105,7 +110,7 @@ export function groupByCategory(skills: Skill[]): SkillGroup[] {
     .sort((a, c) => {
       if (a.key === OTHER_KEY) return 1
       if (c.key === OTHER_KEY) return -1
-      return a.order - c.order || (a.title?.en ?? '').localeCompare(c.title?.en ?? '')
+      return a.order.localeCompare(c.order) || (a.title?.en ?? '').localeCompare(c.title?.en ?? '')
     })
     .map(({key, title, skills}) => ({key, title, skills}))
 }
@@ -133,7 +138,7 @@ export async function getSkills(): Promise<Skill[]> {
           ? {
               key: cat.key,
               title: {en: cat.title?.en ?? cat.key, nl: cat.title?.nl ?? null},
-              order: cat.order ?? Number.MAX_SAFE_INTEGER,
+              order: cat.order ?? '',
             }
           : null
       return {key: r.key, name: r.name, count: r.count ?? 0, category}

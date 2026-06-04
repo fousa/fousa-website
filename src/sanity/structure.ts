@@ -8,6 +8,7 @@
  * Stack tags) sit below as standard browseable lists.
  */
 import type {StructureResolver} from 'sanity/structure'
+import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
 
 /**
  * Singleton document IDs — these documents have a fixed `_id` so they can
@@ -17,7 +18,7 @@ import type {StructureResolver} from 'sanity/structure'
  */
 const SINGLETONS = ['profile', 'availability', 'siteSettings', 'emptyStates'] as const
 
-export const structure: StructureResolver = (S) =>
+export const structure: StructureResolver = (S, context) =>
   S.list()
     .title('Content')
     .items([
@@ -63,6 +64,13 @@ export const structure: StructureResolver = (S) =>
       S.documentTypeListItem('project').title('Projects'),
       S.documentTypeListItem('timelineEntry').title('Timeline'),
       S.documentTypeListItem('stackTag').title('Stack tags'),
+      // Skill categories — drag the rows to set their order on the About page.
+      orderableDocumentListDeskItem({
+        type: 'skillCategory',
+        title: 'Skill categories',
+        S,
+        context,
+      }),
     ])
 
 export {SINGLETONS}

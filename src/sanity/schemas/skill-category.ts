@@ -2,12 +2,14 @@
  * Skill category — collection document.
  *
  * Groups stack tags on the About "Skills" section. Each category carries a
- * translatable display label and an `order` that fixes where it appears in the
- * list. Stack tags point here via a reference, so adding, renaming, reordering,
- * or removing a category is pure Studio work — no code change. Tags with no
- * category reference collect under a code-side "Other" bucket.
+ * translatable display label; its position is set by dragging rows in the
+ * Studio list, stored in a hidden `orderRank` (lexorank) field. Stack tags
+ * point here via a reference, so adding, renaming, reordering, or removing a
+ * category is pure Studio work — no code change. Tags with no category
+ * reference collect under a code-side "Other" bucket.
  */
 import {defineField, defineType} from 'sanity'
+import {orderRankField, orderRankOrdering} from '@sanity/orderable-document-list'
 import {i18nString} from '@/sanity/fields/i18n'
 
 export const skillCategory = defineType({
@@ -25,23 +27,12 @@ export const skillCategory = defineType({
       options: {source: 'title.en', maxLength: 32},
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'order',
-      title: 'Order',
-      type: 'number',
-      description: 'Lower numbers appear first. Ties fall back to the English title.',
-      validation: (Rule) => Rule.required().integer().min(0),
-    }),
+    // Hidden field holding the drag-ordered position (managed by the list view).
+    orderRankField({type: 'skillCategory'}),
   ],
-  orderings: [
-    {
-      title: 'Display order',
-      name: 'orderAsc',
-      by: [{field: 'order', direction: 'asc'}],
-    },
-  ],
+  orderings: [orderRankOrdering],
   preview: {
-    select: {title: 'title.en', order: 'order'},
-    prepare: ({title, order}) => ({title, subtitle: `Order ${order}`}),
+    select: {title: 'title.en'},
+    prepare: ({title}) => ({title}),
   },
 })

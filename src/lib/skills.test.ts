@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { sizeSkills, groupByCategory, type SkillCategory } from "./skills";
 
-const cat = (key: string, order: number): SkillCategory => ({
+const cat = (key: string, order: string): SkillCategory => ({
   key,
   title: { en: key, nl: null },
   order,
@@ -28,20 +28,20 @@ describe("sizeSkills", () => {
 });
 
 describe("groupByCategory", () => {
-  it("orders groups by each category's order field", () => {
+  it("orders groups by each category's lexorank order", () => {
     const out = groupByCategory([
-      mk("rails", 5, cat("framework", 2)),
-      mk("swift", 9, cat("language", 1)),
+      mk("rails", 5, cat("framework", "0|200000:")),
+      mk("swift", 9, cat("language", "0|100000:")),
     ]);
     expect(out.map((g) => g.key)).toEqual(["language", "framework"]);
   });
   it("sorts within a group by count desc then name", () => {
-    const lang = cat("language", 1);
+    const lang = cat("language", "0|100000:");
     const out = groupByCategory([mk("php", 3, lang), mk("swift", 9, lang), mk("ruby", 9, lang)]);
     expect(out[0].skills.map((s) => s.key)).toEqual(["ruby", "swift", "php"]);
   });
   it("buckets uncategorized skills into 'other', placed last", () => {
-    const out = groupByCategory([mk("swift", 9, cat("language", 1)), mk("weird", 2, null), mk("x", 2, null)]);
+    const out = groupByCategory([mk("swift", 9, cat("language", "0|100000:")), mk("weird", 2, null), mk("x", 2, null)]);
     expect(out.at(-1)!.key).toBe("other");
     expect(out.at(-1)!.skills.map((s) => s.key).sort()).toEqual(["weird", "x"]);
   });
@@ -49,7 +49,7 @@ describe("groupByCategory", () => {
 
 describe("sizeSkills stays global", () => {
   it("a high-count language outsizes a low-count service", () => {
-    const steps = sizeSkills([mk("swift", 28, cat("language", 1)), mk("garmin", 1, cat("service", 5))]);
+    const steps = sizeSkills([mk("swift", 28, cat("language", "0|100000:")), mk("garmin", 1, cat("service", "0|500000:"))]);
     expect(steps.get("swift")!).toBeLessThan(steps.get("garmin")!);
   });
 });
