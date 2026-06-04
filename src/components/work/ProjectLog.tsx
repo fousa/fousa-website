@@ -69,24 +69,34 @@ function parseList<T extends string>(raw: string | null, allowed: T[]): T[] {
   return raw.split(",").filter((v): v is T => (allowed as string[]).includes(v));
 }
 
+/**
+ * Parse the open-ended `skill` param: any non-empty, de-duplicated tag slugs.
+ * No allowlist (skills are data-driven) — an unknown key just matches nothing.
+ */
+function parseSkills(raw: string | null): string[] {
+  if (!raw) return [];
+  return [...new Set(raw.split(",").map((s) => s.trim()).filter(Boolean))];
+}
+
 function filtersFromParams(params: URLSearchParams): Filters {
   return {
     stack: parseList(params.get("stack"), ALLOWED_STACK),
     status: parseList(params.get("status"), ALLOWED_STATUS),
     affiliation: parseList(params.get("affiliation"), ALLOWED_AFFILIATION),
+    skill: parseSkills(params.get("skill")),
   };
 }
 
 function filtersToParams(f: Filters, base: URLSearchParams): URLSearchParams {
   const sp = new URLSearchParams(base);
-  (["stack", "status", "affiliation"] as Group[]).forEach((g) => {
+  (["stack", "status", "affiliation", "skill"] as Group[]).forEach((g) => {
     f[g].length ? sp.set(g, f[g].join(",")) : sp.delete(g);
   });
   return sp;
 }
 
 function filterCount(f: Filters): number {
-  return f.stack.length + f.status.length + f.affiliation.length;
+  return f.stack.length + f.status.length + f.affiliation.length + f.skill.length;
 }
 
 // ---------------------------------------------------------------------------
@@ -108,7 +118,7 @@ function parseSort(raw: string | null): Sort {
 
 /** Flatten the active filter values across all groups into one list. */
 function activeValues(f: Filters): string[] {
-  return [...f.stack, ...f.status, ...f.affiliation];
+  return [...f.stack, ...f.status, ...f.affiliation, ...f.skill];
 }
 
 /**
@@ -204,7 +214,7 @@ export function ProjectLog({
 
   const clearAll = useCallback(() => {
     track("clear_filters", { count: filterCount(filters), locale });
-    writeUrl({ stack: [], status: [], affiliation: [] });
+    writeUrl({ stack: [], status: [], affiliation: [], skill: [] });
   }, [filters, writeUrl, locale]);
 
   /**

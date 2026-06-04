@@ -79,6 +79,12 @@ export type Filters = {
   stack: StackFilter[]
   status: StatusFilter[]
   affiliation: AffiliationFilter[]
+  /**
+   * Arbitrary stack-tag keys (slugs) from the About "Skills" deep-links, e.g.
+   * `swift` or `ruby-on-rails`. Unlike the curated groups this has no fixed
+   * allowlist — any tag slug is valid; an unknown key simply matches nothing.
+   */
+  skill: string[]
 }
 
 /** Stack-tag slugs that count as Apple-platform work (lowercase, no spaces). */
@@ -107,9 +113,19 @@ const STACK_TAG_SETS: Record<StackFilter, Set<string>> = {
   web: WEB_TAGS,
 }
 
+/** Project carries the given stack-tag key (normalized slug comparison). */
+function hasSkill(p: Project, key: string): boolean {
+  const k = normTag(key)
+  return p.tagSlugs.some((t) => normTag(t) === k)
+}
+
 /**
  * Test whether a project passes the combined multi-select filters.
  * OR within a group, AND across groups. Empty group = not applied.
+ *
+ * The `skill` group is the open-ended axis: a project matches when its stack
+ * tags include any of the selected skill keys, ANDed with the curated groups
+ * just like the others.
  */
 export function matchesFilters(p: Project, f: Filters): boolean {
   if (f.stack.length && !f.stack.some((s) => hasTag(p, STACK_TAG_SETS[s]))) return false
@@ -122,6 +138,7 @@ export function matchesFilters(p: Project, f: Filters): boolean {
     )
     if (!match) return false
   }
+  if (f.skill.length && !f.skill.some((k) => hasSkill(p, k))) return false
   return true
 }
 
