@@ -30,7 +30,7 @@ export function ForCell({p, locale}: {p: Project; locale: Locale}) {
       return <span className="text-ink">{f.text}</span>
     case 'tool':
       return (
-        <span className="font-mono text-[11px] uppercase tracking-[0.07em] text-muted">
+        <span className="inline-flex items-center rounded-full border border-line px-2 py-0.5 font-mono text-[11px] uppercase tracking-[0.07em] text-muted">
           {t(locale, 'forTool')}
         </span>
       )
