@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { sizeSkills, groupByCategory, type SkillCategory } from "./skills";
+import { sizeSkills, groupByCategory, coreKeys, type SkillCategory } from "./skills";
 
 const cat = (key: string, order: string): SkillCategory => ({
   key,
@@ -44,6 +44,14 @@ describe("groupByCategory", () => {
     const out = groupByCategory([mk("swift", 9, cat("language", "0|100000:")), mk("weird", 2, null), mk("x", 2, null)]);
     expect(out.at(-1)!.key).toBe("other");
     expect(out.at(-1)!.skills.map((s) => s.key).sort()).toEqual(["weird", "x"]);
+  });
+});
+
+describe("coreKeys", () => {
+  it("marks high-count skills as core and the long tail as not", () => {
+    const core = coreKeys([mk("swift", 28), mk("ios", 26), mk("garmin", 1), mk("lua", 1)]);
+    expect(core.has("swift")).toBe(true);
+    expect(core.has("garmin")).toBe(false);
   });
 });
 
