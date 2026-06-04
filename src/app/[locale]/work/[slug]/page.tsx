@@ -15,7 +15,7 @@ import Link from "next/link";
 import { isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
 import { getProjectDetail, getProjectSlugs, yearRange } from "@/lib/work";
-import { forLabel } from "@/lib/work-display";
+import { ForCell } from "@/components/work/ForCell";
 import { fetchSanity } from "@/sanity/fetch";
 import { PROFILE_QUERY } from "@/sanity/queries/profile";
 import { localizedHref } from "@/lib/href";
@@ -139,29 +139,7 @@ export default async function DetailPage({
               {t(locale, "for")}
             </p>
             <p className="mt-1 text-[14.5px]">
-              {(() => {
-                const f = forLabel(project, t(locale, "personal"));
-                if (f.kind === "via") {
-                  return (
-                    <>
-                      <span className="text-muted">{f.employer}</span>
-                      <span className="mx-1 text-faint" aria-hidden>
-                        →
-                      </span>
-                      <span className="text-ink">{f.client}</span>
-                    </>
-                  );
-                }
-                return (
-                  <span
-                    className={
-                      f.kind === "personal" ? "text-muted" : "text-ink"
-                    }
-                  >
-                    {f.text}
-                  </span>
-                );
-              })()}
+              <ForCell p={project} locale={locale} />
             </p>
           </div>
           {[

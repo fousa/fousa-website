@@ -27,7 +27,7 @@ import {
   type Depth,
   type EmptyStateOverride,
 } from "@/lib/work";
-import { forLabel, type ForLabel } from "@/lib/work-display";
+import { ForCell } from "./ForCell";
 import { t, type MessageKey } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 import { track } from "@/lib/analytics";
@@ -344,7 +344,7 @@ export function ProjectLog({
                     <StatusDot state={p.state} locale={locale} />
                   </div>
                   <div className="mt-[5px] text-[12.5px] text-muted">
-                    <ForLabelInline f={forLabel(p, t(locale, "personal"))} /> ·{" "}
+                    <ForCell p={p} locale={locale} /> ·{" "}
                     {p.stack} · <YearRangeInline p={p} />
                   </div>
                 </button>
@@ -488,7 +488,7 @@ function Row({
           )}
         </td>
         <td className="px-11 py-5 align-top">
-          <ForLabelInline f={forLabel(p, t(locale, "personal"))} />
+          <ForCell p={p} locale={locale} />
         </td>
         <td className="px-11 py-5 align-top">{p.stack}</td>
         <td className="px-11 py-5 align-top font-mono text-[13px] text-muted">
@@ -633,7 +633,6 @@ function RowActions({
   );
 }
 
-/** Inline renderer for the structured for-label. */
 /**
  * The year cell: a single year, or "start → end" for a closed range, with the
  * same faint arrow the "For" column uses. Ongoing projects show just the start.
@@ -652,21 +651,3 @@ function YearRangeInline({ p }: { p: Project }) {
   );
 }
 
-function ForLabelInline({ f }: { f: ForLabel }) {
-  if (f.kind === "via") {
-    return (
-      <>
-        <span className="text-muted">{f.employer}</span>
-        <span className="mx-1 text-faint" aria-hidden>
-          →
-        </span>
-        <span className="text-ink">{f.client}</span>
-      </>
-    );
-  }
-  return (
-    <span className={f.kind === "personal" ? "text-muted" : "text-ink"}>
-      {f.text}
-    </span>
-  );
-}
