@@ -16,13 +16,17 @@ import { sizeSkills, driftOffset, displayOrder, type Skill } from "@/lib/skills"
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 
-/** Tailwind size + tone per quantile step (1 = largest/most-used … 5 = smallest). */
+/**
+ * Tailwind size + tone per quantile step (1 = largest/most-used … 5 = smallest).
+ * Sizes step up at `md`: the desktop scale is too large for a phone, where the
+ * biggest tags would otherwise crowd the screen edges past the section padding.
+ */
 const SIZE: Record<number, string> = {
-  1: "text-[40px] text-ink",
-  2: "text-[31px] text-ink",
-  3: "text-[23px] text-text",
-  4: "text-[17px] text-muted",
-  5: "text-[14px] text-faint",
+  1: "text-[28px] md:text-[40px] text-ink",
+  2: "text-[23px] md:text-[31px] text-ink",
+  3: "text-[19px] md:text-[23px] text-text",
+  4: "text-[15px] md:text-[17px] text-muted",
+  5: "text-[13px] md:text-[14px] text-faint",
 };
 
 export function Skills({
