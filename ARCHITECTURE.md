@@ -93,8 +93,8 @@ Grouped by domain under `src/components/`:
   `EmptyState`, `Frame` (hairline device frames for galleries), `StatusDot`, `ToolingChip`.
 - **layout/** — `TopBar` (scroll-revealed hairline + blur), `SiteFooter`, `LocaleSwitch`,
   `InfoTip`, `OutboundLink`, `use-scrolled`.
-- **about/** — `CareerTimeline`, `AvailabilityBadge`, `Skills` (three-column
-  technology list, most-used first, each row deep-linking into the filtered log).
+- **about/** — `CareerTimeline`, `AvailabilityBadge`, `Skills` (type-scaled
+  technology cloud, each tag deep-linking into the filtered log).
 - **home/** `HomeLead` · **theme/** `ThemeToggle` · **brand/** `Wordmark` · **seo/** `JsonLd`.
 
 The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDepth`,
@@ -123,11 +123,18 @@ each project's `tagSlugs`. OR within a group, AND across groups, all URL-backed 
 `useSearchParams` (one param per group). The per-helper rules live in their JSDoc.
 The skill axis powers the About **Skills** section: `lib/skills.ts` / `getSkills`
 (query `sanity/queries/skills.ts`) returns every tag used by ≥1 project with its
-usage count, and each row links to `/?skill=<key>#work`. Unlike the curated chips,
-an active skill surfaces as a removable "Filtering by <label> ×" pill above the
-chip bar — `ProjectLog` takes a `skillLabels` key→name map so the pill reads
-"PostgreSQL", not the slug. The log section carries `id="work"` + `scroll-mt-20`
-so the `#work` hash lands on the filtered list below the sticky header.
+usage count, and each tag links to `/?skill=<key>#work`. It renders as a
+type-scaled **cloud** (`components/about/Skills.tsx`): `sizeSkills` buckets tags
+into five quantile size steps by count (computed over the *full* set, so a tag's
+size never shifts when the tail toggles), `driftOffset` nudges each baseline
+±6px, and `displayOrder` interleaves by key-hash so big and small tags mix —
+all deterministic (key-hash based) to avoid hydration mismatch. `meaningful`
+hides single-use tags (count < 2) behind a "show all" toggle. In the log, an
+active skill rides **alongside the curated chips** as an extra `Skill ×` chip
+(it has no off-state of its own, so clicking removes it); `ProjectLog` takes a
+`skillLabels` key→name map so the chip reads "PostgreSQL", not the slug. The log
+section carries `id="work"` + `scroll-mt-20` so the `#work` hash lands on the
+filtered list below the sticky header.
 
 **Sorting** is desktop-only: the **Project**, **Year**, and **State** column headers
 toggle asc⇄desc, persisted as `?s=<key>-<dir>` (omitted when it equals the default).
