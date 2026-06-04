@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { sizeSkills, displayOrder } from "./skills";
+import { sizeSkills } from "./skills";
 
 const mk = (key: string, count: number, category: string | null = null) => ({
   key,
@@ -18,15 +18,5 @@ describe("sizeSkills", () => {
   it("equal counts get the same step", () => {
     const m = sizeSkills([mk("a", 10), mk("b", 10), mk("c", 2)]);
     expect(m.get("a")).toBe(m.get("b"));
-  });
-});
-
-describe("displayOrder", () => {
-  it("is a stable permutation (same set, deterministic order)", () => {
-    const s = [mk("a", 1), mk("b", 2), mk("c", 3)];
-    const o1 = displayOrder(s).map((x) => x.key);
-    const o2 = displayOrder(s).map((x) => x.key);
-    expect(o1).toEqual(o2);
-    expect([...o1].sort()).toEqual(["a", "b", "c"]);
   });
 });

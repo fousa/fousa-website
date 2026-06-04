@@ -127,12 +127,16 @@ URL-backed via `useSearchParams` (one param per group). The per-helper rules liv
 in their JSDoc.
 The skill axis powers the About **Skills** section: `lib/skills.ts` / `getSkills`
 (query `sanity/queries/skills.ts`) returns every tag used by ≥1 project with its
-usage count, and each tag links to `/?skill=<key>#work`. It renders as a
-type-scaled **cloud** (`components/about/Skills.tsx`): `sizeSkills` buckets tags
-into five quantile size steps by count, and `displayOrder` interleaves by
-key-hash so big and small tags mix — both deterministic (key-hash based) to
-avoid hydration mismatch. Tags flow as tight running text on a shared baseline,
-so the cloud stays dense and even. Every tag is shown.
+usage count and its grouping `category` (a field on the `stackTag` document),
+and each tag links to `/?skill=<key>#work`. It renders **grouped by category**
+(layout C, `components/about/Skills.tsx`): `groupByCategory` buckets tags into a
+fixed category order (Languages → Frameworks → Platforms → Apple capabilities →
+Services → Infrastructure → Other), dropping empty groups and parking
+null/unknown categories under "Other" so nothing silently disappears. Each row
+shows a mono category label (left on desktop, above on mobile) beside its tags,
+ordered most-used first. `sizeSkills` still buckets tags into five quantile size
+steps by count, computed **globally** over the full set — so a high-count
+language outsizes a low-count service even across categories. Every tag is shown.
 In the log, an active skill rides **alongside the curated chips** as an extra `Skill ×` chip
 (it has no off-state of its own, so clicking removes it); `ProjectLog` takes a
 `skillLabels` key→name map so the chip reads "PostgreSQL", not the slug. The log

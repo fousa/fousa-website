@@ -22,20 +22,6 @@ export type Skill = {
 }
 
 /**
- * Stable 32-bit-ish hash of a string. Drives the deterministic display order
- * so the server and client render identically — no hydration mismatch, and no
- * jitter when the component re-renders.
- *
- * @param s - input string (a skill key)
- * @returns a non-negative integer hash
- */
-function hash(s: string): number {
-  let h = 0
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0
-  return Math.abs(h)
-}
-
-/**
  * Assign each skill a size step 1 (largest/most-used) … 5 (smallest), by rank
  * quantile over the FULL set so a skill's size is stable whether the single-use
  * tail is shown or not. Equal counts share a step (ties take the first/larger
@@ -63,18 +49,6 @@ export function sizeSkills(skills: Skill[]): Map<string, 1 | 2 | 3 | 4 | 5> {
     prevStep = step
   })
   return out
-}
-
-/**
- * Deterministic display order that interleaves sizes (sorted by key-hash) so
- * the cloud reads organic — a large tag beside a small one — rather than a
- * heavy→light gradient.
- *
- * @param skills - skills to order
- * @returns a new array in hash order (input not mutated)
- */
-export function displayOrder(skills: Skill[]): Skill[] {
-  return [...skills].sort((a, b) => hash(a.key) - hash(b.key))
 }
 
 /**
