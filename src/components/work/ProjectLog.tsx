@@ -361,14 +361,14 @@ export function ProjectLog({
                             <ToolingChip label={t(locale, "toolingChip")} />
                           </div>
                         )}
-                        <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
-                          {p.summary}
-                        </p>
                         {p.role && (
                           <p className="mb-2 text-[13px] font-semibold text-ink">
                             {p.role}
                           </p>
                         )}
+                        <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
+                          {p.summary}
+                        </p>
                         <DepthLink
                           depth={p.depth}
                           slug={p.slug}
@@ -520,14 +520,14 @@ function Row({
                       <ToolingChip label={t(locale, "toolingChip")} />
                     </div>
                   )}
-                  <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
-                    {p.summary}
-                  </p>
                   {p.role && (
                     <p className="mb-3 text-[14.5px] font-semibold text-ink">
                       {p.role}
                     </p>
                   )}
+                  <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
+                    {p.summary}
+                  </p>
                   <DepthLink
                     depth={p.depth}
                     slug={p.slug}
