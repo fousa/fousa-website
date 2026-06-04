@@ -32,6 +32,7 @@ import { t, type MessageKey } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 import { track } from "@/lib/analytics";
 import { localizedHref } from "@/lib/href";
+import { OutboundLink } from "@/components/layout/OutboundLink";
 import { StatusDot } from "./StatusDot";
 import { ToolingChip } from "./ToolingChip";
 import { EmptyState } from "./EmptyState";
@@ -369,12 +370,7 @@ export function ProjectLog({
                         <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
                           {p.summary}
                         </p>
-                        <DepthLink
-                          depth={p.depth}
-                          slug={p.slug}
-                          locale={locale}
-                          size="sm"
-                        />
+                        <RowActions p={p} locale={locale} size="sm" />
                       </div>
                     </div>
                   </div>
@@ -528,12 +524,7 @@ function Row({
                   <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
                     {p.summary}
                   </p>
-                  <DepthLink
-                    depth={p.depth}
-                    slug={p.slug}
-                    locale={locale}
-                    size="base"
-                  />
+                  <RowActions p={p} locale={locale} size="base" />
                 </div>
               </div>
             </div>
@@ -578,6 +569,67 @@ function DepthLink({
       {label}
       <span aria-hidden className="text-accent"> →</span>
     </Link>
+  );
+}
+
+/**
+ * External links to surface in the log row when a project has no case study
+ * (a "tool"), in priority order — source repo first, then the live URL. Empty
+ * when the project carries neither.
+ */
+function externalActions(p: Project): { kind: "github" | "live"; href: string }[] {
+  const out: { kind: "github" | "live"; href: string }[] = [];
+  if (p.links?.github) out.push({ kind: "github", href: p.links.github });
+  if (p.links?.live) out.push({ kind: "live", href: p.links.live });
+  return out;
+}
+
+/**
+ * Action label per external link kind. The label names the action, not the
+ * host: a repo opens as "Source", a live URL as "Open".
+ */
+const LINK_LABEL: Record<"github" | "live", MessageKey> = {
+  github: "linkSource",
+  live: "linkOpen",
+};
+
+/**
+ * The expanded row's call-to-action. Projects with their own detail page get
+ * the internal case-study / gallery link; case-study-less "tool" rows instead
+ * surface the external Source/Open link(s) they carry (↗ signals leaving the
+ * site). A tool with no links renders nothing — the row still shows its summary.
+ */
+function RowActions({
+  p,
+  locale,
+  size,
+}: {
+  p: Project;
+  locale: Locale;
+  size: "sm" | "base";
+}) {
+  if (p.depth !== "none") {
+    return <DepthLink depth={p.depth} slug={p.slug} locale={locale} size={size} />;
+  }
+  const actions = externalActions(p);
+  if (actions.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-x-5 gap-y-1">
+      {actions.map(({ kind, href }) => (
+        <OutboundLink
+          key={kind}
+          kind={kind}
+          href={href}
+          locale={locale}
+          className={`font-display font-semibold text-ink ${size === "sm" ? "text-[13px]" : "text-sm"}`}
+        >
+          {t(locale, LINK_LABEL[kind])}
+          <span className="text-accent" aria-hidden>
+            {" ↗"}
+          </span>
+        </OutboundLink>
+      ))}
+    </div>
   );
 }
 
