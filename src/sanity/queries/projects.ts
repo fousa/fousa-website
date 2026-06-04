@@ -26,7 +26,6 @@ export const PROJECTS_QUERY = defineQuery(`
     summary,
     liveUrl,
     githubUrl,
-    writeupUrl,
     "employer": employer->{
       _id,
       "name": organisation,

@@ -241,13 +241,6 @@ export const project = defineType({
       group: 'links',
       description: 'Source repo, if open source.',
     }),
-    defineField({
-      name: 'writeupUrl',
-      title: 'Writeup URL',
-      type: 'url',
-      group: 'links',
-      description: 'External case study, blog post, or press article — opens in a new tab.',
-    }),
   ],
   orderings: [
     {

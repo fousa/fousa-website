@@ -282,7 +282,7 @@ export type ProjectDetail = Project & {
   body: unknown[] | null
   cover: { url: string; alt: string | null } | null
   deck: string | null
-  links: { live: string | null; github: string | null; writeup: string | null }
+  links: { live: string | null; github: string | null }
   related: { slug: string; name: string; year: number | null }[]
 }
 
@@ -329,7 +329,6 @@ export async function getProjectDetail(
     links: {
       live: row.liveUrl ?? null,
       github: row.githubUrl ?? null,
-      writeup: row.writeupUrl ?? null,
     },
     related: (row.related ?? [])
       .filter((r) => r.slug)

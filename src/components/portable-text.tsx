@@ -6,8 +6,8 @@
  * case study bodies (the case study has its own h2 outside the body), so a
  * plain-paragraph mapping keeps the markup clean.
  *
- * Marks: em → italic, strong → font-medium (we cap at 500 — see globals.css).
- * Links open in a new tab with rel="noopener noreferrer".
+ * Marks: em → italic, strong → font-semibold so emphasised runs stand out
+ * clearly against the body text. Links open in a new tab with rel="noopener noreferrer".
  */
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 
@@ -17,7 +17,7 @@ const components: PortableTextComponents = {
   },
   marks: {
     em: ({children}) => <em className="italic">{children}</em>,
-    strong: ({children}) => <strong className="font-medium">{children}</strong>,
+    strong: ({children}) => <strong className="font-semibold text-ink">{children}</strong>,
     link: ({children, value}) => (
       <a
         href={value?.href}

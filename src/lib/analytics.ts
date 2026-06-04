@@ -28,7 +28,7 @@ type Events = {
   theme_toggle: { to: "dark" | "light" };
   glide_open: { locale: string };
   outbound_click: {
-    kind: "email" | "github" | "linkedin" | "bluesky" | "instagram" | "cv" | "live" | "writeup";
+    kind: "email" | "github" | "linkedin" | "bluesky" | "instagram" | "cv" | "live";
     href: string;
     locale: string;
   };
