@@ -115,12 +115,16 @@ plus the external `links` so a tool row can surface them), so the two never drif
 `body`, `cover`, `deck`, and `related`) — no second raw fetch, and `links` ride
 along on the base. Both the detail page and tool rows render any present live /
 GitHub links via `OutboundLink` (`outbound_click` kinds `live` / `github`).
-Filtering is six curated chips in three groups — **stack**
-(`apple` | `web`), **status** (`active`), **affiliation**
-(`freelance` | `icapps` | `10to1`) — plus a fourth, open-ended **skill** axis
-(`?skill=swift,ruby-on-rails`): any stack-tag slug, no allowlist, matched against
-each project's `tagSlugs`. OR within a group, AND across groups, all URL-backed via
-`useSearchParams` (one param per group). The per-helper rules live in their JSDoc.
+Filtering is seven curated chips in four groups — **stack**
+(`apple` | `web`), **status** (`active`), **tool** (`tools`, placed right after
+`active`), **affiliation** (`freelance` | `icapps` | `10to1`) — plus a fifth,
+open-ended **skill** axis (`?skill=swift,ruby-on-rails`): any stack-tag slug, no
+allowlist, matched against each project's `tagSlugs`. The **tool** axis narrows
+to projects that read as "Tool" in the For column; it matches via
+`isToolProject` — the same `forLabel`-derived predicate the label uses, so the
+chip and the label can never disagree. OR within a group, AND across groups, all
+URL-backed via `useSearchParams` (one param per group). The per-helper rules live
+in their JSDoc.
 The skill axis powers the About **Skills** section: `lib/skills.ts` / `getSkills`
 (query `sanity/queries/skills.ts`) returns every tag used by ≥1 project with its
 usage count, and each tag links to `/?skill=<key>#work`. It renders as a

@@ -49,6 +49,7 @@ const CHIPS: ChipDef[] = [
   { group: "stack", value: "apple", labelKey: "apple" },
   { group: "stack", value: "web", labelKey: "web" },
   { group: "status", value: "active", labelKey: "active" },
+  { group: "tool", value: "tools", labelKey: "filterTools" },
   { group: "affiliation", value: "freelance", labelKey: "freelance" },
   { group: "affiliation", value: "icapps", labelKey: "icapps" },
   { group: "affiliation", value: "10to1", labelKey: "tenToOne" },
