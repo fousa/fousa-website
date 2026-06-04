@@ -27,7 +27,6 @@ export const CASE_STUDY_QUERY = defineQuery(`
     body,
     liveUrl,
     githubUrl,
-    featured,
     featureTooling,
     isTool,
     "employer": employer->{
@@ -54,7 +53,7 @@ export const CASE_STUDY_QUERY = defineQuery(`
       _type == "project"
       && slug.current != $slug
       && references(^.employer._ref)
-    ] | order(featured desc, year desc) [0...3] {
+    ] | order(year desc) [0...3] {
       _id,
       name,
       "slug": slug.current,

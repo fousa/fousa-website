@@ -17,7 +17,6 @@ export type ProjectFrontmatter = {
   liveUrl?: string
   startDate: string
   endDate?: string
-  featured?: boolean
 }
 
 export type TimelineFrontmatter = {

@@ -132,14 +132,6 @@ export const project = defineType({
       validation: (Rule) => Rule.required().min(1),
     }),
     defineField({
-      name: 'featured',
-      title: 'Featured?',
-      type: 'boolean',
-      group: 'basics',
-      description: 'Featured projects appear higher in the log and on the about page "selected work" section.',
-      initialValue: false,
-    }),
-    defineField({
       name: 'isTool',
       title: 'Personal tool/utility?',
       type: 'boolean',
@@ -256,11 +248,6 @@ export const project = defineType({
       title: 'Most recent first',
       name: 'yearDesc',
       by: [{field: 'year', direction: 'desc'}, {field: 'name', direction: 'asc'}],
-    },
-    {
-      title: 'Featured first',
-      name: 'featuredFirst',
-      by: [{field: 'featured', direction: 'desc'}, {field: 'year', direction: 'desc'}],
     },
   ],
   preview: {

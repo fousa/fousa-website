@@ -140,7 +140,6 @@ export async function migrateProjects(
       engagement: deriveEngagement(data.type, hasEmployer),
       state: data.endDate === 'Present' || !data.endDate ? 'live' : 'done',
       stack,
-      featured: Boolean(data.featured),
     }
 
     // Optional fields — only set if non-empty (URL validation rejects '').

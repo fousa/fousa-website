@@ -4,7 +4,7 @@
  * Three sub-queries combined:
  *   - profile: full Profile singleton (bio, portrait asset, socials, CV)
  *   - timeline: every TimelineEntry ordered most-recent-first (career timeline)
- *   - ownApps: every Project with engagement = "owner", featured first
+ *   - ownApps: every Project with engagement = "owner", most-recent first
  *
  * Single round-trip — Sanity handles the multi-query in one request.
  */
@@ -47,7 +47,7 @@ export const ABOUT_QUERY = defineQuery(`
       description,
       location
     },
-    "ownApps": *[_type == "project" && engagement == "owner"] | order(featured desc, year desc) {
+    "ownApps": *[_type == "project" && engagement == "owner"] | order(year desc) {
       _id,
       name,
       "slug": slug.current,
