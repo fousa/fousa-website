@@ -260,27 +260,6 @@ export function ProjectLog({
 
   return (
     <section id="work" className="scroll-mt-20">
-      {/* Active skill pills — only the open-ended `skill` axis surfaces here;
-          curated selections already light up their own chip below. */}
-      {filters.skill.length > 0 && (
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-2 px-5 pt-3 md:px-11">
-          <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-faint">
-            {t(locale, "filteringBy")}
-          </span>
-          {filters.skill.map((key) => (
-            <button
-              key={key}
-              onClick={() => toggle("skill", key)}
-              aria-label={`${t(locale, "clearAll")} — ${skillLabels[key] ?? key}`}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-transparent bg-accent-soft px-3 py-[5px] text-[12.5px] font-semibold text-accent-deep transition-colors hover:text-accent cursor-pointer"
-            >
-              {skillLabels[key] ?? key}
-              <span aria-hidden>×</span>
-            </button>
-          ))}
-        </div>
-      )}
-
       {/* Chip bar */}
       <div className="flex flex-wrap gap-x-2 gap-y-2 border-b border-line px-5 pb-3 pt-3 md:flex-nowrap md:px-11">
         {CHIPS.map(({ group, value, labelKey }) => {
@@ -300,6 +279,20 @@ export function ProjectLog({
             </button>
           );
         })}
+        {/* Active skill filters ride alongside the curated chips. They have no
+            off-state chip of their own, so each is always "on"; clicking one
+            removes it (toggles the key out of the `skill` axis). */}
+        {filters.skill.map((key) => (
+          <button
+            key={`skill:${key}`}
+            onClick={() => toggle("skill", key)}
+            aria-pressed
+            className="relative inline-flex shrink-0 items-center gap-1.5 rounded-full border border-transparent bg-accent-soft px-3 py-[5px] text-[12.5px] font-semibold text-accent-deep transition-colors cursor-pointer after:absolute after:-inset-y-[9px] after:inset-x-0 after:content-['']"
+          >
+            {skillLabels[key] ?? key}
+            <span aria-hidden>×</span>
+          </button>
+        ))}
         {hasAnyFilter && (
           <button
             onClick={clearAll}
