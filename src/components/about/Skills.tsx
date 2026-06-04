@@ -1,18 +1,18 @@
 "use client";
 /**
  * Type-scaled skills cloud for the About page. Size encodes how many projects
- * use each skill (five quantile steps), monochrome, with gentle deterministic
- * drift so the baseline reads organic rather than gridded. Every skill is shown.
- * Each skill links into the work log filtered by that skill (`?skill=<key>`).
+ * use each skill (five quantile steps), monochrome. Tags flow as tight running
+ * text — sharing a baseline — so the cloud stays dense and even. Every skill is
+ * shown, each linking into the work log filtered by that skill (`?skill=<key>`).
  *
- * Drift and order derive from a stable key hash, so server and client render
+ * The display order derives from a stable key hash, so server and client render
  * identically (no hydration mismatch, no jitter).
  */
 import { useMemo } from "react";
 import Link from "next/link";
 import { localizedHref } from "@/lib/href";
 import { track } from "@/lib/analytics";
-import { sizeSkills, driftOffset, displayOrder, type Skill } from "@/lib/skills";
+import { sizeSkills, displayOrder, type Skill } from "@/lib/skills";
 import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 
@@ -43,7 +43,7 @@ export function Skills({
     <div className="mt-4">
       <p className="pb-2 text-[13px] text-muted">{t(locale, "skills.sub")}</p>
 
-      <div className="flex flex-wrap items-baseline gap-x-[18px] gap-y-[6px] pt-2">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-2">
         {visible.map((s) => (
           <Link
             key={s.key}
@@ -51,8 +51,7 @@ export function Skills({
             onClick={() =>
               track("skill_click", { key: s.key, count: s.count, locale })
             }
-            style={{ top: `${driftOffset(s.key)}px` }}
-            className={`relative font-display font-semibold leading-none tracking-[-0.015em] transition-colors hover:text-accent ${SIZE[steps.get(s.key) ?? 5]}`}
+            className={`font-display font-semibold leading-none tracking-[-0.015em] transition-colors hover:text-accent ${SIZE[steps.get(s.key) ?? 5]}`}
           >
             {s.name}
           </Link>

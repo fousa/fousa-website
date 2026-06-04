@@ -16,13 +16,10 @@ export type Skill = {
   count: number
 }
 
-/** A skill plus its rendered size step and vertical drift for the cloud. */
-export type SizedSkill = Skill & {step: 1 | 2 | 3 | 4 | 5; drift: number}
-
 /**
- * Stable 32-bit-ish hash of a string. Drives the deterministic drift and
- * display order so the server and client render identically — no hydration
- * mismatch, and no jitter when the component re-renders.
+ * Stable 32-bit-ish hash of a string. Drives the deterministic display order
+ * so the server and client render identically — no hydration mismatch, and no
+ * jitter when the component re-renders.
  *
  * @param s - input string (a skill key)
  * @returns a non-negative integer hash
@@ -31,17 +28,6 @@ function hash(s: string): number {
   let h = 0
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0
   return Math.abs(h)
-}
-
-/**
- * Vertical drift in px (−6..+6) for a skill, derived from its key so it stays
- * constant across renders. Gives the cloud a gently uneven baseline.
- *
- * @param key - skill key
- * @returns drift offset in pixels, −6..+6
- */
-export function driftOffset(key: string): number {
-  return (hash(key) % 13) - 6
 }
 
 /**

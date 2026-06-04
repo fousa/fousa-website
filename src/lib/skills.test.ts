@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { sizeSkills, driftOffset, displayOrder } from "./skills";
+import { sizeSkills, displayOrder } from "./skills";
 
 const mk = (key: string, count: number) => ({ key, name: key, count });
 
@@ -13,15 +13,6 @@ describe("sizeSkills", () => {
   it("equal counts get the same step", () => {
     const m = sizeSkills([mk("a", 10), mk("b", 10), mk("c", 2)]);
     expect(m.get("a")).toBe(m.get("b"));
-  });
-});
-
-describe("driftOffset", () => {
-  it("is deterministic and within −6..+6", () => {
-    const d = driftOffset("swift");
-    expect(d).toBe(driftOffset("swift")); // stable
-    expect(d).toBeGreaterThanOrEqual(-6);
-    expect(d).toBeLessThanOrEqual(6);
   });
 });
 

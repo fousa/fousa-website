@@ -125,9 +125,10 @@ The skill axis powers the About **Skills** section: `lib/skills.ts` / `getSkills
 (query `sanity/queries/skills.ts`) returns every tag used by ≥1 project with its
 usage count, and each tag links to `/?skill=<key>#work`. It renders as a
 type-scaled **cloud** (`components/about/Skills.tsx`): `sizeSkills` buckets tags
-into five quantile size steps by count, `driftOffset` nudges each baseline ±6px,
-and `displayOrder` interleaves by key-hash so big and small tags mix — all
-deterministic (key-hash based) to avoid hydration mismatch. Every tag is shown.
+into five quantile size steps by count, and `displayOrder` interleaves by
+key-hash so big and small tags mix — both deterministic (key-hash based) to
+avoid hydration mismatch. Tags flow as tight running text on a shared baseline,
+so the cloud stays dense and even. Every tag is shown.
 In the log, an active skill rides **alongside the curated chips** as an extra `Skill ×` chip
 (it has no off-state of its own, so clicking removes it); `ProjectLog` takes a
 `skillLabels` key→name map so the chip reads "PostgreSQL", not the slug. The log
