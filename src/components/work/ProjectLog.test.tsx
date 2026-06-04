@@ -21,6 +21,7 @@ const vulture: Project = {
   employer: null,
   client: null,
   stack: "Next.js",
+  platforms: "—",
   role: "Solo",
   year: 2024,
   endYear: null,

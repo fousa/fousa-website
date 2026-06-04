@@ -56,7 +56,7 @@ const CHIPS: ChipDef[] = [
 ];
 
 /** Map table column headers to i18n keys. */
-const COLUMNS = ["project", "for", "stack", "year", "state"] as const;
+const COLUMNS = ["project", "for", "platform", "year", "state"] as const;
 
 // ---------------------------------------------------------------------------
 // URL ↔ Filters helpers
@@ -380,7 +380,7 @@ export function ProjectLog({
                   </div>
                   <div className="mt-[5px] text-[12.5px] text-muted">
                     <ForCell p={p} locale={locale} /> ·{" "}
-                    {p.stack} · <YearRangeInline p={p} />
+                    {p.platforms} · <YearRangeInline p={p} />
                   </div>
                 </button>
                 <div
@@ -525,7 +525,7 @@ function Row({
         <td className="px-11 py-5 align-top">
           <ForCell p={p} locale={locale} />
         </td>
-        <td className="px-11 py-5 align-top">{p.stack}</td>
+        <td className="px-11 py-5 align-top">{p.platforms}</td>
         <td className="px-11 py-5 align-top font-mono text-[13px] text-muted">
           <YearRangeInline p={p} />
         </td>

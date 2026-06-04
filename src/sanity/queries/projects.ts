@@ -34,7 +34,8 @@ export const PROJECTS_QUERY = defineQuery(`
     "stack": stack[]->{
       _id,
       name,
-      "slug": slug.current
+      "slug": slug.current,
+      "category": category->slug.current
     },
     featureTooling,
     "hasBody": count(body.en) > 0,

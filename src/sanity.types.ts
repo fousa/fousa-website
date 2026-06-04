@@ -970,7 +970,7 @@ export type PROFILE_QUERY_RESULT =
 
 // Source: src/sanity/queries/projects.ts
 // Variable: PROJECTS_QUERY
-// Query: *[_type == "project"] | order(year desc, name asc) {    _id,    name,    "slug": slug.current,    year,    endYear,    state,    engagement,    isTool,    role,    client,    deck,    summary,    liveUrl,    githubUrl,    "employer": employer->{      _id,      "name": organisation,      "slug": lower(organisation)    },    "stack": stack[]->{      _id,      name,      "slug": slug.current    },    featureTooling,    "hasBody": count(body.en) > 0,    "galleryCount": count(gallery)  }
+// Query: *[_type == "project"] | order(year desc, name asc) {    _id,    name,    "slug": slug.current,    year,    endYear,    state,    engagement,    isTool,    role,    client,    deck,    summary,    liveUrl,    githubUrl,    "employer": employer->{      _id,      "name": organisation,      "slug": lower(organisation)    },    "stack": stack[]->{      _id,      name,      "slug": slug.current,      "category": category->slug.current    },    featureTooling,    "hasBody": count(body.en) > 0,    "galleryCount": count(gallery)  }
 export type PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   name: string | null;
@@ -1001,6 +1001,7 @@ export type PROJECTS_QUERY_RESULT = Array<{
     _id: string;
     name: string | null;
     slug: string | null;
+    category: string | null;
   }> | null;
   featureTooling: boolean | null;
   hasBody: boolean | null;
@@ -1079,7 +1080,7 @@ declare module "@sanity/client" {
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
     '\n  *[_id == "emptyStates"][0]{\n    overrides[]{\n      filters,\n      headline,\n      body\n    }\n  }\n': EMPTY_STATES_QUERY_RESULT;
     '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    roleLine,\n    filterIntro,\n    aboutHeadline,\n    bio,\n    "portraitUrl": portrait.asset->url,\n    beyondCode[]{\n      title,\n      body\n    },\n    location,\n    email,\n    socialLinks,\n    "cvEnUrl": cvEn.asset->url,\n    "cvNlUrl": cvNl.asset->url,\n    vatNumber,\n    copyrightYear\n  }\n': PROFILE_QUERY_RESULT;
-    '\n  *[_type == "project"] | order(year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    isTool,\n    role,\n    client,\n    deck,\n    summary,\n    liveUrl,\n    githubUrl,\n    "employer": employer->{\n      _id,\n      "name": organisation,\n      "slug": lower(organisation)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current\n    },\n    featureTooling,\n    "hasBody": count(body.en) > 0,\n    "galleryCount": count(gallery)\n  }\n': PROJECTS_QUERY_RESULT;
+    '\n  *[_type == "project"] | order(year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    isTool,\n    role,\n    client,\n    deck,\n    summary,\n    liveUrl,\n    githubUrl,\n    "employer": employer->{\n      _id,\n      "name": organisation,\n      "slug": lower(organisation)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      "category": category->slug.current\n    },\n    featureTooling,\n    "hasBody": count(body.en) > 0,\n    "galleryCount": count(gallery)\n  }\n': PROJECTS_QUERY_RESULT;
     '\n  *[_id == "siteSettings"][0]{\n    email,\n    socials[]{\n      platform,\n      url,\n      label\n    },\n    metaDescription,\n    "ogImageUrl": ogImage.asset->url\n  }\n': SITE_SETTINGS_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current) && (count(body.en) > 0 || count(gallery) > 0)]{\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': SITEMAP_SLUGS_QUERY_RESULT;
     '\n  *[_type == "stackTag" && count(*[_type == "project" && references(^._id)]) > 0]{\n    "key": slug.current,\n    "name": name,\n    "category": category->{\n      "key": slug.current,\n      "title": title,\n      "order": orderRank\n    },\n    "count": count(*[_type == "project" && references(^._id)])\n  } | order(count desc, name asc)\n': SKILLS_QUERY_RESULT;

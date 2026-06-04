@@ -7,6 +7,7 @@ function makeProject(overrides: Partial<Project> = {}): Project {
     slug: "demo",
     name: "Demo",
     stack: "—",
+    platforms: "—",
     role: "Lead",
     year: 2024,
     state: "active",

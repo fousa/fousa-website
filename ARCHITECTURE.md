@@ -110,6 +110,10 @@ sites (desktop row, mobile meta, case-study meta) go through the shared `ForCell
 (`components/work/ForCell.tsx`) so the label never drifts. `mapProjectBase` is the one mapper for the fields the log row
 and the detail page share (slug/name/employer/stack/year/locale-resolved summary…,
 plus the external `links` so a tool row can surface them), so the two never drift.
+It also derives `platforms` — the stack tags whose skill category is `platform`,
+joined for display — which the home log's "Platform" column shows in place of the
+full `stack` (the detail page still renders the complete `stack`). Tag a stack
+tag's category as **Platform** in Studio to surface it there.
 `getProjects` builds log `Project`s from it; the detail page calls one
 `getProjectDetail(slug, locale)` that returns a `ProjectDetail` (the base plus
 `body`, `cover`, `deck`, and `related`) — no second raw fetch, and `links` ride

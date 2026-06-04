@@ -35,6 +35,12 @@ export type Project = {
   employer?: { name: string } | null
   client?: string | null
   stack: string
+  /**
+   * The stack tags grouped under the "platform" skill category, joined for
+   * display. The home log surfaces only these (the platforms a project runs
+   * on) rather than the full stack; the detail page still uses `stack`.
+   */
+  platforms: string
   role: string
   year: number
   endYear?: number | null
@@ -249,7 +255,7 @@ type ProjectBaseRow = {
   endYear: number | null
   state: string | null
   engagement: string | null
-  stack: Array<{ name: string | null; slug: string | null }> | null
+  stack: Array<{ name: string | null; slug: string | null; category?: string | null }> | null
   summary: { en?: string; nl?: string } | null
   deck: { en?: string; nl?: string } | null
   featureTooling: boolean | null
@@ -273,6 +279,12 @@ function mapProjectBase(row: ProjectBaseRow, locale: Locale): Omit<Project, 'dep
     employerSlug: row.employer?.slug ?? null,
     client: row.client ?? null,
     stack: stackTags.map((s) => s?.name).filter(Boolean).join(' · ') || '—',
+    platforms:
+      stackTags
+        .filter((s) => s?.category === 'platform')
+        .map((s) => s?.name)
+        .filter(Boolean)
+        .join(' · ') || '—',
     role: row.role ?? '',
     year: row.year ?? 0,
     endYear: row.endYear ?? null,

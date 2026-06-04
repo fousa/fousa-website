@@ -20,6 +20,7 @@ function makeProject(
     slug: name.toLowerCase(),
     name,
     stack: "—",
+    platforms: "—",
     role: "Lead",
     year,
     endYear: endYear ?? null,
