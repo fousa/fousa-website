@@ -690,7 +690,7 @@ export type AVAILABILITY_QUERY_RESULT =
 
 // Source: src/sanity/queries/case-study.ts
 // Variable: CASE_STUDY_QUERY
-// Query: *[_type == "project" && slug.current == $slug][0]{    _id,    name,    "slug": slug.current,    year,    endYear,    state,    engagement,    role,    client,    deck,    summary,    body,    liveUrl,    githubUrl,    featureTooling,    isTool,    "employer": employer->{      _id,      "name": organisation,      "slug": "employer-" + lower(organisation)    },    "stack": stack[]->{      _id,      name,      "slug": slug.current    },    "coverUrl": cover.asset->url,    "coverAlt": cover.alt,    "gallery": gallery[]{      _key,      frame,      caption,      "imageUrl": image.asset->url,      "width": image.asset->metadata.dimensions.width,      "height": image.asset->metadata.dimensions.height    },    "related": *[      _type == "project"      && slug.current != $slug      && references(^.employer._ref)    ] | order(year desc) [0...3] {      _id,      name,      "slug": slug.current,      year,      deck    }  }
+// Query: *[_type == "project" && slug.current == $slug][0]{    _id,    name,    "slug": slug.current,    year,    endYear,    state,    engagement,    role,    client,    deck,    summary,    body,    liveUrl,    githubUrl,    featureTooling,    isTool,    "employer": employer->{      _id,      "name": organisation,      "slug": "employer-" + lower(organisation)    },    "stack": stack[]->{      _id,      name,      "slug": slug.current    },    "cover": cover{      ...,      "alt": alt,      "dimensions": asset->metadata.dimensions    },    "gallery": gallery[]{      _key,      frame,      caption,      "image": image{        ...,        "dimensions": asset->metadata.dimensions      }    },    "related": *[      _type == "project"      && slug.current != $slug      && references(^.employer._ref)    ] | order(year desc) [0...3] {      _id,      name,      "slug": slug.current,      year,      deck    }  }
 export type CASE_STUDY_QUERY_RESULT = {
   _id: string;
   name: string | null;
@@ -761,8 +761,15 @@ export type CASE_STUDY_QUERY_RESULT = {
     name: string | null;
     slug: string | null;
   }> | null;
-  coverUrl: string | null;
-  coverAlt: string | null;
+  cover: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt: string | null;
+    _type: "image";
+    dimensions: SanityImageDimensions | null;
+  } | null;
   gallery: Array<{
     _key: string;
     frame: "browser" | "none" | "phone" | "tablet" | null;
@@ -770,9 +777,14 @@ export type CASE_STUDY_QUERY_RESULT = {
       en?: string;
       nl?: string;
     } | null;
-    imageUrl: string | null;
-    width: number | null;
-    height: number | null;
+    image: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+      dimensions: SanityImageDimensions | null;
+    } | null;
   }> | null;
   related: Array<{
     _id: string;
@@ -1076,7 +1088,7 @@ declare module "@sanity/client" {
   interface SanityQueries {
     '\n  {\n    "profile": *[_id == "profile"][0]{\n      name,\n      tagline,\n      aboutHeadline,\n      bio,\n      beyondCode[]{\n        title,\n        body,\n        image{\n          "url": asset->url,\n          "lqip": asset->metadata.lqip,\n          "width": asset->metadata.dimensions.width,\n          "height": asset->metadata.dimensions.height,\n          alt\n        }\n      },\n      location,\n      email,\n      socialLinks,\n      "cvEnUrl": cvEn.asset->url,\n      "cvNlUrl": cvNl.asset->url,\n      vatNumber,\n      copyrightYear,\n      "portraitUrl": portrait.asset->url\n    },\n    "timeline": *[_type == "timelineEntry"] | order(startDate desc) {\n      _id,\n      organisation,\n      title,\n      group,\n      startDate,\n      endDate,\n      description,\n      location\n    },\n    "ownApps": *[_type == "project" && engagement == "owner"] | order(year desc) {\n      _id,\n      name,\n      "slug": slug.current,\n      deck,\n      year,\n      state,\n      liveUrl\n    }\n  }\n': ABOUT_QUERY_RESULT;
     '\n  *[_id == "availability"][0]{\n    status,\n    message,\n    nextOpening\n  }\n': AVAILABILITY_QUERY_RESULT;
-    '\n  *[_type == "project" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    role,\n    client,\n    deck,\n    summary,\n    body,\n    liveUrl,\n    githubUrl,\n    featureTooling,\n    isTool,\n    "employer": employer->{\n      _id,\n      "name": organisation,\n      "slug": "employer-" + lower(organisation)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current\n    },\n    "coverUrl": cover.asset->url,\n    "coverAlt": cover.alt,\n    "gallery": gallery[]{\n      _key,\n      frame,\n      caption,\n      "imageUrl": image.asset->url,\n      "width": image.asset->metadata.dimensions.width,\n      "height": image.asset->metadata.dimensions.height\n    },\n    "related": *[\n      _type == "project"\n      && slug.current != $slug\n      && references(^.employer._ref)\n    ] | order(year desc) [0...3] {\n      _id,\n      name,\n      "slug": slug.current,\n      year,\n      deck\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
+    '\n  *[_type == "project" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    role,\n    client,\n    deck,\n    summary,\n    body,\n    liveUrl,\n    githubUrl,\n    featureTooling,\n    isTool,\n    "employer": employer->{\n      _id,\n      "name": organisation,\n      "slug": "employer-" + lower(organisation)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current\n    },\n    "cover": cover{\n      ...,\n      "alt": alt,\n      "dimensions": asset->metadata.dimensions\n    },\n    "gallery": gallery[]{\n      _key,\n      frame,\n      caption,\n      "image": image{\n        ...,\n        "dimensions": asset->metadata.dimensions\n      }\n    },\n    "related": *[\n      _type == "project"\n      && slug.current != $slug\n      && references(^.employer._ref)\n    ] | order(year desc) [0...3] {\n      _id,\n      name,\n      "slug": slug.current,\n      year,\n      deck\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
     '\n  *[_id == "emptyStates"][0]{\n    overrides[]{\n      filters,\n      headline,\n      body\n    }\n  }\n': EMPTY_STATES_QUERY_RESULT;
     '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    roleLine,\n    filterIntro,\n    aboutHeadline,\n    bio,\n    "portraitUrl": portrait.asset->url,\n    beyondCode[]{\n      title,\n      body\n    },\n    location,\n    email,\n    socialLinks,\n    "cvEnUrl": cvEn.asset->url,\n    "cvNlUrl": cvNl.asset->url,\n    vatNumber,\n    copyrightYear\n  }\n': PROFILE_QUERY_RESULT;

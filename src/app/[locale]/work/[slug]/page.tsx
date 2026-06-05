@@ -217,7 +217,7 @@ export default async function DetailPage({
               <Image
                 src={coverUrl}
                 alt={coverAlt}
-                width={1200}
+                width={1800}
                 height={600}
                 priority
                 className="h-auto w-full rounded object-cover"

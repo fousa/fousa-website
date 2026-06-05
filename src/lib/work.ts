@@ -11,9 +11,29 @@ import {PROJECTS_QUERY} from '@/sanity/queries/projects'
 import {CASE_STUDY_QUERY, CASE_STUDY_SLUGS_QUERY} from '@/sanity/queries/case-study'
 import {EMPTY_STATES_QUERY} from '@/sanity/queries/empty-states'
 import {isToolProject} from '@/lib/work-display'
+import {urlForImage} from '@/sanity/image'
 import {pickLocale} from '@/i18n/pick-locale'
 import type {Locale} from '@/i18n/config'
-import type {PROJECTS_QUERY_RESULT, CASE_STUDY_QUERY_RESULT, CASE_STUDY_SLUGS_QUERY_RESULT, EMPTY_STATES_QUERY_RESULT} from '@/sanity.types'
+import type {PROJECTS_QUERY_RESULT, CASE_STUDY_QUERY_RESULT, CASE_STUDY_SLUGS_QUERY_RESULT, EMPTY_STATES_QUERY_RESULT, SanityImageCrop, SanityImageDimensions} from '@/sanity.types'
+
+/**
+ * Dimensions of an image *after* the editor's crop is applied. Sanity stores
+ * the crop as edge fractions, so the visible region is the asset shrunk by
+ * those margins — the ratio the frontend must use so the framed/lightbox image
+ * isn't stretched.
+ */
+function croppedDimensions(img: {
+  crop?: SanityImageCrop
+  dimensions: SanityImageDimensions | null
+}): {width: number; height: number} {
+  const w = img.dimensions?.width ?? 1200
+  const h = img.dimensions?.height ?? 800
+  const c = img.crop
+  if (!c) return {width: w, height: h}
+  const cw = Math.round(w * (1 - (c.left ?? 0) - (c.right ?? 0)))
+  const ch = Math.round(h * (1 - (c.top ?? 0) - (c.bottom ?? 0)))
+  return {width: cw || w, height: ch || h}
+}
 
 export type State = 'active' | 'maintained' | 'archived' | 'cancelled'
 export type Engagement = 'freelance' | 'full-time' | 'student'
@@ -363,15 +383,21 @@ export async function getProjectDetail(
 
   const hasBody = Array.isArray(row.body?.en) && row.body.en.length > 0
   const gallery: GalleryShot[] = (row.gallery ?? [])
-    .filter((g) => g.imageUrl)
-    .map((g) => ({
-      key: g._key,
-      imageUrl: g.imageUrl!,
-      width: g.width ?? 1200,
-      height: g.height ?? 800,
-      frame: (g.frame as Frame) ?? 'browser',
-      caption: pickLocale(typeof g.caption === 'object' ? g.caption : null, locale),
-    }))
+    .filter((g) => g.image?.asset)
+    .map((g) => {
+      const img = g.image!
+      // Builder URL bakes in the crop; dimensions follow the cropped region so
+      // the frame/lightbox keeps the right aspect ratio.
+      const {width, height} = croppedDimensions(img)
+      return {
+        key: g._key,
+        imageUrl: urlForImage(img).width(1600).auto('format').url(),
+        width,
+        height,
+        frame: (g.frame as Frame) ?? 'browser',
+        caption: pickLocale(typeof g.caption === 'object' ? g.caption : null, locale),
+      }
+    })
 
   const body = hasBody
     ? locale === 'nl' && Array.isArray(row.body?.nl) && row.body.nl.length > 0
@@ -384,7 +410,14 @@ export async function getProjectDetail(
     depth: hasBody ? 'full' : gallery.length > 0 ? 'gallery' : 'none',
     gallery,
     body: body ?? null,
-    cover: row.coverUrl ? { url: row.coverUrl, alt: row.coverAlt ?? null } : null,
+    cover: row.cover?.asset
+      ? {
+          // Fixed 3:1 hero: fit('crop') frames the (already crop-trimmed) image
+          // around the editor's hotspot, so the chosen focal point stays in view.
+          url: urlForImage(row.cover).width(1800).height(600).fit('crop').auto('format').url(),
+          alt: row.cover.alt ?? null,
+        }
+      : null,
     related: (row.related ?? [])
       .filter((r) => r.slug)
       .map((r) => ({ slug: r.slug as string, name: r.name ?? '', year: r.year ?? null })),

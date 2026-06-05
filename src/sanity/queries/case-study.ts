@@ -39,15 +39,19 @@ export const CASE_STUDY_QUERY = defineQuery(`
       name,
       "slug": slug.current
     },
-    "coverUrl": cover.asset->url,
-    "coverAlt": cover.alt,
+    "cover": cover{
+      ...,
+      "alt": alt,
+      "dimensions": asset->metadata.dimensions
+    },
     "gallery": gallery[]{
       _key,
       frame,
       caption,
-      "imageUrl": image.asset->url,
-      "width": image.asset->metadata.dimensions.width,
-      "height": image.asset->metadata.dimensions.height
+      "image": image{
+        ...,
+        "dimensions": asset->metadata.dimensions
+      }
     },
     "related": *[
       _type == "project"

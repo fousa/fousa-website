@@ -129,7 +129,11 @@ tag's category as **Platform** in Studio to surface it there.
 `getProjects` builds log `Project`s from it; the detail page calls one
 `getProjectDetail(slug, locale)` that returns a `ProjectDetail` (the base plus
 `body`, `cover`, and `related`) — no second raw fetch, and `links` ride
-along on the base. Both the detail page and tool rows render any present live /
+along on the base. Cover and gallery URLs go through the `@sanity/image-url`
+builder (`sanity/image.ts` → `urlForImage`), not `asset->url`, so the editor's
+crop + hotspot take effect: the cover is a fixed 3:1 hero framed on the hotspot
+(`width(1800).height(600).fit('crop')`), while gallery shots honor the crop
+region and carry the cropped dimensions so frames aren't stretched. Both the detail page and tool rows render any present live /
 GitHub links via `OutboundLink` (`outbound_click` kinds `live` / `github`).
 Filtering is seven curated chips in four groups — **stack**
 (`apple` | `web`), **status** (`active`), **tool** (`tools`, placed right after
