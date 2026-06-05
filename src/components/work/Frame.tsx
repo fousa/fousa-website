@@ -41,11 +41,15 @@ export function Frame({ shot }: { shot: GalleryShot }) {
     );
   }
 
-  if (shot.frame === "tablet") {
+  // Both tablet orientations share the same hairline bezel and corner radius —
+  // a landscape and a portrait iPad read as one device turned two ways. Only
+  // the aspect ratio differs: 4:3 wide vs 3:4 tall (real iPad proportions).
+  if (shot.frame === "tablet-landscape" || shot.frame === "tablet-portrait") {
+    const ratio = shot.frame === "tablet-portrait" ? "aspect-[3/4]" : "aspect-[4/3]";
     return (
       <figure className="w-full">
         <div className="rounded-2xl border-[1.5px] border-ink p-[9px]">
-          <div className="aspect-[4/3] overflow-hidden rounded-md bg-surface">
+          <div className={`${ratio} overflow-hidden rounded-md bg-surface`}>
             {img}
           </div>
         </div>

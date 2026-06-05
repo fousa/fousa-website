@@ -112,7 +112,13 @@ export type Project = {
       crop?: SanityImageCrop;
       _type: "image";
     };
-    frame?: "phone" | "tablet" | "browser" | "none";
+    frame?:
+      | "phone"
+      | "tablet-landscape"
+      | "tablet-portrait"
+      | "watch"
+      | "browser"
+      | "none";
     caption?: {
       en?: string;
       nl?: string;
@@ -772,7 +778,14 @@ export type CASE_STUDY_QUERY_RESULT = {
   } | null;
   gallery: Array<{
     _key: string;
-    frame: "browser" | "none" | "phone" | "tablet" | null;
+    frame:
+      | "browser"
+      | "none"
+      | "phone"
+      | "tablet-landscape"
+      | "tablet-portrait"
+      | "watch"
+      | null;
     caption: {
       en?: string;
       nl?: string;

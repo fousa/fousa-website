@@ -3,7 +3,8 @@ import { deviceForFrame, DEVICE_ORDER, DEVICE_LABEL_KEY } from "./gallery-device
 
 describe("deviceForFrame", () => {
   it("maps each frame onto its device group", () => {
-    expect(deviceForFrame("tablet")).toBe("ipad");
+    expect(deviceForFrame("tablet-landscape")).toBe("ipad");
+    expect(deviceForFrame("tablet-portrait")).toBe("ipad");
     expect(deviceForFrame("phone")).toBe("iphone");
     expect(deviceForFrame("watch")).toBe("watch");
     expect(deviceForFrame("browser")).toBe("browser");

@@ -2,9 +2,10 @@
  * Maps a gallery shot's device `frame` onto a device group used to lay the
  * gallery out grouped-by-device (iPad → iPhone → Apple Watch → …).
  *
- * The project already stores an explicit per-shot `frame` (phone/tablet/watch/
- * browser/none), so that — not an aspect-ratio guess — is the source of truth
- * for which device a screenshot belongs to.
+ * The project already stores an explicit per-shot `frame` (phone/tablet-landscape/
+ * tablet-portrait/watch/browser/none), so that — not an aspect-ratio guess — is
+ * the source of truth for which device a screenshot belongs to. Both tablet
+ * orientations belong to the same iPad group.
  */
 import type {Frame} from './work'
 import type {MessageKey} from '@/i18n/messages'
@@ -25,7 +26,8 @@ export const DEVICE_LABEL_KEY: Record<DeviceKind, MessageKey> = {
 
 export function deviceForFrame(frame: Frame): DeviceKind {
   switch (frame) {
-    case 'tablet':
+    case 'tablet-landscape':
+    case 'tablet-portrait':
       return 'ipad'
     case 'phone':
       return 'iphone'

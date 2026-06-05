@@ -38,7 +38,7 @@ function croppedDimensions(img: {
 export type State = 'active' | 'maintained' | 'archived' | 'cancelled'
 export type Engagement = 'freelance' | 'full-time' | 'student'
 export type Depth = 'none' | 'gallery' | 'full'
-export type Frame = 'phone' | 'tablet' | 'watch' | 'browser' | 'none'
+export type Frame = 'phone' | 'tablet-landscape' | 'tablet-portrait' | 'watch' | 'browser' | 'none'
 
 export type GalleryShot = {
   key: string
