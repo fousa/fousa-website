@@ -1,4 +1,4 @@
-import imageUrlBuilder, {type SanityImageSource} from '@sanity/image-url'
+import {createImageUrlBuilder, type SanityImageSource} from '@sanity/image-url'
 import {projectId, dataset} from './env'
 
 /**
@@ -7,7 +7,7 @@ import {projectId, dataset} from './env'
  * a `?rect=` parameter and lets a requested width/height + `fit('crop')` frame
  * the image around the hotspot. The raw asset URL ignores both.
  */
-const builder = imageUrlBuilder({projectId, dataset})
+const builder = createImageUrlBuilder({projectId, dataset})
 
 export function urlForImage(source: SanityImageSource) {
   return builder.image(source)
