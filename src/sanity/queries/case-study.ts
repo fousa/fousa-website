@@ -23,7 +23,6 @@ export const CASE_STUDY_QUERY = defineQuery(`
     role,
     client,
     deck,
-    summary,
     body,
     liveUrl,
     githubUrl,

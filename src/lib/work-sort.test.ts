@@ -27,7 +27,6 @@ function makeProject(
     state,
     engagement: "freelance",
     tagSlugs: [],
-    summary: "",
     depth: "none",
     gallery: [],
   };

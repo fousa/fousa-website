@@ -13,7 +13,6 @@ function makeProject(overrides: Partial<Project> = {}): Project {
     state: "active",
     engagement: "freelance",
     tagSlugs: [],
-    summary: "",
     depth: "none",
     gallery: [],
     ...overrides,

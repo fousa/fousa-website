@@ -68,11 +68,11 @@ export type Project = {
   engagement: Engagement
   tagSlugs: string[]
   employerSlug?: string | null
-  /** Two-sentence teaser — used for the case-study page intro and SEO meta. */
-  summary: string
   /**
-   * One-line elevator pitch shown in the expanded log row. Optional: a project
-   * with no deck simply expands to a panel without the lead paragraph.
+   * One-line elevator pitch — the single short summary, shown under the
+   * case-study title, in the expanded log row, and as the SEO/OG description.
+   * Optional: a project with no deck simply expands to a panel without the lead
+   * paragraph (and SEO falls back to the site description).
    */
   deck?: string | null
   depth: Depth
@@ -304,7 +304,6 @@ type ProjectBaseRow = {
   state: string | null
   engagement: string | null
   stack: Array<{ name: string | null; slug: string | null; category?: string | null }> | null
-  summary: { en?: string; nl?: string } | null
   deck: { en?: string; nl?: string } | null
   featureTooling: boolean | null
   isTool: boolean | null
@@ -318,7 +317,7 @@ type ProjectBaseRow = {
  * from its own query shape). Single source of truth so the log and detail never
  * drift on naming or locale resolution.
  */
-function mapProjectBase(row: ProjectBaseRow, locale: Locale): Omit<Project, 'depth' | 'gallery'> {
+export function mapProjectBase(row: ProjectBaseRow, locale: Locale): Omit<Project, 'depth' | 'gallery'> {
   const stackTags = row.stack ?? []
   return {
     slug: row.slug ?? '',
@@ -339,7 +338,6 @@ function mapProjectBase(row: ProjectBaseRow, locale: Locale): Omit<Project, 'dep
     state: (row.state as State) ?? 'active',
     engagement: (row.engagement as Engagement) ?? 'freelance',
     tagSlugs: stackTags.map((s) => s?.slug).filter((s): s is string => Boolean(s)),
-    summary: pickLocale(row.summary, locale) ?? pickLocale(row.deck, locale) ?? '',
     deck: pickLocale(row.deck, locale),
     featureTooling: row.featureTooling ?? false,
     isTool: row.isTool ?? false,

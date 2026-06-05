@@ -29,7 +29,7 @@ const vulture: Project = {
   engagement: "freelance",
   tagSlugs: ["web"],
   employerSlug: null,
-  summary: "Self-hosted uptime.",
+  deck: "Self-hosted uptime.",
   depth: "full",
   gallery: [],
   featureTooling: false,

@@ -6,7 +6,7 @@
  * descending, name ascending) — matches what the homepage table needs out of the box.
  *
  * Includes the lightweight case-study fields the expanded log row needs (deck,
- * summary, links). ~65 documents, so the payload stays small.
+ * links). ~65 documents, so the payload stays small.
  */
 import {defineQuery} from 'next-sanity'
 
@@ -23,7 +23,6 @@ export const PROJECTS_QUERY = defineQuery(`
     role,
     client,
     deck,
-    summary,
     liveUrl,
     githubUrl,
     "employer": employer->{
