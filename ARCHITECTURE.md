@@ -95,7 +95,16 @@ Grouped by domain under `src/components/`:
   `InfoTip`, `OutboundLink`, `use-scrolled`.
 - **about/** — `CareerTimeline`, `AvailabilityBadge`, `Skills` (numbered
   category index, each tag deep-linking into the filtered log).
-- **home/** `HomeLead` · **theme/** `ThemeToggle` · **brand/** `Wordmark` · **seo/** `JsonLd`.
+- **home/** `HomeLead` · **theme/** `ThemeToggle` · **brand/** `Wordmark` · **glide/**
+  `GlideGame` (the hidden glider mini-game) · **seo/** `JsonLd`.
+
+The wordmark hides an easter egg: on desktop, hovering (or keyboard-focusing) `fousa.be`
+in the `TopBar` wipes out a small "take off ✈" link to its right that launches `GlideGame`
+— styling lives in the scoped `.brand-unit` / `.reveal-*` block in `globals.css` (motion
+collapses under the global `prefers-reduced-motion` safeguard). Touch has no hover, so the
+game becomes a regular item in the mobile menu instead. Both entries reuse the one
+`GlideGame` trigger (its `children`/`ariaLabel`/`onLaunch` props); the wordmark itself stays
+the home link everywhere.
 
 The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDepth`,
 `matchesFilters`, plus the sort model `compareProjects` / `sortProjects`) plus
