@@ -27,11 +27,11 @@ export function Frame({ shot }: { shot: GalleryShot }) {
 
   if (shot.frame === "phone") {
     return (
-      <figure className="mx-auto w-[180px]">
+      <figure className="w-full">
         <div className="rounded-[22px] border-[1.5px] border-ink p-[7px]">
           <div className="relative aspect-[9/19] overflow-hidden rounded-[15px] bg-surface">
             <span
-              className="absolute left-1/2 top-0 h-3.5 w-12 -translate-x-1/2 rounded-b-[9px] bg-ink"
+              className="absolute left-1/2 top-0 h-3.5 w-[26%] -translate-x-1/2 rounded-b-[9px] bg-ink"
               aria-hidden
             />
             {img}
@@ -43,7 +43,7 @@ export function Frame({ shot }: { shot: GalleryShot }) {
 
   if (shot.frame === "tablet") {
     return (
-      <figure className="mx-auto w-[280px]">
+      <figure className="w-full">
         <div className="rounded-2xl border-[1.5px] border-ink p-[9px]">
           <div className="aspect-[4/3] overflow-hidden rounded-md bg-surface">
             {img}
@@ -55,7 +55,7 @@ export function Frame({ shot }: { shot: GalleryShot }) {
 
   if (shot.frame === "watch") {
     return (
-      <figure className="relative mx-auto w-[150px]">
+      <figure className="relative w-full">
         {/* Digital crown + side button on the right edge. */}
         <span
           className="absolute right-0 top-[36%] h-5 w-[3px] -translate-y-1/2 translate-x-full rounded-r-[2px] bg-ink"

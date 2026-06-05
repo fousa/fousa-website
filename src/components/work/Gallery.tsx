@@ -23,8 +23,19 @@ import {
   DEVICE_ORDER,
   DEVICE_LABEL_KEY,
   deviceForFrame,
+  type DeviceKind,
 } from "@/lib/gallery-devices";
 import { Frame } from "./Frame";
+
+// Per-device grid columns: a fixed count on mobile (so frames never overflow and
+// overlap), then fixed-width auto-fill tracks from `sm` up to keep desktop sizing.
+const GRID_COLUMNS: Record<DeviceKind, string> = {
+  ipad: "grid-cols-2 sm:[grid-template-columns:repeat(auto-fill,280px)]",
+  iphone: "grid-cols-3 sm:[grid-template-columns:repeat(auto-fill,180px)]",
+  watch: "grid-cols-3 sm:[grid-template-columns:repeat(auto-fill,150px)]",
+  browser: "grid-cols-2 sm:[grid-template-columns:repeat(auto-fill,560px)]",
+  other: "grid-cols-2 sm:[grid-template-columns:repeat(auto-fill,560px)]",
+};
 
 export function Gallery({
   shots,
@@ -119,20 +130,11 @@ export function Gallery({
                 {t(locale, DEVICE_LABEL_KEY[device])}
               </h3>
             )}
-            <div className="flex flex-wrap items-end justify-center gap-8 md:gap-10">
+            <div
+              className={`grid items-end gap-4 sm:gap-8 md:gap-10 ${GRID_COLUMNS[device]}`}
+            >
               {entries.map(({ shot, index: i }) => (
-                <div
-                  key={shot.key}
-                  className={
-                    shot.frame === "phone"
-                      ? "w-[180px]"
-                      : shot.frame === "watch"
-                        ? "w-[150px]"
-                        : shot.frame === "tablet"
-                          ? "w-[280px]"
-                          : "w-full max-w-[560px]"
-                  }
-                >
+                <div key={shot.key}>
                   <button
                     ref={(el) => {
                       thumbRefs.current[i] = el;
