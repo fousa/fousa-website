@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { projectDepth, matchesFilters, hasCaseStudy, type Project, type Filters } from "./work";
+import { projectDepth, matchesFilters, hasCaseStudy, mapProjectBase, type Project, type Filters } from "./work";
 
 /** Build a Project with sensible defaults; override only what a test cares about. */
 function makeProject(overrides: Partial<Project> = {}): Project {
@@ -23,6 +23,17 @@ function makeProject(overrides: Partial<Project> = {}): Project {
 function makeFilters(overrides: Partial<Filters> = {}): Filters {
   return { stack: [], status: [], tool: [], caseStudy: [], affiliation: [], skill: [], ...overrides };
 }
+
+describe("mapProjectBase", () => {
+  it("maps the localized deck onto the base project (and no longer carries summary)", () => {
+    const base = mapProjectBase(
+      { deck: { en: "Soaring planner for glider pilots" }, stack: [] } as never,
+      "en",
+    );
+    expect(base.deck).toBe("Soaring planner for glider pilots");
+    expect((base as Record<string, unknown>).summary).toBeUndefined();
+  });
+});
 
 describe("projectDepth", () => {
   it("is 'full' when the project has body content", () => {
