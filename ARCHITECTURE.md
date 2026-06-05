@@ -153,7 +153,11 @@ Filtering is eight curated chips in five groups — **stack**
 `active`), **caseStudy** (`casestudy`, placed right after `tools`), **affiliation**
 (`freelance` | `icapps` | `10to1`) — plus a sixth,
 open-ended **skill** axis (`?skill=swift,ruby-on-rails`): any stack-tag slug, no
-allowlist, matched against each project's `tagSlugs`. The **tool** axis narrows
+allowlist, matched against each project's `tagSlugs`. The two stack chips are
+deliberately asymmetric (`matchesStack`): **apple** stays broad — it groups
+several Apple-platform tags (iOS, macOS, Swift…) — while **web** is strict,
+matching only the explicit `web` platform tag like a skill key (so "web" means
+tagged-as-web, not "uses some web tech"). The **tool** axis narrows
 to projects that read as "Tool" in the For column; it matches via
 `isToolProject` — the same `forLabel`-derived predicate the label uses, so the
 chip and the label can never disagree. The **caseStudy** axis narrows to projects
