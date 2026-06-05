@@ -141,21 +141,24 @@ export function Gallery({
             </button>
           )}
 
-          {/* Image — stopPropagation so clicking it doesn't close the overlay. */}
+          {/* Image — stopPropagation so clicking it doesn't close the overlay.
+              The image fills a flex-1 box and uses object-contain, so the whole
+              shot scales to fit the space left between the padding and caption. */}
           <div
             onClick={(e) => e.stopPropagation()}
-            className="flex max-h-full flex-col items-center"
+            className="flex h-full w-full flex-col items-center justify-center gap-4"
           >
-            <Image
-              src={current.imageUrl}
-              alt={current.caption ?? ""}
-              width={current.width}
-              height={current.height}
-              sizes="90vw"
-              className="h-auto w-auto max-h-[80vh] max-w-[90vw] rounded object-contain"
-            />
+            <div className="relative min-h-0 w-full flex-1">
+              <Image
+                src={current.imageUrl}
+                alt={current.caption ?? ""}
+                fill
+                sizes="90vw"
+                className="rounded object-contain"
+              />
+            </div>
             {(current.caption || many) && (
-              <p className="mt-4 text-center font-mono text-[11px] text-muted">
+              <p className="shrink-0 text-center font-mono text-[11px] text-muted">
                 {current.caption}
                 {current.caption && many ? " · " : ""}
                 {many ? `${index! + 1} / ${shots.length}` : ""}
