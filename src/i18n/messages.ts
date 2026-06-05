@@ -44,6 +44,8 @@ const messages = {
     cv: 'Download CV',
     done: 'done',
     downloadCv: 'Download CV (pdf)',
+    'depth.caseStudy': 'Case study available',
+    'depth.gallery': 'Screenshots available',
     'empty.headline': 'Nothing here yet.',
     'empty.body':
       'No project matches the filters you picked. Loosen one to see more, or browse the full log.',
@@ -172,6 +174,8 @@ const messages = {
     cv: 'Download CV',
     done: 'klaar',
     downloadCv: 'CV downloaden (pdf)',
+    'depth.caseStudy': 'Case study beschikbaar',
+    'depth.gallery': 'Screenshots beschikbaar',
     'empty.headline': 'Niets gevonden in deze hoek van mijn werk.',
     'empty.body':
       'Geen enkel project past bij deze combinatie. Laat er eentje los, of bekijk de volledige log.',
