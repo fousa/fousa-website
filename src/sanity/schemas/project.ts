@@ -9,7 +9,7 @@
  * Fields are grouped into three Studio tabs: Basics, Case study, Links.
  */
 import {defineField, defineType} from 'sanity'
-import {i18nString, i18nText, i18nPortableText} from '@/sanity/fields/i18n'
+import {i18nString, i18nPortableText} from '@/sanity/fields/i18n'
 
 export const project = defineType({
   name: 'project',
@@ -151,15 +151,10 @@ export const project = defineType({
     }),
 
     // — Case study tab
-    i18nText(
-      'summary',
-      'Summary',
-      'Two-sentence teaser used for the case-study page intro and SEO meta. Plain text, no formatting.'
-    ),
     i18nString(
       'deck',
       'Deck',
-      'One-line elevator pitch shown in the expanded log row. Skip to leave the row’s panel without a lead line.'
+      'One-line pitch shown under the project title, in the log row, and as the SEO/OG description. Skip to leave the row’s panel without a lead line (SEO falls back to the site description).'
     ),
     i18nPortableText(
       'body',
