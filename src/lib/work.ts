@@ -117,6 +117,7 @@ export type StackFilter = 'apple' | 'web'
 export type StatusFilter = 'active'
 export type AffiliationFilter = 'freelance' | 'icapps' | '10to1'
 export type ToolFilter = 'tools'
+export type CaseStudyFilter = 'casestudy'
 
 export type Filters = {
   stack: StackFilter[]
@@ -129,6 +130,13 @@ export type Filters = {
    * so the chip and the label can't disagree.
    */
   tool: ToolFilter[]
+  /**
+   * Case study — projects with a full written case study (`depth === "full"`).
+   * A single-value axis (the only key is `casestudy`); it shares the
+   * `hasCaseStudy` definition with the name underline, so the chip and the
+   * underlined rows can't disagree.
+   */
+  caseStudy: CaseStudyFilter[]
   /**
    * Arbitrary stack-tag keys (slugs) from the About "Skills" deep-links, e.g.
    * `swift` or `ruby-on-rails`. Unlike the curated groups this has no fixed
@@ -181,6 +189,7 @@ export function matchesFilters(p: Project, f: Filters): boolean {
   if (f.stack.length && !f.stack.some((s) => hasTag(p, STACK_TAG_SETS[s]))) return false
   if (f.status.includes('active') && !isActive(p)) return false
   if (f.tool.includes('tools') && !isToolProject(p)) return false
+  if (f.caseStudy.includes('casestudy') && !hasCaseStudy(p)) return false
   if (f.affiliation.length) {
     const match = f.affiliation.some((a) =>
       a === 'freelance'

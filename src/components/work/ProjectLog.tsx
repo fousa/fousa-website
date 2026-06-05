@@ -22,6 +22,7 @@ import {
   type StatusFilter,
   type AffiliationFilter,
   type ToolFilter,
+  type CaseStudyFilter,
   type Sort,
   type SortKey,
   type SortDir,
@@ -66,6 +67,7 @@ const COLUMNS = ["project", "for", "platform", "year", "state"] as const;
 const ALLOWED_STACK: StackFilter[] = ["apple", "web"];
 const ALLOWED_STATUS: StatusFilter[] = ["active"];
 const ALLOWED_TOOL: ToolFilter[] = ["tools"];
+const ALLOWED_CASESTUDY: CaseStudyFilter[] = ["casestudy"];
 const ALLOWED_AFFILIATION: AffiliationFilter[] = ["freelance", "icapps", "10to1"];
 
 function parseList<T extends string>(raw: string | null, allowed: T[]): T[] {
@@ -87,6 +89,7 @@ function filtersFromParams(params: URLSearchParams): Filters {
     stack: parseList(params.get("stack"), ALLOWED_STACK),
     status: parseList(params.get("status"), ALLOWED_STATUS),
     tool: parseList(params.get("tool"), ALLOWED_TOOL),
+    caseStudy: parseList(params.get("caseStudy"), ALLOWED_CASESTUDY),
     affiliation: parseList(params.get("affiliation"), ALLOWED_AFFILIATION),
     skill: parseSkills(params.get("skill")),
   };
@@ -94,14 +97,14 @@ function filtersFromParams(params: URLSearchParams): Filters {
 
 function filtersToParams(f: Filters, base: URLSearchParams): URLSearchParams {
   const sp = new URLSearchParams(base);
-  (["stack", "status", "tool", "affiliation", "skill"] as Group[]).forEach((g) => {
+  (["stack", "status", "tool", "caseStudy", "affiliation", "skill"] as Group[]).forEach((g) => {
     f[g].length ? sp.set(g, f[g].join(",")) : sp.delete(g);
   });
   return sp;
 }
 
 function filterCount(f: Filters): number {
-  return f.stack.length + f.status.length + f.tool.length + f.affiliation.length + f.skill.length;
+  return f.stack.length + f.status.length + f.tool.length + f.caseStudy.length + f.affiliation.length + f.skill.length;
 }
 
 // ---------------------------------------------------------------------------
@@ -123,7 +126,7 @@ function parseSort(raw: string | null): Sort {
 
 /** Flatten the active filter values across all groups into one list. */
 function activeValues(f: Filters): string[] {
-  return [...f.stack, ...f.status, ...f.tool, ...f.affiliation, ...f.skill];
+  return [...f.stack, ...f.status, ...f.tool, ...f.caseStudy, ...f.affiliation, ...f.skill];
 }
 
 /**
@@ -226,7 +229,7 @@ export function ProjectLog({
 
   const clearAll = useCallback(() => {
     track("clear_filters", { count: filterCount(filters), locale });
-    writeUrl({ stack: [], status: [], tool: [], affiliation: [], skill: [] });
+    writeUrl({ stack: [], status: [], tool: [], caseStudy: [], affiliation: [], skill: [] });
   }, [filters, writeUrl, locale]);
 
   /**

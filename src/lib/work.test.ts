@@ -22,7 +22,7 @@ function makeProject(overrides: Partial<Project> = {}): Project {
 
 /** Build a Filters object; empty groups mean "not applied". */
 function makeFilters(overrides: Partial<Filters> = {}): Filters {
-  return { stack: [], status: [], tool: [], affiliation: [], skill: [], ...overrides };
+  return { stack: [], status: [], tool: [], caseStudy: [], affiliation: [], skill: [], ...overrides };
 }
 
 describe("projectDepth", () => {
