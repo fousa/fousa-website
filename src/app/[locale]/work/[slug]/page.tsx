@@ -49,6 +49,9 @@ export async function generateMetadata({
     return { title: t(locale, "notFoundTitle") };
 
   const title = `${project.name} ${t(locale, "caseStudyMetaSuffix")}`;
+  // Deck is the short pitch; fall back to the site description when a project
+  // has none, so the meta/OG description is never empty.
+  const description = project.deck ?? t(locale, "siteDescription");
   const path = `/work/${slug}`;
   // Per-project share image from the dedicated /og generator; falls back to
   // the site default only if a project somehow has no generated card.
@@ -56,11 +59,11 @@ export async function generateMetadata({
 
   return {
     title,
-    description: project.summary,
+    description,
     ...altMetadata(locale, path),
     openGraph: {
       title,
-      description: project.summary,
+      description,
       url: altMetadata(locale, path).alternates?.canonical as string,
       siteName: "fousa.be",
       locale: locale === "nl" ? "nl_BE" : "en_US",
@@ -70,7 +73,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title,
-      description: project.summary,
+      description,
       images: [ogImage],
     },
   };
@@ -124,9 +127,11 @@ export default async function DetailPage({
         <h1 className="font-display text-[28px] font-bold tracking-[-0.03em] md:text-[36px]">
           {project.name}
         </h1>
-        <p className="mt-3 max-w-[520px] text-[15px] leading-[1.6] text-text">
-          {project.summary}
-        </p>
+        {project.deck && (
+          <p className="mt-3 max-w-[520px] text-[15px] leading-[1.6] text-text">
+            {project.deck}
+          </p>
+        )}
         {project.featureTooling && (
           <div className="mt-4 -ml-2">
             <ToolingChip label={t(locale, "toolingChip")} />
