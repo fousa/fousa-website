@@ -94,9 +94,11 @@ Internal links use `localizedHref(locale, path)` (`lib/href.ts`); metadata uses
 Grouped by domain under `src/components/`:
 
 - **work/** — `ProjectLog` (filterable table/cards with expand-in-place rows),
-  `EmptyState`, `Frame` (hairline device frames for galleries: phone, tablet, Apple
+  `EmptyState`, `Frame` (hairline device frames for galleries: phone, tablet-landscape
+  (4:3) / tablet-portrait (3:4) — same iPad bezel in two orientations, Apple
   Watch, browser, none), `Gallery` (screenshots grouped by device — iPad → iPhone →
-  Apple Watch, derived from each shot's `frame` via `lib/gallery-devices`, with a
+  Apple Watch, derived from each shot's `frame` via `lib/gallery-devices`; both tablet
+  orientations fall under the iPad group, with a
   built-in fit-to-screen lightbox carousel), `StatusDot`, `ToolingChip`.
 - **layout/** — `TopBar` (scroll-revealed hairline + blur), `SiteFooter`, `LocaleSwitch`,
   `InfoTip`, `OutboundLink`, `use-scrolled`.
@@ -140,7 +142,10 @@ along on the base. Cover and gallery URLs go through the `@sanity/image-url`
 builder (`sanity/image.ts` → `urlForImage`), not `asset->url`, so the editor's
 crop + hotspot take effect: the cover is a fixed 3:1 hero framed on the hotspot
 (`width(1800).height(600).fit('crop')`), while gallery shots honor the crop
-region and carry the cropped dimensions so frames aren't stretched. Both the detail page and tool rows render any present live /
+region and carry the cropped dimensions so frames aren't stretched. The per-shot
+`frame` value `tablet` was split into `tablet-landscape` / `tablet-portrait`; the
+old value was migrated to `tablet-landscape` (one-off `scripts/migrate-tablet-frame.ts`).
+Both the detail page and tool rows render any present live /
 GitHub links via `OutboundLink` (`outbound_click` kinds `live` / `github`).
 Filtering is eight curated chips in five groups — **stack**
 (`apple` | `web`), **status** (`active`), **tool** (`tools`, placed right after
