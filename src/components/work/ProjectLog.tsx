@@ -30,6 +30,7 @@ import {
   type EmptyStateOverride,
 } from "@/lib/work";
 import { ForCell } from "./ForCell";
+import { DepthIcon } from "./DepthIcon";
 import { t, type MessageKey } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 import { track } from "@/lib/analytics";
@@ -376,8 +377,9 @@ export function ProjectLog({
                 >
                   <div className="flex items-center justify-between gap-3">
                     <span
-                      className={`font-display text-base font-semibold ${open === p.slug ? "text-accent" : "text-ink"}`}
+                      className={`depth-name font-display text-base font-semibold ${open === p.slug ? "text-accent" : "text-ink"}`}
                     >
+                      <DepthIcon depth={p.depth} label={(k) => t(locale, k as MessageKey)} />
                       {p.name}
                     </span>
                     <StatusDot state={p.state} locale={locale} />
@@ -513,8 +515,9 @@ function Row({
       >
         <td className="px-11 py-5 align-top">
           <span
-            className={`font-display text-base font-semibold tracking-[-0.01em] ${open ? "text-accent" : "text-ink group-hover:text-accent"}`}
+            className={`depth-name font-display text-base font-semibold tracking-[-0.01em] ${open ? "text-accent" : "text-ink group-hover:text-accent"}`}
           >
+            <DepthIcon depth={p.depth} label={(k) => t(locale, k as MessageKey)} />
             {p.name}
           </span>
         </td>
