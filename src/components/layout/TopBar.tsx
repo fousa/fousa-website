@@ -133,6 +133,19 @@ export function TopBar({ locale }: { locale: Locale }) {
               {n.label}
             </Link>
           ))}
+          {/* No hover on touch, so the easter egg gets a plain menu entry here —
+              styled to match the desktop hover-reveal (faint, small uppercase mono). */}
+          <GlideGame
+            locale={locale}
+            ariaLabel={t(locale, "play.aria")}
+            onClose={() => setOpen(false)}
+            triggerClassName="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-faint"
+          >
+            {t(locale, "play.label")}
+            <span aria-hidden className="text-accent">
+              ✈
+            </span>
+          </GlideGame>
           <Link
             href={`${localizedHref(locale, "/about")}#contact`}
             onClick={() => setOpen(false)}
@@ -140,18 +153,6 @@ export function TopBar({ locale }: { locale: Locale }) {
             {t(locale, "hireMe")}
             <span aria-hidden className="text-accent"> →</span>
           </Link>
-          {/* No hover on touch, so the easter egg gets a plain menu entry here. */}
-          <GlideGame
-            locale={locale}
-            ariaLabel={t(locale, "play.aria")}
-            onLaunch={() => setOpen(false)}
-            triggerClassName="inline-flex items-center gap-1.5 text-base font-medium"
-          >
-            {t(locale, "play.label")}
-            <span aria-hidden className="text-accent">
-              ✈
-            </span>
-          </GlideGame>
         </nav>
       )}
       </header>

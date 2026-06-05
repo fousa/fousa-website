@@ -47,6 +47,7 @@ export function GlideGame({
   children,
   ariaLabel,
   onLaunch,
+  onClose,
 }: {
   locale: Locale;
   /** Tailwind classes for the trigger so each nav can match its own styling. */
@@ -65,6 +66,12 @@ export function GlideGame({
   ariaLabel?: string;
   /** Called when the game opens — lets a mobile menu close itself. */
   onLaunch?: () => void;
+  /**
+   * Called when the overlay closes. Mobile uses this to dismiss the menu *after*
+   * play — closing it on launch instead would unmount this component (and the
+   * just-opened overlay) before it ever renders.
+   */
+  onClose?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [end, setEnd] = useState<EndState | null>(null);
@@ -72,6 +79,10 @@ export function GlideGame({
   const [runId, setRunId] = useState(0);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  // Held in a ref so the open effect (keyed on `open`) doesn't re-run when a
+  // parent passes a fresh inline `onClose` on every render.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   const launch = useCallback(() => {
     track("glide_open", { locale });
@@ -110,6 +121,7 @@ export function GlideGame({
       document.body.style.overflow = prevOverflow;
       document.removeEventListener("keydown", onKey);
       trigger?.focus();
+      onCloseRef.current?.();
     };
   }, [open]);
 
