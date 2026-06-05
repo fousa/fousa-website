@@ -1,7 +1,7 @@
 "use client";
 /**
  * The homepage log: active filter pills + chip bar + project table (desktop)
- * / cards (mobile), with rows that expand in place to a summary + case-study
+ * / cards (mobile), with rows that expand in place to a deck + case-study
  * link.
  *
  * Filter state is multi-select with three groups (stack / status / affiliation),
@@ -402,9 +402,11 @@ export function ProjectLog({
                             {p.role}
                           </p>
                         )}
-                        <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
-                          {p.summary}
-                        </p>
+                        {p.deck && (
+                          <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
+                            {p.deck}
+                          </p>
+                        )}
                         <RowActions p={p} locale={locale} size="sm" />
                       </div>
                     </div>
@@ -556,9 +558,11 @@ function Row({
                       {p.role}
                     </p>
                   )}
-                  <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
-                    {p.summary}
-                  </p>
+                  {p.deck && (
+                    <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
+                      {p.deck}
+                    </p>
+                  )}
                   <RowActions p={p} locale={locale} size="base" />
                 </div>
               </div>
@@ -632,7 +636,7 @@ const LINK_LABEL: Record<"github" | "live", MessageKey> = {
  * The expanded row's call-to-action. Projects with their own detail page get
  * the internal case-study / gallery link; case-study-less "tool" rows instead
  * surface the external Source/Open link(s) they carry (↗ signals leaving the
- * site). A tool with no links renders nothing — the row still shows its summary.
+ * site). A tool with no links renders nothing — the row still shows its deck.
  */
 function RowActions({
   p,

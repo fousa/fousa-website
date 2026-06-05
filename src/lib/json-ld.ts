@@ -14,7 +14,7 @@ export function buildProjectJsonLd({
   url,
   authorName,
 }: {
-  project: {name: string; slug: string; year: number; deck: string | null}
+  project: {name: string; slug: string; year: number; deck?: string | null}
   locale: 'en' | 'nl'
   siteUrl: string
   /** Canonical URL of the page this script is embedded in. */

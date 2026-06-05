@@ -48,7 +48,13 @@ export type Project = {
   engagement: Engagement
   tagSlugs: string[]
   employerSlug?: string | null
+  /** Two-sentence teaser — used for the case-study page intro and SEO meta. */
   summary: string
+  /**
+   * One-line elevator pitch shown in the expanded log row. Optional: a project
+   * with no deck simply expands to a panel without the lead paragraph.
+   */
+  deck?: string | null
   depth: Depth
   gallery: GalleryShot[]
   featureTooling?: boolean | null
@@ -293,6 +299,7 @@ function mapProjectBase(row: ProjectBaseRow, locale: Locale): Omit<Project, 'dep
     engagement: (row.engagement as Engagement) ?? 'freelance',
     tagSlugs: stackTags.map((s) => s?.slug).filter((s): s is string => Boolean(s)),
     summary: pickLocale(row.summary, locale) ?? pickLocale(row.deck, locale) ?? '',
+    deck: pickLocale(row.deck, locale),
     featureTooling: row.featureTooling ?? false,
     isTool: row.isTool ?? false,
     links: {
@@ -331,12 +338,11 @@ export async function getProjects(locale: Locale = 'en'): Promise<Project[]> {
 /**
  * The full case-study payload: the shared Project base plus the detail-only
  * fields the /work/<slug> page renders — portable-text body, cover image,
- * deck, external links, and related projects.
+ * external links, and related projects. (`deck` lives on the Project base.)
  */
 export type ProjectDetail = Project & {
   body: unknown[] | null
   cover: { url: string; alt: string | null } | null
-  deck: string | null
   related: { slug: string; name: string; year: number | null }[]
 }
 
@@ -379,7 +385,6 @@ export async function getProjectDetail(
     gallery,
     body: body ?? null,
     cover: row.coverUrl ? { url: row.coverUrl, alt: row.coverAlt ?? null } : null,
-    deck: pickLocale(row.deck, locale),
     related: (row.related ?? [])
       .filter((r) => r.slug)
       .map((r) => ({ slug: r.slug as string, name: r.name ?? '', year: r.year ?? null })),

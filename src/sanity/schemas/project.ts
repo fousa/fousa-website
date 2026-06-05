@@ -154,12 +154,12 @@ export const project = defineType({
     i18nText(
       'summary',
       'Summary',
-      'Two-sentence teaser shown in the expanded log row. Plain text, no formatting.'
+      'Two-sentence teaser used for the case-study page intro and SEO meta. Plain text, no formatting.'
     ),
     i18nString(
       'deck',
       'Deck',
-      'One-line elevator pitch shown in italic at the top of the expanded panel. Skip to hide the expand.'
+      'One-line elevator pitch shown in the expanded log row. Skip to leave the row’s panel without a lead line.'
     ),
     i18nPortableText(
       'body',
