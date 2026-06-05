@@ -103,6 +103,31 @@ describe("matchesFilters", () => {
   });
 });
 
+describe("Web filter (strict)", () => {
+  // `web` matches only the explicit `web` platform tag — not any web-ish tech.
+  it("matches a project with the explicit web tag", () => {
+    const p = makeProject({ tagSlugs: ["web", "next-js"] });
+    expect(matchesFilters(p, makeFilters({ stack: ["web"] }))).toBe(true);
+  });
+
+  it("does NOT match a webby project that lacks the web tag", () => {
+    const p = makeProject({ tagSlugs: ["next-js", "ruby-on-rails"] }); // would've matched before
+    expect(matchesFilters(p, makeFilters({ stack: ["web"] }))).toBe(false);
+  });
+
+  it("does not match native-only projects", () => {
+    const p = makeProject({ tagSlugs: ["swift", "ios"] });
+    expect(matchesFilters(p, makeFilters({ stack: ["web"] }))).toBe(false);
+  });
+
+  it("still ANDs with other axes (web + active)", () => {
+    const active = makeProject({ tagSlugs: ["web"], endYear: null });
+    expect(matchesFilters(active, makeFilters({ stack: ["web"], status: ["active"] }))).toBe(true);
+    const ended = makeProject({ tagSlugs: ["web"], endYear: 2019 });
+    expect(matchesFilters(ended, makeFilters({ stack: ["web"], status: ["active"] }))).toBe(false);
+  });
+});
+
 describe("hasCaseStudy", () => {
   it("is true only for full depth", () => {
     expect(hasCaseStudy(makeProject({ depth: "full" }))).toBe(true);
