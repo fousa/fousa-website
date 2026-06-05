@@ -148,9 +148,6 @@ export type Filters = {
 /** Stack-tag slugs that count as Apple-platform work (lowercase, no spaces). */
 const APPLE_TAGS = new Set(['ios', 'ipados', 'macos', 'watchos', 'swift', 'swiftui'])
 
-/** Stack-tag slugs that count as web work (lowercase, no spaces). */
-const WEB_TAGS = new Set(['website', 'ruby-on-rails', 'node', 'api', 'next-js'])
-
 /** Normalize a tag slug for matching (lowercase, strip spaces). */
 function normTag(s: string): string {
   return s.toLowerCase().replace(/\s+/g, '')
@@ -166,15 +163,21 @@ function isActive(p: Project): boolean {
   return !p.endYear
 }
 
-const STACK_TAG_SETS: Record<StackFilter, Set<string>> = {
-  apple: APPLE_TAGS,
-  web: WEB_TAGS,
-}
-
 /** Project carries the given stack-tag key (normalized slug comparison). */
 function hasSkill(p: Project, key: string): boolean {
   const k = normTag(key)
   return p.tagSlugs.some((t) => normTag(t) === k)
+}
+
+/**
+ * Whether a project matches a curated stack chip. The two axes are deliberately
+ * asymmetric: `apple` stays broad — it groups several Apple-platform tags (iOS,
+ * macOS, Swift…) — while `web` is strict, matching only the explicit `web`
+ * platform tag, exactly like a skill key. So "web" means tagged-as-web, not
+ * "uses some web tech".
+ */
+function matchesStack(p: Project, key: StackFilter): boolean {
+  return key === 'apple' ? hasTag(p, APPLE_TAGS) : hasSkill(p, 'web')
 }
 
 /**
@@ -186,7 +189,7 @@ function hasSkill(p: Project, key: string): boolean {
  * just like the others.
  */
 export function matchesFilters(p: Project, f: Filters): boolean {
-  if (f.stack.length && !f.stack.some((s) => hasTag(p, STACK_TAG_SETS[s]))) return false
+  if (f.stack.length && !f.stack.some((s) => matchesStack(p, s))) return false
   if (f.status.includes('active') && !isActive(p)) return false
   if (f.tool.includes('tools') && !isToolProject(p)) return false
   if (f.caseStudy.includes('casestudy') && !hasCaseStudy(p)) return false

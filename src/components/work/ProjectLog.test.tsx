@@ -27,7 +27,7 @@ const vulture: Project = {
   endYear: null,
   state: "active",
   engagement: "freelance",
-  tagSlugs: ["website"],
+  tagSlugs: ["web"],
   employerSlug: null,
   summary: "Self-hosted uptime.",
   depth: "full",

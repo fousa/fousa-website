@@ -54,12 +54,12 @@ describe("matchesFilters", () => {
   });
 
   it("drops a project whose tags miss the selected stack set", () => {
-    const p = makeProject({ tagSlugs: ["website"] }); // web, not apple
+    const p = makeProject({ tagSlugs: ["web"] }); // web, not apple
     expect(matchesFilters(p, makeFilters({ stack: ["apple"] }))).toBe(false);
   });
 
   it("ORs within a group: apple|web keeps a web-only project", () => {
-    const p = makeProject({ tagSlugs: ["website"] });
+    const p = makeProject({ tagSlugs: ["web"] });
     expect(matchesFilters(p, makeFilters({ stack: ["apple", "web"] }))).toBe(true);
   });
 
