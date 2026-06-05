@@ -31,14 +31,14 @@ export function Skills({ skills, locale }: { skills: Skill[]; locale: Locale }) 
           className="grid grid-cols-[34px_1fr] items-baseline gap-x-3 border-t border-line py-4 first:border-t-0 md:gap-x-[18px]"
         >
           {/* Number stays in the left gutter on every breakpoint. */}
-          <span className="font-mono text-[12px] text-faint">
+          <span className="font-mono text-[12px] text-accent">
             {String(i + 1).padStart(2, "0")}
           </span>
 
           {/* Mobile: label over tags, both indented past the number. Desktop:
               label and tags side by side in a 150px · 1fr row. */}
           <div className="md:grid md:grid-cols-[150px_1fr] md:items-baseline md:gap-x-[18px]">
-            <div className="font-display text-[16px] font-semibold text-ink">
+            <div className="font-mono text-[10px] tracking-[0.1em] text-faint uppercase text-faint">
               {title
                 ? pickLocale(title, locale) ?? title.en
                 : t(locale, "skills.cat.other")}
