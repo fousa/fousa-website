@@ -195,6 +195,7 @@ export const project = defineType({
                   {title: 'Phone', value: 'phone'},
                   {title: 'Tablet — landscape', value: 'tablet-landscape'},
                   {title: 'Tablet — portrait', value: 'tablet-portrait'},
+                  {title: 'TV', value: 'tv'},
                   {title: 'Apple Watch', value: 'watch'},
                   {title: 'Browser', value: 'browser'},
                   {title: 'None (bare image)', value: 'none'},
