@@ -1,7 +1,7 @@
 /**
  * Marks a project's depth next to its name in the log:
- *   "full"    → document icon  (a written case study)
- *   "gallery" → stacked frames (screenshots only)
+ *   "full"    → page-with-text-lines icon (a written case study)
+ *   "gallery" → photo icon (screenshots only)
  *   "none"    → nothing
  *
  * Purely a marker; the actual link lives in the expanded row CTA. The component
@@ -31,10 +31,10 @@ export function DepthIcon({
           strokeLinejoin="round"
           aria-hidden
         >
-          <path d="M4 2h4.4L12 5.6V14H4z" />
-          <path d="M8.3 2v3.4H12" />
-          <line x1="5.8" y1="8.6" x2="10.2" y2="8.6" />
-          <line x1="5.8" y1="10.8" x2="10.2" y2="10.8" />
+          <rect x="3.5" y="2" width="9" height="12" rx="1.2" />
+          <line x1="5.6" y1="5.4" x2="10.4" y2="5.4" />
+          <line x1="5.6" y1="8" x2="10.4" y2="8" />
+          <line x1="5.6" y1="10.6" x2="8.6" y2="10.6" />
         </svg>
       </span>
     );
@@ -53,8 +53,9 @@ export function DepthIcon({
           strokeLinejoin="round"
           aria-hidden
         >
-          <rect x="2.2" y="4" width="7.5" height="6" rx="1" />
-          <rect x="6.3" y="6" width="7.5" height="6" rx="1" />
+          <rect x="2.4" y="3.6" width="11.2" height="8.8" rx="1.4" />
+          <circle cx="6" cy="6.6" r="1" />
+          <path d="M3 11.4l3.2-3 2.4 2.3L11 8l2.6 2.6" />
         </svg>
       </span>
     );
