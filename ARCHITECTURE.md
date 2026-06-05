@@ -60,7 +60,11 @@ and three collections.
   derived not flagged) shows just its start year; the status dot already signals
   it's still live.
   Detail depth is derived from content — `body` → full case study,
-  `gallery` → framed screenshots, neither → no detail page. A depth-`none`
+  `gallery` → framed screenshots, neither → no detail page. Full-case-study rows
+  (`hasCaseStudy`, depth `full`) get a hairline underline on the project name
+  (coral on row hover, `.pn--study`) so visitors can scan which rows lead to a
+  written story; `hasCaseStudy` is the lone predicate behind both this underline
+  and the **Case study** filter chip. A depth-`none`
   project that carries an external link (`githubUrl` / `liveUrl`) surfaces
   "Source ↗" / "Open ↗" in its log row instead of an internal CTA — derived from
   depth + links, no flag. The "Tool" *label* in the "For" column is separate and
@@ -138,14 +142,18 @@ crop + hotspot take effect: the cover is a fixed 3:1 hero framed on the hotspot
 (`width(1800).height(600).fit('crop')`), while gallery shots honor the crop
 region and carry the cropped dimensions so frames aren't stretched. Both the detail page and tool rows render any present live /
 GitHub links via `OutboundLink` (`outbound_click` kinds `live` / `github`).
-Filtering is seven curated chips in four groups — **stack**
+Filtering is eight curated chips in five groups — **stack**
 (`apple` | `web`), **status** (`active`), **tool** (`tools`, placed right after
-`active`), **affiliation** (`freelance` | `icapps` | `10to1`) — plus a fifth,
+`active`), **caseStudy** (`casestudy`, placed right after `tools`), **affiliation**
+(`freelance` | `icapps` | `10to1`) — plus a sixth,
 open-ended **skill** axis (`?skill=swift,ruby-on-rails`): any stack-tag slug, no
 allowlist, matched against each project's `tagSlugs`. The **tool** axis narrows
 to projects that read as "Tool" in the For column; it matches via
 `isToolProject` — the same `forLabel`-derived predicate the label uses, so the
-chip and the label can never disagree. OR within a group, AND across groups, all
+chip and the label can never disagree. The **caseStudy** axis narrows to projects
+with a full written case study; it matches via `hasCaseStudy` (depth `full`) —
+the single predicate that also drives the name underline in the log, so the chip
+and the underline can never disagree. OR within a group, AND across groups, all
 URL-backed via `useSearchParams` (one param per group). The per-helper rules live
 in their JSDoc.
 The skill axis powers the About **Skills** section: `lib/skills.ts` / `getSkills`

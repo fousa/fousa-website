@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { projectDepth, matchesFilters, type Project, type Filters } from "./work";
+import { projectDepth, matchesFilters, hasCaseStudy, type Project, type Filters } from "./work";
 
 /** Build a Project with sensible defaults; override only what a test cares about. */
 function makeProject(overrides: Partial<Project> = {}): Project {
@@ -100,6 +100,30 @@ describe("matchesFilters", () => {
     expect(matchesFilters(p, makeFilters({ skill: ["swift"], status: ["active"] }))).toBe(true);
     const ended = makeProject({ tagSlugs: ["swift"], endYear: 2019 });
     expect(matchesFilters(ended, makeFilters({ skill: ["swift"], status: ["active"] }))).toBe(false);
+  });
+});
+
+describe("hasCaseStudy", () => {
+  it("is true only for full depth", () => {
+    expect(hasCaseStudy(makeProject({ depth: "full" }))).toBe(true);
+    expect(hasCaseStudy(makeProject({ depth: "gallery" }))).toBe(false);
+    expect(hasCaseStudy(makeProject({ depth: "none" }))).toBe(false);
+  });
+});
+
+describe("Case study filter", () => {
+  it("matches only full-case-study projects", () => {
+    const full = makeProject({ depth: "full" });
+    const gallery = makeProject({ depth: "gallery" });
+    expect(matchesFilters(full, makeFilters({ caseStudy: ["casestudy"] }))).toBe(true);
+    expect(matchesFilters(gallery, makeFilters({ caseStudy: ["casestudy"] }))).toBe(false);
+  });
+
+  it("ANDs with another axis (Case study + active)", () => {
+    const active = makeProject({ depth: "full", endYear: null });
+    expect(matchesFilters(active, makeFilters({ caseStudy: ["casestudy"], status: ["active"] }))).toBe(true);
+    const ended = makeProject({ depth: "full", endYear: 2019 });
+    expect(matchesFilters(ended, makeFilters({ caseStudy: ["casestudy"], status: ["active"] }))).toBe(false);
   });
 });
 
