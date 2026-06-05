@@ -193,7 +193,8 @@ export const project = defineType({
                 layout: 'radio',
                 list: [
                   {title: 'Phone', value: 'phone'},
-                  {title: 'Tablet', value: 'tablet'},
+                  {title: 'Tablet — landscape', value: 'tablet-landscape'},
+                  {title: 'Tablet — portrait', value: 'tablet-portrait'},
                   {title: 'Apple Watch', value: 'watch'},
                   {title: 'Browser', value: 'browser'},
                   {title: 'None (bare image)', value: 'none'},
