@@ -144,7 +144,7 @@ export function Gallery({
                     aria-label={t(locale, "galleryEnlarge")}
                     className="block w-full cursor-zoom-in rounded-md ring-offset-2 ring-offset-bg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   >
-                    <Frame shot={shot} />
+                    <Frame shot={shot} priority={i === 0} />
                   </button>
                   {shot.caption && (
                     <p className="mt-2 text-center font-mono text-[11px] text-muted">

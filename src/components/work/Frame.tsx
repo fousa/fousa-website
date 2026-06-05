@@ -1,18 +1,20 @@
 /**
  * Minimal hairline device/browser frame around a screenshot. Stays in the
  * design system (1px–1.5px outline, no gloss). `frame="none"` renders the
- * bare image with a subtle border.
+ * bare image with a subtle border. Pass `priority` for the first above-the-fold
+ * shot so it loads eagerly (it's the page's LCP candidate).
  */
 import Image from "next/image";
 import type { GalleryShot } from "@/lib/work";
 
-export function Frame({ shot }: { shot: GalleryShot }) {
+export function Frame({ shot, priority }: { shot: GalleryShot; priority?: boolean }) {
   const img = (
     <Image
       src={shot.imageUrl}
       alt={shot.caption ?? ""}
       width={shot.width}
       height={shot.height}
+      priority={priority}
       className="h-full w-full object-cover"
     />
   );
