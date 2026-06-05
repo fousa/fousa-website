@@ -109,12 +109,13 @@ the home link everywhere.
 The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDepth`,
 `matchesFilters`, plus the sort model `compareProjects` / `sortProjects`) plus
 `lib/work-display.ts` (`forLabel` — the single source for the "For" label from
-employer + client). When a project has neither, `forLabel` reads "Tool" if the
-manual `isTool` Studio flag is set, else "Personal". Employer/client are checked
-first, so a client product keeps its relationship label even if `isTool` is ticked
-(and still shows its Source link on expand). The Tool *label* is deliberately
-manual — separate from the derived Source-↗ link rule — because too many
-case-study-less personal projects carry a link without being a tool. All three render
+employer + client). The manual `isTool` Studio flag is authoritative: when set,
+`forLabel` reads "Tool", keeping any employer/client as a "→ Tool" prefix (an
+internal icapps tool reads "icapps → Tool"); a standalone utility is just "Tool".
+With the flag off it falls back to the relationship label (employer → client, a
+single name) or "Personal". The Tool *label* is deliberately manual — separate
+from the derived Source-↗ link rule — because too many case-study-less personal
+projects carry a link without being a tool. All three render
 sites (desktop row, mobile meta, case-study meta) go through the shared `ForCell`
 (`components/work/ForCell.tsx`) so the label never drifts. `mapProjectBase` is the one mapper for the fields the log row
 and the detail page share (slug/name/employer/stack/year/locale-resolved summary…,

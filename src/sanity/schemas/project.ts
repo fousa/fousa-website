@@ -133,10 +133,10 @@ export const project = defineType({
     }),
     defineField({
       name: 'isTool',
-      title: 'Personal tool/utility?',
+      title: 'Tool/utility?',
       type: 'boolean',
       group: 'basics',
-      description: 'Tick for a personal utility (e.g. an nvim config) — its "For" column reads "Tool" instead of "Personal". Only applies to projects with no employer/client.',
+      description: 'Tick for a tool or utility (e.g. an nvim config, or an internal icapps tool) — its "For" column reads "Tool". An employer/client still shows as a prefix, e.g. "icapps → Tool".',
       initialValue: false,
     }),
 

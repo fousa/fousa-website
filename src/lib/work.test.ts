@@ -104,16 +104,16 @@ describe("matchesFilters", () => {
 });
 
 describe("Tools filter", () => {
-  // The Tools axis matches via isToolProject (forLabel kind === "tool"): a
-  // personal utility with no employer or client and the manual isTool flag set.
+  // The Tools axis matches via isToolProject (forLabel kind === "tool"): any
+  // project with the manual isTool flag set, employer/client or not.
   it("matches a personal utility (reads as Tool)", () => {
     const tool = makeProject({ isTool: true });
     expect(matchesFilters(tool, makeFilters({ tool: ["tools"] }))).toBe(true);
   });
 
-  it("does NOT match a client product, even with the isTool flag set", () => {
+  it("matches a flagged tool that still has an employer/client (e.g. icapps → Tool)", () => {
     const clientP = makeProject({ client: "Telenet", isTool: true });
-    expect(matchesFilters(clientP, makeFilters({ tool: ["tools"] }))).toBe(false);
+    expect(matchesFilters(clientP, makeFilters({ tool: ["tools"] }))).toBe(true);
   });
 
   it("does NOT match a personal project without the isTool flag", () => {

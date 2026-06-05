@@ -52,7 +52,7 @@ export type Project = {
   depth: Depth
   gallery: GalleryShot[]
   featureTooling?: boolean | null
-  /** Manually flagged in Studio: a personal utility, so the "For" column reads "Tool". */
+  /** Manually flagged in Studio: a utility, so the "For" column reads "Tool" (an employer/client becomes an "icapps → Tool" prefix). */
   isTool?: boolean | null
   /**
    * External links carried on every project (not just the detail page) so the
@@ -88,9 +88,10 @@ export type Filters = {
   status: StatusFilter[]
   affiliation: AffiliationFilter[]
   /**
-   * Personal utilities — projects that read as "Tool" in the For column. A
-   * single-value axis (the only key is `tools`); it carries the same definition
-   * as the label via `isToolProject`, so the chip and the label can't disagree.
+   * Tools — projects that read as "Tool" in the For column (flagged via
+   * `isTool`, employer/client or not). A single-value axis (the only key is
+   * `tools`); it carries the same definition as the label via `isToolProject`,
+   * so the chip and the label can't disagree.
    */
   tool: ToolFilter[]
   /**

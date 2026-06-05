@@ -10,14 +10,17 @@
 export type ForLabel =
   | {kind: 'via'; employer: string; client: string}
   | {kind: 'single'; text: string}
-  | {kind: 'tool'}
+  | {kind: 'tool'; via?: string}
   | {kind: 'personal'}
 
 /**
- * Build the structured "For" column label per the display rule. Employer/client
- * are checked first, so a project with a relationship keeps that label even when
- * `isTool` is set — only a truly personal project falls through to "Tool" (when
- * the manual flag is on) or "Personal".
+ * Build the structured "For" column label per the display rule.
+ *
+ * `isTool` is authoritative: a flagged project reads as "Tool", and any
+ * employer/client is kept as a "→ Tool" prefix so the affiliation isn't lost —
+ * an internal icapps tool reads "icapps → Tool", a standalone utility just
+ * "Tool". Only when the flag is off do we fall back to the relationship label
+ * (employer → client, a single name) or "Personal".
  *
  * `isTool` is a manual Studio flag, not derived: too many case-study-less
  * personal projects carry a link without being a "tool", so the call is the
@@ -33,17 +36,20 @@ export function forLabel(p: {
 }): ForLabel {
   const emp = p.employer?.name?.trim() || ''
   const cli = p.client?.trim() || ''
+  if (p.isTool) {
+    const via = emp || cli
+    return via ? {kind: 'tool', via} : {kind: 'tool'}
+  }
   if (emp && cli) return {kind: 'via', employer: emp, client: cli}
   if (emp) return {kind: 'single', text: emp}
   if (cli) return {kind: 'single', text: cli}
-  if (p.isTool) return {kind: 'tool'}
   return {kind: 'personal'}
 }
 
 /**
- * A project that reads as "Tool" in the For column: a personal utility with no
- * employer or client. Defined via `forLabel` so the filter and the label can
- * never drift — both answer the same single question.
+ * A project that reads as "Tool" in the For column — i.e. has the `isTool` flag
+ * set, regardless of any employer/client prefix. Defined via `forLabel` so the
+ * filter and the label can never drift — both answer the same single question.
  *
  * @param p - same shape forLabel takes (employer name, client, isTool flag)
  * @returns true when the project's For label is the "Tool" kind

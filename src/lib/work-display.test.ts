@@ -38,7 +38,7 @@ describe("forLabel", () => {
 const base = { employer: null, client: null };
 
 describe("forLabel — Tool flag", () => {
-  it("is Tool when personal + the isTool flag is set", () => {
+  it("is a bare Tool when personal + the isTool flag is set", () => {
     expect(forLabel({ ...base, isTool: true })).toEqual({ kind: "tool" });
   });
 
@@ -47,15 +47,15 @@ describe("forLabel — Tool flag", () => {
     expect(forLabel({ ...base })).toEqual({ kind: "personal" });
   });
 
-  it("keeps the client relationship over the Tool flag", () => {
+  it("prefixes the Tool with the employer (e.g. an internal icapps tool)", () => {
     expect(
-      forLabel({ employer: null, client: "Telenet", isTool: true }),
-    ).toEqual({ kind: "single", text: "Telenet" });
+      forLabel({ employer: { name: "icapps" }, client: "iCapps", isTool: true }),
+    ).toEqual({ kind: "tool", via: "icapps" });
   });
 
-  it("keeps employer → client over the Tool flag", () => {
+  it("falls back to the client as the Tool prefix when there's no employer", () => {
     expect(
-      forLabel({ employer: { name: "icapps" }, client: "Telenet", isTool: true }),
-    ).toEqual({ kind: "via", employer: "icapps", client: "Telenet" });
+      forLabel({ employer: null, client: "Telenet", isTool: true }),
+    ).toEqual({ kind: "tool", via: "Telenet" });
   });
 });

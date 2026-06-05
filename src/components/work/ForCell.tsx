@@ -3,10 +3,10 @@
  * case-study meta so the three render sites never drift.
  *
  * Renders the employer→client relationship, a single name, the localized
- * "Personal" fallback, or — for a personal utility (no case study + external
- * link) — a mono-uppercase "Tool" badge. The mono/uppercase treatment reads as
- * a *category*, not a client name, which is what keeps "Tool" from feeling like
- * an odd relationship label.
+ * "Personal" fallback, or — for a flagged tool — a mono-uppercase "Tool" badge,
+ * optionally prefixed by its employer/client as "icapps → Tool". The
+ * mono/uppercase treatment reads as a *category*, not a client name, which is
+ * what keeps "Tool" from feeling like an odd relationship label.
  */
 import {forLabel} from '@/lib/work-display'
 import {t} from '@/i18n/messages'
@@ -28,12 +28,26 @@ export function ForCell({p, locale}: {p: Project; locale: Locale}) {
       )
     case 'single':
       return <span className="text-ink">{f.text}</span>
-    case 'tool':
-      return (
+    case 'tool': {
+      const badge = (
         <span className="inline-flex items-center rounded-full border border-line px-2 py-0.5 font-mono text-[11px] uppercase tracking-[0.07em] text-muted">
           {t(locale, 'forTool')}
         </span>
       )
+      // An employer/client (e.g. an internal icapps tool) prefixes the badge as
+      // "icapps → Tool"; a standalone utility shows just the badge.
+      return f.via ? (
+        <>
+          <span className="text-muted">{f.via}</span>
+          <span className="mx-1 text-faint" aria-hidden>
+            →
+          </span>
+          {badge}
+        </>
+      ) : (
+        badge
+      )
+    }
     case 'personal':
       return <span className="text-muted">{t(locale, 'personal')}</span>
   }
