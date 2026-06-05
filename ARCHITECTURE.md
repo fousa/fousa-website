@@ -128,10 +128,11 @@ from the derived Source-↗ link rule — because too many case-study-less perso
 projects carry a link without being a tool. All three render
 sites (desktop row, mobile meta, case-study meta) go through the shared `ForCell`
 (`components/work/ForCell.tsx`) so the label never drifts. `mapProjectBase` is the one mapper for the fields the log row
-and the detail page share (slug/name/employer/stack/year/locale-resolved `summary`
-+ `deck`…, plus the external `links` so a tool row can surface them), so the two
-never drift. The expanded log row shows the one-line `deck` (the two-sentence
-`summary` is kept for the case-study intro + SEO meta).
+and the detail page share (slug/name/employer/stack/year/locale-resolved `deck`…,
+plus the external `links` so a tool row can surface them), so the two
+never drift. `deck` is the single short pitch: the one-line `deck` shows in the
+expanded log row, under the case-study title, and as the SEO/OG description
+(falling back to the site description when a project has no deck).
 It also derives `platforms` — the stack tags whose skill category is `platform`,
 joined for display — which the home log's "Platform" column shows in place of the
 full `stack` (the detail page still renders the complete `stack`). Tag a stack
