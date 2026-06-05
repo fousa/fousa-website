@@ -100,6 +100,15 @@ export function projectDepth(p: { hasBody?: boolean | null; galleryCount?: numbe
   return 'none'
 }
 
+/**
+ * True when the project has a full written case study (depth "full"), as opposed
+ * to a screenshots-only gallery or no detail page. Drives both the name underline
+ * in the log and the "Case study" filter, so the two can never disagree.
+ */
+export function hasCaseStudy(p: Pick<Project, 'depth'>): boolean {
+  return p.depth === 'full'
+}
+
 // ---------------------------------------------------------------------------
 // Three-group filter model
 // ---------------------------------------------------------------------------
