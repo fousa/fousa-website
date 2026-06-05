@@ -194,6 +194,7 @@ export const project = defineType({
                 list: [
                   {title: 'Phone', value: 'phone'},
                   {title: 'Tablet', value: 'tablet'},
+                  {title: 'Apple Watch', value: 'watch'},
                   {title: 'Browser', value: 'browser'},
                   {title: 'None (bare image)', value: 'none'},
                 ],

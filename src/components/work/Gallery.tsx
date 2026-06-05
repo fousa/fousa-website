@@ -79,9 +79,11 @@ export function Gallery({
             className={
               shot.frame === "phone"
                 ? "w-[180px]"
-                : shot.frame === "tablet"
-                  ? "w-[280px]"
-                  : "w-full max-w-[560px]"
+                : shot.frame === "watch"
+                  ? "w-[150px]"
+                  : shot.frame === "tablet"
+                    ? "w-[280px]"
+                    : "w-full max-w-[560px]"
             }
           >
             <button

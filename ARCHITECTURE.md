@@ -90,7 +90,8 @@ Internal links use `localizedHref(locale, path)` (`lib/href.ts`); metadata uses
 Grouped by domain under `src/components/`:
 
 - **work/** — `ProjectLog` (filterable table/cards with expand-in-place rows),
-  `EmptyState`, `Frame` (hairline device frames for galleries), `StatusDot`, `ToolingChip`.
+  `EmptyState`, `Frame` (hairline device frames for galleries: phone, tablet, Apple
+  Watch, browser, none), `StatusDot`, `ToolingChip`.
 - **layout/** — `TopBar` (scroll-revealed hairline + blur), `SiteFooter`, `LocaleSwitch`,
   `InfoTip`, `OutboundLink`, `use-scrolled`.
 - **about/** — `CareerTimeline`, `AvailabilityBadge`, `Skills` (numbered

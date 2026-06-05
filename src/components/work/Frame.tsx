@@ -53,6 +53,27 @@ export function Frame({ shot }: { shot: GalleryShot }) {
     );
   }
 
+  if (shot.frame === "watch") {
+    return (
+      <figure className="relative mx-auto w-[150px]">
+        {/* Digital crown + side button on the right edge. */}
+        <span
+          className="absolute right-0 top-[36%] h-5 w-[3px] -translate-y-1/2 translate-x-full rounded-r-[2px] bg-ink"
+          aria-hidden
+        />
+        <span
+          className="absolute right-0 top-[58%] h-7 w-[2px] -translate-y-1/2 translate-x-full rounded-r-[2px] bg-ink"
+          aria-hidden
+        />
+        <div className="rounded-[34px] border-[1.5px] border-ink p-[8px]">
+          <div className="aspect-[4/5] overflow-hidden rounded-[26px] bg-surface">
+            {img}
+          </div>
+        </div>
+      </figure>
+    );
+  }
+
   // browser
   return (
     <figure>
