@@ -13,7 +13,6 @@ import { useMemo, useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   matchesFilters,
-  hasCaseStudy,
   sortProjects,
   yearRange,
   DEFAULT_SORT,
@@ -377,7 +376,7 @@ export function ProjectLog({
                 >
                   <div className="flex items-center justify-between gap-3">
                     <span
-                      className={`font-display text-base font-semibold ${open === p.slug ? "text-accent" : "text-ink"} ${hasCaseStudy(p) ? "pn--study" : ""}`}
+                      className={`font-display text-base font-semibold ${open === p.slug ? "text-accent" : "text-ink"}`}
                     >
                       {p.name}
                     </span>
@@ -514,7 +513,7 @@ function Row({
       >
         <td className="px-11 py-5 align-top">
           <span
-            className={`font-display text-base font-semibold tracking-[-0.01em] ${open ? "text-accent" : "text-ink group-hover:text-accent"} ${hasCaseStudy(p) ? "pn--study" : ""}`}
+            className={`font-display text-base font-semibold tracking-[-0.01em] ${open ? "text-accent" : "text-ink group-hover:text-accent"}`}
           >
             {p.name}
           </span>
