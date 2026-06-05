@@ -57,6 +57,29 @@ export function Frame({ shot }: { shot: GalleryShot }) {
     );
   }
 
+  // A television: 16:9, chrome-less (unlike the browser frame), with an even
+  // hairline bezel on all four sides and squarer corners than the tablet. A
+  // tiny centered stand cues "TV" without leaning into a hardware render.
+  if (shot.frame === "tv") {
+    return (
+      <figure className="w-full">
+        <div className="rounded-xl border-[1.5px] border-ink p-3">
+          <div className="aspect-[16/9] overflow-hidden rounded-[6px] bg-surface">
+            {img}
+          </div>
+        </div>
+        {/* Centered hairline stand: two short legs on a thin foot. */}
+        <div className="mx-auto flex w-[18%] flex-col items-center" aria-hidden>
+          <span className="flex w-full justify-between">
+            <span className="h-2 w-[1.5px] bg-ink" />
+            <span className="h-2 w-[1.5px] bg-ink" />
+          </span>
+          <span className="h-[1.5px] w-full bg-ink" />
+        </div>
+      </figure>
+    );
+  }
+
   if (shot.frame === "watch") {
     return (
       <figure className="relative w-full">

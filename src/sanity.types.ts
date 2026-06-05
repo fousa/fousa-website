@@ -116,6 +116,7 @@ export type Project = {
       | "phone"
       | "tablet-landscape"
       | "tablet-portrait"
+      | "tv"
       | "watch"
       | "browser"
       | "none";
@@ -784,6 +785,7 @@ export type CASE_STUDY_QUERY_RESULT = {
       | "phone"
       | "tablet-landscape"
       | "tablet-portrait"
+      | "tv"
       | "watch"
       | null;
     caption: {
