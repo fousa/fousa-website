@@ -149,6 +149,20 @@
 .group:hover .depth-ico,
 tr:hover .depth-ico { opacity: 1; transform: translate(-6px, -50%); }
 
+/* Touch devices have no hover, so the slide never fires. Render the marker
+   inline before the name, always visible (faint) — `(hover: none)` targets
+   hover capability rather than a width breakpoint. */
+@media (hover: none) {
+  .depth-ico {
+    position: static;
+    transform: none;
+    opacity: 1;
+    color: var(--faint);
+    margin-right: 6px;
+    vertical-align: 1px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .depth-ico { transition: opacity 0.15s ease; transform: translate(-6px, -50%); }
   .group:hover .depth-ico, tr:hover .depth-ico { transform: translate(-6px, -50%); }
