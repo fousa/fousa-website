@@ -13,7 +13,7 @@
  * it shows a panel with the distance flown and a "Launch again" button that
  * remounts the canvas for a fresh run. No scoreboard or persistence.
  */
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { GlideCanvas } from "./GlideCanvas";
 import type { EndReason } from "./engine";
@@ -44,6 +44,8 @@ export function GlideGame({
   triggerClassName = "transition-colors hover:text-ink",
   iconOnly = false,
   withArrow = false,
+  children,
+  ariaLabel,
   onLaunch,
 }: {
   locale: Locale;
@@ -53,6 +55,14 @@ export function GlideGame({
   iconOnly?: boolean;
   /** Render as a text link with the coral arrow (matches the "Hire me" link). */
   withArrow?: boolean;
+  /**
+   * Custom trigger content. When set it replaces the default glyph/label and the
+   * button uses `triggerClassName` verbatim (no flex wrapper), so callers can own
+   * the markup — e.g. the wordmark hover-reveal's "take off ✈".
+   */
+  children?: ReactNode;
+  /** Accessible name for the trigger when the custom content doesn't spell it out. */
+  ariaLabel?: string;
   /** Called when the game opens — lets a mobile menu close itself. */
   onLaunch?: () => void;
 }) {
@@ -109,21 +119,26 @@ export function GlideGame({
         ref={triggerRef}
         type="button"
         onClick={launch}
+        aria-label={ariaLabel}
         className={
-          withArrow
+          children || withArrow
             ? triggerClassName
             : `inline-flex items-center gap-1.5 ${triggerClassName}`
         }
       >
-        {!withArrow && <PlaneIcon />}
-        <span className={iconOnly && !withArrow ? "sr-only" : undefined}>
-          {t(locale, "playGame")}
-        </span>
-        {withArrow && (
-          <span aria-hidden className="text-accent">
-            {" "}
-            →
-          </span>
+        {children ?? (
+          <>
+            {!withArrow && <PlaneIcon />}
+            <span className={iconOnly && !withArrow ? "sr-only" : undefined}>
+              {t(locale, "playGame")}
+            </span>
+            {withArrow && (
+              <span aria-hidden className="text-accent">
+                {" "}
+                →
+              </span>
+            )}
+          </>
         )}
       </button>
 
