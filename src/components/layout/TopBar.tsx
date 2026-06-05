@@ -140,6 +140,18 @@ export function TopBar({ locale }: { locale: Locale }) {
             {t(locale, "hireMe")}
             <span aria-hidden className="text-accent"> →</span>
           </Link>
+          {/* No hover on touch, so the easter egg gets a plain menu entry here. */}
+          <GlideGame
+            locale={locale}
+            ariaLabel={t(locale, "play.aria")}
+            onLaunch={() => setOpen(false)}
+            triggerClassName="inline-flex items-center gap-1.5 text-base font-medium"
+          >
+            {t(locale, "play.label")}
+            <span aria-hidden className="text-accent">
+              ✈
+            </span>
+          </GlideGame>
         </nav>
       )}
       </header>
