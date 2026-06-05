@@ -102,8 +102,8 @@ export function projectDepth(p: { hasBody?: boolean | null; galleryCount?: numbe
 
 /**
  * True when the project has a full written case study (depth "full"), as opposed
- * to a screenshots-only gallery or no detail page. Drives both the name underline
- * in the log and the "Case study" filter, so the two can never disagree.
+ * to a screenshots-only gallery or no detail page. Drives the "Case study"
+ * filter; the log row's own depth marker reads `depth` directly.
  */
 export function hasCaseStudy(p: Pick<Project, 'depth'>): boolean {
   return p.depth === 'full'
@@ -133,8 +133,8 @@ export type Filters = {
   /**
    * Case study — projects with a full written case study (`depth === "full"`).
    * A single-value axis (the only key is `casestudy`); it shares the
-   * `hasCaseStudy` definition with the name underline, so the chip and the
-   * underlined rows can't disagree.
+   * `hasCaseStudy` definition with the row's depth marker, so the chip and the
+   * marked rows can't disagree.
    */
   caseStudy: CaseStudyFilter[]
   /**

@@ -60,11 +60,14 @@ and three collections.
   derived not flagged) shows just its start year; the status dot already signals
   it's still live.
   Detail depth is derived from content — `body` → full case study,
-  `gallery` → framed screenshots, neither → no detail page. Full-case-study rows
-  (`hasCaseStudy`, depth `full`) get a hairline underline on the project name
-  (coral on row hover, `.pn--study`) so visitors can scan which rows lead to a
-  written story; `hasCaseStudy` is the lone predicate behind both this underline
-  and the **Case study** filter chip. A depth-`none`
+  `gallery` → framed screenshots, neither → no detail page. Rows with depth
+  carry a **depth marker** (`DepthIcon`) next to the name: a document glyph for a
+  full case study, stacked frames for a screenshots-only gallery, nothing for a
+  bare/tool row. The icon is absolutely positioned in the whitespace left of the
+  name and slides into that margin on row hover (so the name never shifts); on
+  touch devices (`hover: none`) it sits inline before the name, always visible
+  and faint. The **Case study** filter chip still keys off `hasCaseStudy` (depth
+  `full`). A depth-`none`
   project that carries an external link (`githubUrl` / `liveUrl`) surfaces
   "Source ↗" / "Open ↗" in its log row instead of an internal CTA — derived from
   depth + links, no flag. The "Tool" *label* in the "For" column is separate and
@@ -163,8 +166,8 @@ to projects that read as "Tool" in the For column; it matches via
 `isToolProject` — the same `forLabel`-derived predicate the label uses, so the
 chip and the label can never disagree. The **caseStudy** axis narrows to projects
 with a full written case study; it matches via `hasCaseStudy` (depth `full`) —
-the single predicate that also drives the name underline in the log, so the chip
-and the underline can never disagree. OR within a group, AND across groups, all
+the single predicate that also drives the row's depth marker in the log, so the
+chip and the marker can never disagree. OR within a group, AND across groups, all
 URL-backed via `useSearchParams` (one param per group). The per-helper rules live
 in their JSDoc.
 The skill axis powers the About **Skills** section: `lib/skills.ts` / `getSkills`
