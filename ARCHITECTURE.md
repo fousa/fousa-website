@@ -95,7 +95,8 @@ Grouped by domain under `src/components/`:
 
 - **work/** — `ProjectLog` (filterable table/cards with expand-in-place rows),
   `EmptyState`, `Frame` (hairline device frames for galleries: phone, tablet-landscape
-  (4:3) / tablet-portrait (3:4) — same iPad bezel in two orientations, Apple
+  (4:3) / tablet-portrait (3:4) — same iPad bezel in two orientations, tv (16:9
+  chrome-less bezel with a small centered stand), Apple
   Watch, browser, none), `Gallery` (screenshots grouped by device — iPad → iPhone →
   Apple Watch, derived from each shot's `frame` via `lib/gallery-devices`; both tablet
   orientations fall under the iPad group, with a
