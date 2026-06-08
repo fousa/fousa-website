@@ -27,7 +27,7 @@ import { StatusDot } from "@/components/work/StatusDot";
 import { ToolingChip } from "@/components/work/ToolingChip";
 import { PortableTextRenderer } from "@/components/portable-text";
 import { Gallery } from "@/components/work/Gallery";
-import { BackOnDelete } from "@/components/work/BackOnDelete";
+import { DetailShortcuts } from "@/components/work/DetailShortcuts";
 import type { PROFILE_QUERY_RESULT } from "@/sanity.types";
 
 const SITE_URL = "https://fousa.be";
@@ -112,7 +112,7 @@ export default async function DetailPage({
   return (
     <>
       {jsonLd && <JsonLd data={jsonLd} />}
-      <BackOnDelete />
+      <DetailShortcuts locale={locale} />
       <main id="main">
         {/* Back link */}
       <div className="px-5 pt-8 md:px-11">
