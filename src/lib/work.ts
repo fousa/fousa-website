@@ -212,6 +212,17 @@ export function matchesFilters(p: Project, f: Filters): boolean {
   return true
 }
 
+/**
+ * Case-insensitive substring match over the project's precomputed `searchText`
+ * (name + deck + flattened body). An empty/whitespace query matches everything.
+ * Search is its own dimension — callers AND it with the active filters.
+ */
+export function matchesQuery(p: Project, query: string): boolean {
+  const q = query.trim().toLowerCase()
+  if (!q) return true
+  return (p.searchText ?? '').includes(q)
+}
+
 // ---------------------------------------------------------------------------
 // Year range (start / end / ongoing)
 // ---------------------------------------------------------------------------
