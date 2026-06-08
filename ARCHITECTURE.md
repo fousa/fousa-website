@@ -210,6 +210,22 @@ so ongoing projects lead; comparisons use sign rather than subtraction to dodge 
 filtered first, then sorted. Mobile renders the same sorted `rows` with no sort UI, so
 a shared `?s=` link still orders correctly.
 
+**Search** is a free-text filter over each project's name, deck, and case-study
+body. The matchable text is assembled **server-side in GROQ** as a `searchText`
+projection — `lower(name + deck[$locale] + pt::text(body))`, coalescing the
+localized field to English — so PortableText is flattened once at query time and
+the client predicate `matchesQuery` is a plain lowercased substring test. It
+composes with the chips exactly like another axis: `rows` is
+`projects.filter(p => matchesQuery(p, q) && matchesFilters(p, filters))`. The
+query lives in the URL as `?q=`, written through a 250 ms `useDebouncedCallback`
+(no history spam, `scroll: false`, hash preserved) while a local `liveQuery`
+keeps the input responsive ahead of the debounce. The `SearchChip` collapses to a
+magnifying-glass icon button at rest and expands to a dark filled pill (borderless
+input + × clear) when focused or non-empty, re-collapsing on blur/Escape when
+empty. Matches are wrapped in `<mark>` by a module-level `highlight()` helper on
+the name and deck in both the desktop row and mobile card. With a query active the
+empty state reads "No projects match …{q}…" and its clear action resets `?q=`.
+
 ## Accessibility decisions
 
 Targets practical access for keyboard, screen-reader, and 200%-zoom users rather
@@ -273,6 +289,8 @@ both on push and PR.
 - **Analytics** — Vercel Analytics (cookie-less), mounted once in the locale layout.
   Page hits (incl. `/about`) are tracked automatically; custom events go through the
   typed `track()` wrapper (`lib/analytics.ts`): `project_expand`, `project_open`,
-  `filter_select`, `sort_change`, `empty_state_shown`, `locale_switch`,
-  `theme_toggle`, `outbound_click`, `glide_open`, and `glide_close` (records
-  `seconds` played and `runs` flown when the mini-game overlay closes).
+  `filter_select`, `sort_change`, `empty_state_shown`, `search_query` (logs the
+  query *length* and result count on the debounced commit, never the text),
+  `locale_switch`, `theme_toggle`, `outbound_click`, `glide_open`, and
+  `glide_close` (records `seconds` played and `runs` flown when the mini-game
+  overlay closes).
