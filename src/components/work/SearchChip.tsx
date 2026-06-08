@@ -3,7 +3,9 @@
  * Search entry in the filter bar. Collapsed: a magnifying-glass icon button.
  * Open/active: a dark filled pill (matching an active filter chip) holding a
  * borderless input and a clear button. No placeholder, per the design.
- * Collapses back to the icon when the field is empty and loses focus.
+ * Collapses back to the icon when the field is empty and loses focus. A single
+ * container morphs between the two states (width + fill animate) so the
+ * expansion reads as one motion rather than a swap.
  */
 import { useRef, useState, useEffect } from "react";
 
@@ -70,56 +72,64 @@ export function SearchChip({
     if (open) inputRef.current?.focus();
   }, [open]);
 
-  if (!active) {
-    return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label={label("search.open")}
-        aria-expanded={false}
-        className="inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border border-line text-muted transition-colors hover:border-muted hover:text-ink cursor-pointer"
-      >
-        <SearchIcon />
-      </button>
-    );
-  }
-
+  // A single morphing container so the icon → pill change animates its width and
+  // fill rather than swapping two separate elements instantly. The input and
+  // clear button mount only when active; the container grows to reveal them
+  // (overflow-hidden keeps them clipped mid-animation).
   return (
     <div
-      role="search"
-      className="inline-flex h-[34px] min-w-[230px] shrink-0 items-center gap-2 rounded-full border border-ink bg-ink pl-[13px] pr-[7px]"
+      role={active ? "search" : undefined}
+      className={`group inline-flex h-[34px] shrink-0 items-center overflow-hidden rounded-full border transition-all duration-200 ease-out motion-reduce:transition-none ${
+        active
+          ? "w-[230px] gap-2 border-ink bg-ink pl-[13px] pr-[7px]"
+          : "w-[34px] justify-center border-line hover:border-muted"
+      }`}
     >
-      <span className="inline-flex shrink-0 text-bg/60" aria-hidden>
-        <SearchIcon />
-      </span>
-      <input
-        ref={inputRef}
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onBlur={() => {
-          if (!value.trim()) setOpen(false);
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") {
-            onClear();
-            setOpen(false);
-          }
-        }}
-        aria-label={label("search.label")}
-        className="h-full min-w-0 flex-1 border-none bg-transparent text-[13.5px] font-medium text-bg caret-bg outline-none"
-      />
-      <button
-        type="button"
-        onClick={() => {
-          onClear();
-          setOpen(false);
-        }}
-        aria-label={label("search.clear")}
-        className="inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-bg/70 transition hover:bg-white/15 hover:text-bg cursor-pointer"
-      >
-        <XIcon />
-      </button>
+      {!active ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label={label("search.open")}
+          aria-expanded={false}
+          className="inline-flex h-full w-full items-center justify-center text-muted transition-colors group-hover:text-ink cursor-pointer"
+        >
+          <SearchIcon />
+        </button>
+      ) : (
+        <>
+          <span className="inline-flex shrink-0 text-bg/60" aria-hidden>
+            <SearchIcon />
+          </span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onBlur={() => {
+              if (!value.trim()) setOpen(false);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                onClear();
+                setOpen(false);
+              }
+            }}
+            aria-label={label("search.label")}
+            className="h-full min-w-0 flex-1 border-none bg-transparent text-[13.5px] font-medium text-bg caret-bg outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              onClear();
+              setOpen(false);
+            }}
+            aria-label={label("search.clear")}
+            className="inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-bg/70 transition hover:bg-white/15 hover:text-bg cursor-pointer"
+          >
+            <XIcon />
+          </button>
+        </>
+      )}
     </div>
   );
 }
