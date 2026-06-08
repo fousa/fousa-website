@@ -175,6 +175,17 @@ function highlight(text: string, q: string): ReactNode {
   return parts;
 }
 
+// Session key for the expanded row. Persisted so it survives a round trip into
+// a project's detail and back (incl. the browser back button), but scoped to
+// the tab session and cleared on a hard reload, so a refresh resets the log.
+const OPEN_KEY = "projectlog:open";
+
+// Module-scoped, so it resets only when the bundle is re-evaluated on a fresh
+// document load (typed URL or refresh) and persists across soft client
+// navigations. Lets us tell "first view of this page load" (reset the log) from
+// "returned via a client navigation" like back from a detail page (restore it).
+let documentLoaded = false;
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -207,6 +218,35 @@ export function ProjectLog({
   const hasQuery = query.trim().length > 0;
 
   const [open, setOpen] = useState<string | null>(null);
+
+  // Set the expanded row and mirror it into sessionStorage so it can be restored
+  // after navigating into a project's detail and back. Pass null to collapse.
+  const expandRow = useCallback((slug: string | null) => {
+    setOpen(slug);
+    try {
+      if (slug) sessionStorage.setItem(OPEN_KEY, slug);
+      else sessionStorage.removeItem(OPEN_KEY);
+    } catch {}
+  }, []);
+
+  // On mount, either reset (first view of this document load — a refresh starts
+  // fresh) or restore the previously expanded row (returned via a client
+  // navigation, e.g. back from a project's detail). Runs once; `projects` is a
+  // stable prop, only read to validate the stored slug.
+  useEffect(() => {
+    try {
+      if (!documentLoaded) {
+        documentLoaded = true;
+        sessionStorage.removeItem(OPEN_KEY);
+        return;
+      }
+      const saved = sessionStorage.getItem(OPEN_KEY);
+      // Restoring from an external store (sessionStorage) is only possible after
+      // mount — doing it in a lazy initializer would mismatch the SSR'd markup.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (saved && projects.some((p) => p.slug === saved)) setOpen(saved);
+    } catch {}
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Local input value for instant typing feedback; the URL (and thus the derived
   // rows) is written debounced so history isn't flooded on every keystroke. Seeded
@@ -343,8 +383,9 @@ export function ProjectLog({
   );
 
   const toggleRow = (slug: string) => {
-    setOpen((c) => (c === slug ? null : slug));
-    if (open !== slug) {
+    const next = open === slug ? null : slug;
+    expandRow(next);
+    if (next === slug) {
       const p = projects.find((pr) => pr.slug === slug);
       if (p) track("project_expand", { slug, depth: p.depth, locale });
     }
@@ -381,7 +422,7 @@ export function ProjectLog({
       if (e.key === "Escape") {
         if (open !== null) {
           e.preventDefault();
-          setOpen(null);
+          expandRow(null);
         }
         return;
       }
@@ -425,13 +466,13 @@ export function ProjectLog({
             : rows[Math.max(i - 1, 0)];
 
       if (next.slug !== open) {
-        setOpen(next.slug);
+        expandRow(next.slug);
         track("project_expand", { slug: next.slug, depth: next.depth, locale });
       }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [rows, open, locale, projects, router]);
+  }, [rows, open, locale, projects, router, expandRow]);
 
   return (
     <section id="work" className="scroll-mt-20">
