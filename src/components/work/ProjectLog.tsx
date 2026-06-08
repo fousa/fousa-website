@@ -13,6 +13,7 @@ import { useMemo, useState, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   matchesFilters,
+  matchesQuery,
   sortProjects,
   yearRange,
   DEFAULT_SORT,
@@ -170,13 +171,19 @@ export function ProjectLog({
   const filters = useMemo(() => filtersFromParams(params), [params]);
   const hasAnyFilter = filterCount(filters) > 0;
   const sort = useMemo(() => parseSort(params.get("s")), [params]);
+  // The committed query lives in the URL; it composes (ANDs) with the filters.
+  const query = params.get("q") ?? "";
 
   const [open, setOpen] = useState<string | null>(null);
 
-  // Filter first, then sort the smaller list — order is identical either way.
+  // Search AND filters, then sort the smaller list — order is identical either way.
   const rows = useMemo(
-    () => sortProjects(projects.filter((p) => matchesFilters(p, filters)), sort),
-    [projects, filters, sort],
+    () =>
+      sortProjects(
+        projects.filter((p) => matchesQuery(p, query) && matchesFilters(p, filters)),
+        sort,
+      ),
+    [projects, filters, sort, query],
   );
 
   // Only an empty state when filters are active — an empty list with no
