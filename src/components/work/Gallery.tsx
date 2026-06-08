@@ -10,8 +10,10 @@
  *
  * Clicking a thumbnail opens a fullscreen overlay showing the bare image at
  * size, with previous/next navigation, a caption and a counter. Keyboard:
- * Escape closes, ←/→ step through. Touch: a horizontal swipe across the image
- * steps (left → next, right → prev). Focus moves into the dialog on open and
+ * Escape closes, ←/→ step through. Touch: drag the image horizontally and it
+ * tracks the finger across a prev|current|next slide track, settling to the
+ * next/prev shot on release (left → next, right → prev) or springing back on a
+ * short or vertical gesture. Focus moves into the dialog on open and
  * returns to the originating thumbnail on close; body scroll is locked while
  * open.
  */
@@ -81,10 +83,19 @@ export function Gallery({
   // Only return focus to the thumbnail (which shows the focus ring) when the
   // lightbox was dismissed via the keyboard. A mouse close should leave the
   // thumbnail un-ringed, so the ring doesn't flash back on every close.
+  // Finger delta (px) while dragging, and the in-flight slide animation. `anim`
+  // both names the direction the track is settling toward and gates the CSS
+  // transition (off while the finger drags so the track tracks 1:1).
+  const [drag, setDrag] = useState(0);
+  const [anim, setAnim] = useState<"next" | "prev" | "cancel" | null>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+
   const restoreFocus = useRef(false);
   const close = useCallback((viaKeyboard = false) => {
     restoreFocus.current = viaKeyboard;
     setIndex(null);
+    setDrag(0);
+    setAnim(null);
   }, []);
   const step = useCallback(
     (delta: number) =>
@@ -94,22 +105,44 @@ export function Gallery({
     [ordered.length],
   );
 
-  // Touch swipe over the image: record the start point, and on release step if
-  // the gesture is a clear horizontal swipe (dominates the vertical drift and
-  // clears the threshold) — swipe left advances, right goes back.
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  // Touch swipe: the lightbox renders a 3-slide track (prev | current | next)
+  // shifted one slide left so `current` sits centred. While a finger drags, the
+  // track follows it (`drag` px, no transition). On release a clear horizontal
+  // swipe animates the track a whole slide over; once that lands, the index is
+  // committed and the track snaps back to centre with no transition (the same
+  // image is now centred, so the snap is invisible). A short or mostly-vertical
+  // gesture springs back instead.
   const onTouchStart = (e: React.TouchEvent) => {
+    if (!many || anim) return; // ignore new touches mid-animation
     const point = e.touches[0];
     touchStart.current = { x: point.clientX, y: point.clientY };
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart.current) return;
+    setDrag(e.touches[0].clientX - touchStart.current.x);
   };
   const onTouchEnd = (e: React.TouchEvent) => {
     const start = touchStart.current;
     touchStart.current = null;
-    if (!start || !many) return;
+    if (!start) return;
     const point = e.changedTouches[0];
     const dx = point.clientX - start.x;
     const dy = point.clientY - start.y;
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) step(dx < 0 ? 1 : -1);
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      setAnim(dx < 0 ? "next" : "prev");
+    } else {
+      setDrag(0);
+      setAnim("cancel");
+    }
+  };
+  // After the settle animation: commit the index for a real swipe, then clear
+  // drag/anim so the track jumps back to the centred slide without a transition.
+  const onTrackTransitionEnd = (e: React.TransitionEvent) => {
+    if (e.propertyName !== "transform") return;
+    if (anim === "next") step(1);
+    else if (anim === "prev") step(-1);
+    setDrag(0);
+    setAnim(null);
   };
 
   // While open: lock scroll, focus the dialog, wire Escape + arrow keys.
@@ -138,6 +171,15 @@ export function Gallery({
   }, [open, index, close, step]);
 
   const current = index !== null ? ordered[index] : null;
+  // The two neighbours that flank `current` in the swipe track (looped). Both
+  // are non-null exactly when `many`, so they double as the "render a track"
+  // signal below; when there's a single shot we render it bare.
+  const prevShot =
+    many && index !== null
+      ? ordered[(index - 1 + ordered.length) % ordered.length]
+      : null;
+  const nextShot =
+    many && index !== null ? ordered[(index + 1) % ordered.length] : null;
 
   return (
     <div className="px-5 py-10 md:px-11">
@@ -218,17 +260,47 @@ export function Gallery({
           <div
             onClick={(e) => e.stopPropagation()}
             onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
             className="flex h-full w-full flex-col items-center justify-center gap-4"
           >
-            <div className="relative min-h-0 w-full flex-1">
-              <Image
-                src={current.imageUrl}
-                alt={current.caption ?? ""}
-                fill
-                sizes="90vw"
-                className="rounded object-contain"
-              />
+            <div className="relative min-h-0 w-full flex-1 overflow-hidden">
+              {prevShot && nextShot ? (
+                // 3-slide track, shifted one slide left so `current` is centred.
+                <div
+                  className="flex h-full w-full"
+                  style={{
+                    transform:
+                      anim === "next"
+                        ? "translateX(-200%)"
+                        : anim === "prev"
+                          ? "translateX(0%)"
+                          : `translateX(calc(-100% + ${drag}px))`,
+                    transition: anim ? "transform 300ms ease-out" : "none",
+                  }}
+                  onTransitionEnd={onTrackTransitionEnd}
+                >
+                  {[prevShot, current, nextShot].map((shot, slot) => (
+                    <div key={slot} className="relative h-full w-full shrink-0">
+                      <Image
+                        src={shot.imageUrl}
+                        alt={shot.caption ?? ""}
+                        fill
+                        sizes="90vw"
+                        className="rounded object-contain"
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Image
+                  src={current.imageUrl}
+                  alt={current.caption ?? ""}
+                  fill
+                  sizes="90vw"
+                  className="rounded object-contain"
+                />
+              )}
             </div>
             {(current.caption || many) && (
               <p className="shrink-0 text-center font-mono text-[11px] text-muted">
