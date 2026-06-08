@@ -107,7 +107,7 @@ export function SearchChip({
           }
         }}
         aria-label={label("search.label")}
-        className="h-full min-w-0 flex-1 border-none bg-transparent text-[13.5px] text-bg caret-bg outline-none"
+        className="h-full min-w-0 flex-1 border-none bg-transparent text-[13.5px] font-medium text-bg caret-bg outline-none"
       />
       <button
         type="button"
