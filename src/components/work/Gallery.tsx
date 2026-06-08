@@ -10,7 +10,8 @@
  *
  * Clicking a thumbnail opens a fullscreen overlay showing the bare image at
  * size, with previous/next navigation, a caption and a counter. Keyboard:
- * Escape closes, ←/→ step through. Focus moves into the dialog on open and
+ * Escape closes, ←/→ step through. Touch: a horizontal swipe across the image
+ * steps (left → next, right → prev). Focus moves into the dialog on open and
  * returns to the originating thumbnail on close; body scroll is locked while
  * open.
  */
@@ -92,6 +93,24 @@ export function Gallery({
       ),
     [ordered.length],
   );
+
+  // Touch swipe over the image: record the start point, and on release step if
+  // the gesture is a clear horizontal swipe (dominates the vertical drift and
+  // clears the threshold) — swipe left advances, right goes back.
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    const point = e.touches[0];
+    touchStart.current = { x: point.clientX, y: point.clientY };
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStart.current;
+    touchStart.current = null;
+    if (!start || !many) return;
+    const point = e.changedTouches[0];
+    const dx = point.clientX - start.x;
+    const dy = point.clientY - start.y;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) step(dx < 0 ? 1 : -1);
+  };
 
   // While open: lock scroll, focus the dialog, wire Escape + arrow keys.
   // On close: return focus to the opening thumbnail only for keyboard dismissal.
@@ -198,6 +217,8 @@ export function Gallery({
               shot scales to fit the space left between the padding and caption. */}
           <div
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
             className="flex h-full w-full flex-col items-center justify-center gap-4"
           >
             <div className="relative min-h-0 w-full flex-1">
