@@ -18,18 +18,21 @@ import {defineArrayMember, defineField, type FieldDefinition} from 'sanity'
  * @param name - The field name on the parent document
  * @param title - Human-readable label shown in the Studio
  * @param description - Optional helper text shown beneath the field in the Studio
+ * @param group - Optional Studio group/tab the field belongs to
  * @returns A Sanity field definition with `en` and `nl` sub-fields
  */
 export function i18nString(
   name: string,
   title: string,
-  description?: string
+  description?: string,
+  group?: string
 ): FieldDefinition {
   return defineField({
     name,
     title,
     type: 'object',
     description,
+    group,
     fields: [
       defineField({
         name: 'en',
@@ -85,11 +88,17 @@ export function i18nText(
  *
  * Use for case study bodies, employer descriptions, profile bios — anywhere
  * the content needs paragraphs, links, and emphasis.
+ *
+ * @param name - The field name on the parent document
+ * @param title - Human-readable label shown in the Studio
+ * @param description - Optional helper text shown beneath the field in the Studio
+ * @param group - Optional Studio group/tab the field belongs to
  */
 export function i18nPortableText(
   name: string,
   title: string,
-  description?: string
+  description?: string,
+  group?: string
 ): FieldDefinition {
   // Inline portable text block config: paragraphs only, plus marks for
   // emphasis, strong, and links. Keep it minimal — case studies don't
@@ -126,6 +135,7 @@ export function i18nPortableText(
     title,
     type: 'object',
     description,
+    group,
     fields: [
       defineField({
         name: 'en',

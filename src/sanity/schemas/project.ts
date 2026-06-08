@@ -150,16 +150,19 @@ export const project = defineType({
       initialValue: false,
     }),
 
-    // — Case study tab
     i18nString(
       'deck',
       'Deck',
-      'One-line pitch shown under the project title, in the log row, and as the SEO/OG description. Skip to leave the row’s panel without a lead line (SEO falls back to the site description).'
+      'One-line pitch shown under the project title, in the log row, and as the SEO/OG description. Skip to leave the row’s panel without a lead line (SEO falls back to the site description).',
+      'basics'
     ),
+
+    // — Case study tab
     i18nPortableText(
       'body',
       'Case study body',
-      'Full case study narrative — context, approach, outcome (use an "Outcome" heading). Shown on the dedicated /work/<slug> page. Leave empty for a tool/utility — the log row will instead link out to the source/live URL.'
+      'Full case study narrative — context, approach, outcome (use an "Outcome" heading). Shown on the dedicated /work/<slug> page. Leave empty for a tool/utility — the log row will instead link out to the source/live URL.',
+      'caseStudy'
     ),
     defineField({
       name: 'gallery',
