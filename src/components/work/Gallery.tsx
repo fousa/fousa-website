@@ -281,14 +281,21 @@ export function Gallery({
                   onTransitionEnd={onTrackTransitionEnd}
                 >
                   {[prevShot, current, nextShot].map((shot, slot) => (
-                    <div key={slot} className="relative h-full w-full shrink-0">
-                      <Image
-                        src={shot.imageUrl}
-                        alt={shot.caption ?? ""}
-                        fill
-                        sizes="90vw"
-                        className="rounded object-contain"
-                      />
+                    // Each slide is a full viewport-width track cell; the px
+                    // padding leaves a gutter between shots while dragging
+                    // without changing the slide width the translate math relies
+                    // on. The inner box is the `fill` image's positioning
+                    // context, so it sits inside that padding.
+                    <div key={slot} className="h-full w-full shrink-0 px-4 md:px-8">
+                      <div className="relative h-full w-full">
+                        <Image
+                          src={shot.imageUrl}
+                          alt={shot.caption ?? ""}
+                          fill
+                          sizes="90vw"
+                          className="rounded object-contain"
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
