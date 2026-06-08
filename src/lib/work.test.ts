@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { projectDepth, matchesFilters, hasCaseStudy, mapProjectBase, type Project, type Filters } from "./work";
+import { projectDepth, matchesFilters, matchesQuery, hasCaseStudy, mapProjectBase, type Project, type Filters } from "./work";
 
 /** Build a Project with sensible defaults; override only what a test cares about. */
 function makeProject(overrides: Partial<Project> = {}): Project {
@@ -110,6 +110,24 @@ describe("matchesFilters", () => {
     expect(matchesFilters(p, makeFilters({ skill: ["swift"], status: ["active"] }))).toBe(true);
     const ended = makeProject({ tagSlugs: ["swift"], endYear: 2019 });
     expect(matchesFilters(ended, makeFilters({ skill: ["swift"], status: ["active"] }))).toBe(false);
+  });
+});
+
+describe("matchesQuery", () => {
+  const p = { searchText: "vulture soaring planner skysight weather glider" } as Project;
+
+  it("matches a term in the searchText", () => {
+    expect(matchesQuery(p, "weather")).toBe(true);
+    expect(matchesQuery(p, "WEATHER")).toBe(true);
+  });
+
+  it("does not match an absent term", () => {
+    expect(matchesQuery(p, "kubernetes")).toBe(false);
+  });
+
+  it("empty query matches everything", () => {
+    expect(matchesQuery(p, "")).toBe(true);
+    expect(matchesQuery(p, "   ")).toBe(true);
   });
 });
 

@@ -221,6 +221,15 @@ export function ProjectLog({
     const qs = sp.toString();
     const hash = typeof window !== "undefined" ? window.location.hash : "";
     router.replace(`${pathname}${qs ? `?${qs}` : ""}${hash}`, { scroll: false });
+    // Report only real searches (not the clear), logging the length — never the
+    // text — and how many rows the query + current filters matched.
+    const trimmed = next.trim();
+    if (trimmed) {
+      const results = projects.filter(
+        (p) => matchesQuery(p, trimmed) && matchesFilters(p, filters),
+      ).length;
+      track("search_query", { length: trimmed.length, results });
+    }
   }, 250);
 
   // Search AND filters, then sort the smaller list — order is identical either way.
@@ -251,13 +260,13 @@ export function ProjectLog({
   // A live search gets a query-specific line ("No projects match “…”."); pure
   // filter combos keep the override/dictionary copy.
   const emptyBody = hasQuery
-    ? t(locale, "search.noResults" as MessageKey).replace("{q}", query.trim())
+    ? t(locale, "search.noResults").replace("{q}", query.trim())
     : (override?.body ?? t(locale, "empty.body"));
   // Label the clear action for whichever dimension is active: "Clear search" when
   // only a query narrows the list, otherwise the filter-clear copy.
   const emptyClearLabel =
     hasQuery && !hasAnyFilter
-      ? t(locale, "search.clear" as MessageKey)
+      ? t(locale, "search.clear")
       : t(locale, "empty.clear");
 
   // A zero-match combo is a meaningful signal — track it once per transition.
