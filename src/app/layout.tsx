@@ -2,6 +2,12 @@
  * Root layout — fonts, metadata, viewport, and the no-flash dark-mode script.
  * The three font families (Space Grotesk, Inter, Space Mono) are loaded here
  * and exposed as CSS variables for Tailwind's font-display / font-sans / font-mono.
+ *
+ * `preload: false` on every family: the fonts are consumed only through CSS
+ * variables (never via next/font's own className), so Next can't know which
+ * file the first paint needs and would emit `<link rel=preload>` tags for files
+ * the browser doesn't use in time — the "preloaded but not used" console
+ * warnings. With `display: "swap"` the swap-in stays graceful without them.
  */
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, Space_Mono } from "next/font/google";
@@ -14,17 +20,20 @@ const display = Space_Grotesk({
   weight: ["400", "500", "600", "700"],
   variable: "--font-space-grotesk",
   display: "swap",
+  preload: false,
 });
 const sans = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+  preload: false,
 });
 const mono = Space_Mono({
   subsets: ["latin"],
   weight: ["400"],
   variable: "--font-space-mono",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
