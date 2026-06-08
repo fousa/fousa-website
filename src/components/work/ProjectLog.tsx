@@ -9,7 +9,7 @@
  * selections survive reloads and are shareable.
  */
 import Link from "next/link";
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback, useEffect, type ReactNode } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   matchesFilters,
@@ -144,6 +144,35 @@ function matchOverride(
   if (active.length === 0) return null;
   const key = [...active].sort().join(",");
   return list.find((o) => [...o.filters].sort().join(",") === key) ?? null;
+}
+
+/**
+ * Wrap case-insensitive occurrences of `q` within `text` in `<mark>`, returning
+ * the text unchanged when `q` is empty. Pass plain text only — React escapes the
+ * children, so this introduces no markup injection.
+ */
+function highlight(text: string, q: string): ReactNode {
+  const query = q.trim();
+  if (!query) return text;
+  const parts: ReactNode[] = [];
+  const lower = text.toLowerCase();
+  const ql = query.toLowerCase();
+  let i = 0;
+  let n = 0;
+  for (let idx = lower.indexOf(ql); idx !== -1; idx = lower.indexOf(ql, i)) {
+    if (idx > i) parts.push(text.slice(i, idx));
+    parts.push(
+      <mark
+        key={n++}
+        className="rounded-[2px] bg-accent-soft px-[1px] text-ink"
+      >
+        {text.slice(idx, idx + query.length)}
+      </mark>,
+    );
+    i = idx + query.length;
+  }
+  if (i < text.length) parts.push(text.slice(i));
+  return parts;
 }
 
 // ---------------------------------------------------------------------------
@@ -392,6 +421,7 @@ export function ProjectLog({
                   key={p.slug}
                   p={p}
                   locale={locale}
+                  query={query}
                   open={open === p.slug}
                   onToggle={() => toggleRow(p.slug)}
                 />
@@ -416,7 +446,7 @@ export function ProjectLog({
                       className={`depth-name font-display text-base font-semibold ${open === p.slug ? "text-accent" : "text-ink"}`}
                     >
                       <DepthIcon depth={p.depth} label={(k) => t(locale, k as MessageKey)} />
-                      {p.name}
+                      {highlight(p.name, query)}
                     </span>
                     <StatusDot state={p.state} locale={locale} />
                   </div>
@@ -446,7 +476,7 @@ export function ProjectLog({
                         )}
                         {p.deck && (
                           <p className="mb-[10px] text-[13px] leading-[1.6] text-muted">
-                            {p.deck}
+                            {highlight(p.deck, query)}
                           </p>
                         )}
                         <RowActions p={p} locale={locale} size="sm" />
@@ -526,11 +556,13 @@ function SortHeader({
 function Row({
   p,
   locale,
+  query,
   open,
   onToggle,
 }: {
   p: Project;
   locale: Locale;
+  query: string;
   open: boolean;
   onToggle: () => void;
 }) {
@@ -554,7 +586,7 @@ function Row({
             className={`depth-name font-display text-base font-semibold tracking-[-0.01em] ${open ? "text-accent" : "text-ink group-hover:text-accent"}`}
           >
             <DepthIcon depth={p.depth} label={(k) => t(locale, k as MessageKey)} />
-            {p.name}
+            {highlight(p.name, query)}
           </span>
         </td>
         <td className="px-11 py-5 align-top">
@@ -593,7 +625,7 @@ function Row({
                   )}
                   {p.deck && (
                     <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
-                      {p.deck}
+                      {highlight(p.deck, query)}
                     </p>
                   )}
                   <RowActions p={p} locale={locale} size="base" />
