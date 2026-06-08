@@ -86,6 +86,13 @@ export type Project = {
    * hand-built fixtures; mapped rows always set both to a value or null.
    */
   links?: { live: string | null; github: string | null }
+  /**
+   * Precomputed lowercase search haystack (name + deck + flattened body),
+   * built server-side in the log query. The client substring-matches against
+   * this. Optional: only the log mapper sets it — the detail page and
+   * hand-built fixtures omit it (search runs on the log only).
+   */
+  searchText?: string
 }
 
 /**
@@ -360,16 +367,18 @@ function toProject(
     ...mapProjectBase(row, locale),
     depth: projectDepth(row),
     gallery: [],
+    searchText: row.searchText ?? '',
   }
 }
 
 /**
  * Fetch all projects for the log page.
  *
- * @param locale - active locale for resolving i18n fields
+ * @param locale - active locale for resolving i18n fields (also drives the
+ *   per-locale `searchText` haystack built in GROQ)
  */
 export async function getProjects(locale: Locale = 'en'): Promise<Project[]> {
-  const rows = await fetchSanity<PROJECTS_QUERY_RESULT>(PROJECTS_QUERY)
+  const rows = await fetchSanity<PROJECTS_QUERY_RESULT>(PROJECTS_QUERY, {locale})
   if (!rows) return []
   return rows.map((r) => toProject(r, locale))
 }

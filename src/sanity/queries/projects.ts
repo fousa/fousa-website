@@ -7,6 +7,10 @@
  *
  * Includes the lightweight case-study fields the expanded log row needs (deck,
  * links). ~65 documents, so the payload stays small.
+ *
+ * `searchText` precomputes a lowercase haystack (name + localized deck +
+ * flattened PortableText body) server-side, so the client can substring-search
+ * without ever shipping or flattening the body array. Needs the `$locale` param.
  */
 import {defineQuery} from 'next-sanity'
 
@@ -38,6 +42,11 @@ export const PROJECTS_QUERY = defineQuery(`
     },
     featureTooling,
     "hasBody": count(body.en) > 0,
-    "galleryCount": count(gallery)
+    "galleryCount": count(gallery),
+    "searchText": lower(
+      coalesce(name, "") + " " +
+      coalesce(deck[$locale], deck.en, "") + " " +
+      pt::text(coalesce(body[$locale], body.en))
+    )
   }
 `)
