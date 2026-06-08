@@ -271,6 +271,8 @@ both on push and PR.
   `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, and `SANITY_API_TOKEN`
   as repository secrets for build + E2E.
 - **Analytics** — Vercel Analytics (cookie-less), mounted once in the locale layout.
-  Custom events go through the typed `track()` wrapper (`lib/analytics.ts`):
-  `project_expand`, `project_open`, `filter_select`, `sort_change`,
-  `empty_state_shown`, `locale_switch`, `theme_toggle`, `outbound_click`.
+  Page hits (incl. `/about`) are tracked automatically; custom events go through the
+  typed `track()` wrapper (`lib/analytics.ts`): `project_expand`, `project_open`,
+  `filter_select`, `sort_change`, `empty_state_shown`, `locale_switch`,
+  `theme_toggle`, `outbound_click`, `glide_open`, and `glide_close` (records
+  `seconds` played and `runs` flown when the mini-game overlay closes).

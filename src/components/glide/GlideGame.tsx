@@ -83,6 +83,15 @@ export function GlideGame({
   // parent passes a fresh inline `onClose` on every render.
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+  // Same reasoning for `locale` — read it at teardown without re-keying the
+  // effect. Synced via an effect (not during render) to keep the ref write legal.
+  const localeRef = useRef(locale);
+  useEffect(() => {
+    localeRef.current = locale;
+  }, [locale]);
+  // Number of flights in the current session (first launch counts as 1, each
+  // "Launch again" adds one). Reported alongside the play duration on close.
+  const runsRef = useRef(0);
 
   const launch = useCallback(() => {
     track("glide_open", { locale });
@@ -99,6 +108,7 @@ export function GlideGame({
   );
 
   const relaunch = useCallback(() => {
+    runsRef.current += 1;
     setEnd(null);
     setRunId((n) => n + 1);
   }, []);
@@ -111,6 +121,9 @@ export function GlideGame({
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     closeRef.current?.focus();
+    // Start the play timer for this session; first flight counts as run 1.
+    const startedAt = Date.now();
+    runsRef.current = 1;
 
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false);
@@ -121,6 +134,11 @@ export function GlideGame({
       document.body.style.overflow = prevOverflow;
       document.removeEventListener("keydown", onKey);
       trigger?.focus();
+      track("glide_close", {
+        seconds: Math.round((Date.now() - startedAt) / 1000),
+        runs: runsRef.current,
+        locale: localeRef.current,
+      });
       onCloseRef.current?.();
     };
   }, [open]);
