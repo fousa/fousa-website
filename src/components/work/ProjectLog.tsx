@@ -204,6 +204,7 @@ export function ProjectLog({
   const sort = useMemo(() => parseSort(params.get("s")), [params]);
   // The committed query lives in the URL; it composes (ANDs) with the filters.
   const query = params.get("q") ?? "";
+  const hasQuery = query.trim().length > 0;
 
   const [open, setOpen] = useState<string | null>(null);
 
@@ -232,9 +233,9 @@ export function ProjectLog({
     [projects, filters, sort, query],
   );
 
-  // Only an empty state when filters are active — an empty list with no
-  // filters means the dataset itself is empty, a different problem.
-  const isEmpty = hasAnyFilter && rows.length === 0;
+  // Only an empty state when a search or filters are active — an empty list with
+  // neither means the dataset itself is empty, a different problem.
+  const isEmpty = (hasAnyFilter || hasQuery) && rows.length === 0;
 
   // Stable identity for the current filter combo. Used as the list wrapper's
   // `key` so any filter change remounts it and replays the fade-up entrance.
@@ -247,7 +248,17 @@ export function ProjectLog({
     [filters, overrides],
   );
   const emptyHeadline = override?.headline ?? t(locale, "empty.headline");
-  const emptyBody = override?.body ?? t(locale, "empty.body");
+  // A live search gets a query-specific line ("No projects match “…”."); pure
+  // filter combos keep the override/dictionary copy.
+  const emptyBody = hasQuery
+    ? t(locale, "search.noResults" as MessageKey).replace("{q}", query.trim())
+    : (override?.body ?? t(locale, "empty.body"));
+  // Label the clear action for whichever dimension is active: "Clear search" when
+  // only a query narrows the list, otherwise the filter-clear copy.
+  const emptyClearLabel =
+    hasQuery && !hasAnyFilter
+      ? t(locale, "search.clear" as MessageKey)
+      : t(locale, "empty.clear");
 
   // A zero-match combo is a meaningful signal — track it once per transition.
   useEffect(() => {
@@ -281,10 +292,20 @@ export function ProjectLog({
     [filters, writeUrl, locale],
   );
 
+  // Clear everything that narrows the log — filters *and* the search query — and
+  // reset the input. Used by the chip-bar "Clear all" and the empty-state action.
   const clearAll = useCallback(() => {
     track("clear_filters", { count: filterCount(filters), locale });
-    writeUrl({ stack: [], status: [], tool: [], caseStudy: [], affiliation: [], skill: [] });
-  }, [filters, writeUrl, locale]);
+    setLiveQuery("");
+    const sp = filtersToParams(
+      { stack: [], status: [], tool: [], caseStudy: [], affiliation: [], skill: [] },
+      params,
+    );
+    sp.delete("q");
+    const qs = sp.toString();
+    const hash = typeof window !== "undefined" ? window.location.hash : "";
+    router.replace(`${pathname}${qs ? `?${qs}` : ""}${hash}`, { scroll: false });
+  }, [filters, params, pathname, router, locale]);
 
   /**
    * Sort a column: toggle asc⇄desc on the active column, else apply that
@@ -383,7 +404,7 @@ export function ProjectLog({
             <EmptyState
               headline={emptyHeadline}
               body={emptyBody}
-              clearLabel={t(locale, "empty.clear")}
+              clearLabel={emptyClearLabel}
               showAllLabel={t(locale, "empty.showAll")}
               onClear={clearAll}
             />
@@ -491,8 +512,8 @@ export function ProjectLog({
         )}
       </div>
 
-      {/* Filtered count */}
-      {hasAnyFilter && (
+      {/* Filtered / searched count */}
+      {(hasAnyFilter || hasQuery) && (
         <div
           role="status"
           aria-live="polite"
