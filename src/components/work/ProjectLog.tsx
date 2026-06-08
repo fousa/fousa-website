@@ -385,18 +385,21 @@ export function ProjectLog({
             <span aria-hidden>×</span>
           </button>
         ))}
-        <SearchChip
-          value={liveQuery}
-          onChange={(v) => {
-            setLiveQuery(v);
-            setQuery(v);
-          }}
-          onClear={() => {
-            setLiveQuery("");
-            setQuery("");
-          }}
-          label={(k) => t(locale, k as MessageKey)}
-        />
+        {/* Desktop-only: the mobile cards have no inline search affordance. */}
+        <span className="hidden md:contents">
+          <SearchChip
+            value={liveQuery}
+            onChange={(v) => {
+              setLiveQuery(v);
+              setQuery(v);
+            }}
+            onClear={() => {
+              setLiveQuery("");
+              setQuery("");
+            }}
+            label={(k) => t(locale, k as MessageKey)}
+          />
+        </span>
         {hasAnyFilter && (
           <button
             onClick={clearAll}
