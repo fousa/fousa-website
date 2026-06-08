@@ -13,6 +13,11 @@
  * flattened PortableText body, gallery captions, years, state and engagement —
  * server-side, so the client can substring-search the whole project without
  * ever shipping or flattening those arrays. Needs the `$locale` param.
+ *
+ * Every term is `coalesce(..., "")`-guarded — including `pt::text(...)`, which
+ * returns null for a body-less project — because a single null element makes
+ * `array::join` return null, which would blank out the whole haystack and hide
+ * the project from search entirely (e.g. "Briefing", which has no case study).
  */
 import {defineQuery} from 'next-sanity'
 
@@ -53,7 +58,7 @@ export const PROJECTS_QUERY = defineQuery(`
         coalesce(employer->organisation, ""),
         coalesce(array::join(stack[]->name, " "), ""),
         coalesce(deck[$locale], deck.en, ""),
-        pt::text(coalesce(body[$locale], body.en)),
+        coalesce(pt::text(coalesce(body[$locale], body.en)), ""),
         coalesce(array::join(gallery[defined(caption[$locale])].caption[$locale], " "), ""),
         coalesce(string(year), ""),
         coalesce(string(endYear), ""),
