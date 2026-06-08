@@ -7,7 +7,10 @@
  * container morphs between the two states (width + fill animate) so the
  * expansion reads as one motion rather than a swap.
  */
-import { useRef, useState, useEffect } from "react";
+import { useImperativeHandle, useRef, useState, useEffect, type Ref } from "react";
+
+/** Imperative handle so a parent (e.g. the `f` shortcut) can open + focus it. */
+export type SearchChipHandle = { focus: () => void };
 
 /** Magnifying glass — circle lens + diagonal handle, inherits the text color. */
 function SearchIcon() {
@@ -52,21 +55,38 @@ function XIcon() {
  * @param onChange - called on every keystroke with the new value
  * @param onClear - clears the query (× button or Escape)
  * @param label - i18n lookup bound to the active locale (key → string)
+ * @param ref - exposes `focus()` to open the chip and focus its input
  */
 export function SearchChip({
   value,
   onChange,
   onClear,
   label,
+  ref,
 }: {
   value: string;
   onChange: (v: string) => void;
   onClear: () => void;
   label: (k: string) => string;
+  ref?: Ref<SearchChipHandle>;
 }) {
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const active = open || value.trim().length > 0;
+
+  // Opening flips to the active branch; the effect below focuses the input once
+  // it mounts. When already active, focus it directly (state won't change, so
+  // the effect wouldn't re-run).
+  useImperativeHandle(
+    ref,
+    () => ({
+      focus: () => {
+        setOpen(true);
+        inputRef.current?.focus();
+      },
+    }),
+    [],
+  );
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
@@ -109,9 +129,12 @@ export function SearchChip({
               if (!value.trim()) setOpen(false);
             }}
             onKeyDown={(e) => {
+              // Escape keeps the query but drops focus out of the field
+              // (collapsing to the icon only if it's empty, via onBlur), so the
+              // page's ↑/↓ row navigation can take over.
               if (e.key === "Escape") {
-                onClear();
-                setOpen(false);
+                e.stopPropagation();
+                inputRef.current?.blur();
               }
             }}
             aria-label={label("search.label")}

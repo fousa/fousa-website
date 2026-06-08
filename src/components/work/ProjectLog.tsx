@@ -9,7 +9,7 @@
  * selections survive reloads and are shareable.
  */
 import Link from "next/link";
-import { useMemo, useState, useCallback, useEffect, type ReactNode } from "react";
+import { useMemo, useState, useCallback, useEffect, useRef, type ReactNode } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   matchesFilters,
@@ -32,7 +32,7 @@ import {
 } from "@/lib/work";
 import { ForCell } from "./ForCell";
 import { DepthIcon } from "./DepthIcon";
-import { SearchChip } from "./SearchChip";
+import { SearchChip, type SearchChipHandle } from "./SearchChip";
 import { t, type MessageKey } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 import { track } from "@/lib/analytics";
@@ -350,6 +350,89 @@ export function ProjectLog({
     }
   };
 
+  const searchRef = useRef<SearchChipHandle>(null);
+
+  // Page-level keyboard shortcuts (desktop): ↑/↓ walk the expanded row through
+  // the visible list (opening the first when none is open), and `f` opens and
+  // focuses the search field. Ignored while typing in a field or with a modifier
+  // held, so it never hijacks real input or browser/OS chords.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (
+        e.metaKey ||
+        e.ctrlKey ||
+        e.altKey ||
+        (el &&
+          (el.tagName === "INPUT" ||
+            el.tagName === "TEXTAREA" ||
+            el.isContentEditable))
+      )
+        return;
+
+      if (e.key === "f") {
+        e.preventDefault();
+        searchRef.current?.focus();
+        return;
+      }
+
+      // Escape collapses the open row. (Escape inside the search field is handled
+      // there — it blurs and is excluded by the input guard above.)
+      if (e.key === "Escape") {
+        if (open !== null) {
+          e.preventDefault();
+          setOpen(null);
+        }
+        return;
+      }
+
+      // Enter opens the expanded project's detail (case study or screenshots),
+      // but only from a non-interactive focus, so it never hijacks Enter on a
+      // focused row / button / link that has its own activation.
+      if (e.key === "Enter") {
+        const interactive =
+          el &&
+          (el.tagName === "BUTTON" ||
+            el.tagName === "A" ||
+            el.tagName === "SELECT" ||
+            el.getAttribute("role") === "button");
+        if (interactive || open === null) return;
+        const p = projects.find((pr) => pr.slug === open);
+        if (!p || p.depth === "none") return;
+        e.preventDefault();
+        track("project_open", {
+          slug: p.slug,
+          depth: p.depth,
+          target: p.depth === "full" ? "case_study" : "gallery",
+          locale,
+        });
+        router.push(localizedHref(locale, `/work/${p.slug}`));
+        return;
+      }
+
+      if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+      if (rows.length === 0) return;
+      e.preventDefault();
+
+      // No row open yet → open the first; otherwise step one row, clamping at
+      // the ends. An `open` slug that's been filtered out also resets to first.
+      const i = open === null ? -1 : rows.findIndex((p) => p.slug === open);
+      const next =
+        i === -1
+          ? rows[0]
+          : e.key === "ArrowDown"
+            ? rows[Math.min(i + 1, rows.length - 1)]
+            : rows[Math.max(i - 1, 0)];
+
+      if (next.slug !== open) {
+        setOpen(next.slug);
+        track("project_expand", { slug: next.slug, depth: next.depth, locale });
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [rows, open, locale, projects, router]);
+
   return (
     <section id="work" className="scroll-mt-20">
       {/* Chip bar */}
@@ -388,6 +471,7 @@ export function ProjectLog({
         {/* Desktop-only: the mobile cards have no inline search affordance. */}
         <span className="hidden md:contents">
           <SearchChip
+            ref={searchRef}
             value={liveQuery}
             onChange={(v) => {
               setLiveQuery(v);
