@@ -210,11 +210,14 @@ so ongoing projects lead; comparisons use sign rather than subtraction to dodge 
 filtered first, then sorted. Mobile renders the same sorted `rows` with no sort UI, so
 a shared `?s=` link still orders correctly.
 
-**Search** is a free-text filter over each project's name, deck, and case-study
-body. The matchable text is assembled **server-side in GROQ** as a `searchText`
-projection — `lower(name + deck[$locale] + pt::text(body))`, coalescing the
-localized field to English — so PortableText is flattened once at query time and
-the client predicate `matchesQuery` is a plain lowercased substring test. It
+**Search** is a free-text filter over *every* searchable field on a project —
+name, client, role, employer organisation, stack tag names, deck, case-study
+body, gallery captions, year/end year, state and engagement. The matchable text
+is assembled **server-side in GROQ** as a `searchText` projection that
+`array::join`s those fields into one `lower(...)` haystack (coalescing localized
+fields to English, dereferencing employer/stack, flattening PortableText with
+`pt::text`) — so the arrays are joined once at query time and the client
+predicate `matchesQuery` is a plain lowercased substring test. It
 composes with the chips exactly like another axis: `rows` is
 `projects.filter(p => matchesQuery(p, q) && matchesFilters(p, filters))`. The
 query lives in the URL as `?q=`, written through a 250 ms `useDebouncedCallback`

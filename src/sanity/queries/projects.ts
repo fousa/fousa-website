@@ -8,9 +8,11 @@
  * Includes the lightweight case-study fields the expanded log row needs (deck,
  * links). ~65 documents, so the payload stays small.
  *
- * `searchText` precomputes a lowercase haystack (name + localized deck +
- * flattened PortableText body) server-side, so the client can substring-search
- * without ever shipping or flattening the body array. Needs the `$locale` param.
+ * `searchText` precomputes a lowercase haystack of *every* searchable field on
+ * the project — name, client, role, employer, stack tag names, localized deck,
+ * flattened PortableText body, gallery captions, years, state and engagement —
+ * server-side, so the client can substring-search the whole project without
+ * ever shipping or flattening those arrays. Needs the `$locale` param.
  */
 import {defineQuery} from 'next-sanity'
 
@@ -44,9 +46,20 @@ export const PROJECTS_QUERY = defineQuery(`
     "hasBody": count(body.en) > 0,
     "galleryCount": count(gallery),
     "searchText": lower(
-      coalesce(name, "") + " " +
-      coalesce(deck[$locale], deck.en, "") + " " +
-      pt::text(coalesce(body[$locale], body.en))
+      array::join([
+        coalesce(name, ""),
+        coalesce(client, ""),
+        coalesce(role, ""),
+        coalesce(employer->organisation, ""),
+        coalesce(array::join(stack[]->name, " "), ""),
+        coalesce(deck[$locale], deck.en, ""),
+        pt::text(coalesce(body[$locale], body.en)),
+        coalesce(array::join(gallery[defined(caption[$locale])].caption[$locale], " "), ""),
+        coalesce(string(year), ""),
+        coalesce(string(endYear), ""),
+        coalesce(state, ""),
+        coalesce(engagement, "")
+      ], " ")
     )
   }
 `)
