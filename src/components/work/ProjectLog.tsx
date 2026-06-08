@@ -32,9 +32,11 @@ import {
 } from "@/lib/work";
 import { ForCell } from "./ForCell";
 import { DepthIcon } from "./DepthIcon";
+import { SearchChip } from "./SearchChip";
 import { t, type MessageKey } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 import { track } from "@/lib/analytics";
+import { useDebouncedCallback } from "@/lib/use-debounced-callback";
 import { localizedHref } from "@/lib/href";
 import { OutboundLink } from "@/components/layout/OutboundLink";
 import { StatusDot } from "./StatusDot";
@@ -176,6 +178,21 @@ export function ProjectLog({
 
   const [open, setOpen] = useState<string | null>(null);
 
+  // Local input value for instant typing feedback; the URL (and thus the derived
+  // rows) is written debounced so history isn't flooded on every keystroke. Seeded
+  // once from the URL (so a shared/reloaded ?q= shows in the field); thereafter the
+  // input owns its text and the explicit clear paths reset it.
+  const [liveQuery, setLiveQuery] = useState(query);
+
+  const setQuery = useDebouncedCallback((next: string) => {
+    const sp = new URLSearchParams(params);
+    if (next.trim()) sp.set("q", next);
+    else sp.delete("q");
+    const qs = sp.toString();
+    const hash = typeof window !== "undefined" ? window.location.hash : "";
+    router.replace(`${pathname}${qs ? `?${qs}` : ""}${hash}`, { scroll: false });
+  }, 250);
+
   // Search AND filters, then sort the smaller list — order is identical either way.
   const rows = useMemo(
     () =>
@@ -309,6 +326,18 @@ export function ProjectLog({
             <span aria-hidden>×</span>
           </button>
         ))}
+        <SearchChip
+          value={liveQuery}
+          onChange={(v) => {
+            setLiveQuery(v);
+            setQuery(v);
+          }}
+          onClear={() => {
+            setLiveQuery("");
+            setQuery("");
+          }}
+          label={(k) => t(locale, k as MessageKey)}
+        />
         {hasAnyFilter && (
           <button
             onClick={clearAll}
