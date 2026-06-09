@@ -5,8 +5,7 @@
  * flow (`display: none`, see globals.css) so they don't pad the page height; the
  * remaining shots glide to their new columns and nothing jumps. The device
  * filter persists in `?d=`. Reduced-motion collapses the glide to instant (the
- * global safeguard in globals.css). Each shot links to its case study with
- * `?from=gallery`, so the detail back link reads "← Gallery".
+ * global safeguard in globals.css). Each shot links to its case study.
  */
 import { useRef, useLayoutEffect, useState } from "react";
 import Link from "next/link";
@@ -142,7 +141,7 @@ export function GalleryMasonry({
             ref={(el) => {
               itemRefs.current[i] = el;
             }}
-            href={`${localizedHref(locale, `/work/${s.slug}`)}?from=gallery`}
+            href={localizedHref(locale, `/work/${s.slug}`)}
             className="gallery-item"
             data-hidden="false"
             aria-label={t(locale, "galleryOpen").replace("{name}", s.projectName)}

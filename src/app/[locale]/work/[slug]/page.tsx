@@ -27,7 +27,6 @@ import { StatusDot } from "@/components/work/StatusDot";
 import { ToolingChip } from "@/components/work/ToolingChip";
 import { PortableTextRenderer } from "@/components/portable-text";
 import { Gallery } from "@/components/work/Gallery";
-import { DetailShortcuts } from "@/components/work/DetailShortcuts";
 import type { PROFILE_QUERY_RESULT } from "@/sanity.types";
 
 const SITE_URL = "https://fousa.be";
@@ -82,21 +81,11 @@ export async function generateMetadata({
 
 export default async function DetailPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>;
-  searchParams: Promise<{ from?: string }>;
 }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
-
-  // A `?from=gallery` marker (set on the cross-project gallery links) makes the
-  // back link return to /gallery; otherwise it falls back to the project log.
-  // Using a marker (not document.referrer) keeps direct/shared links deterministic.
-  const fromGallery = (await searchParams)?.from === "gallery";
-  const back = fromGallery
-    ? { href: localizedHref(locale, "/gallery"), label: t(locale, "backGallery") }
-    : { href: localizedHref(locale, "/"), label: t(locale, "backToTheLog") };
 
   const [project, profile] = await Promise.all([
     getProjectDetail(slug, locale),
@@ -122,20 +111,9 @@ export default async function DetailPage({
   return (
     <>
       {jsonLd && <JsonLd data={jsonLd} />}
-      <DetailShortcuts locale={locale} />
       <main id="main">
-        {/* Back link */}
-      <div className="px-5 pt-8 md:px-11">
-        <Link
-          href={back.href}
-          className="font-display text-sm font-semibold text-muted transition-colors hover:text-ink"
-        >
-          ← {back.label}
-        </Link>
-      </div>
-
       {/* Meta */}
-      <header className="px-5 pt-8 pb-8 md:px-11">
+      <header className="px-5 pt-12 pb-8 md:px-11">
         <h1 className="font-display text-[28px] font-bold tracking-[-0.03em] md:text-[36px]">
           {project.name}
         </h1>

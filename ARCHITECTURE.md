@@ -245,9 +245,9 @@ filtered-out shots fade out, then drop to `display: none` (deferred via
 the page with whitespace; nothing jumps; device chips (styled like
 the log's filter chips, single-select — re-tapping the active one clears it, with
 a "Clear all" link beside them while one is active) drive a shareable `?d=` param
-and the glide collapses under the global reduced-motion safeguard. Each shot links to its case study with `?from=gallery`, which the
-detail page's **context-aware back link** reads (`searchParams.from`) to show
-"← Gallery" → `/gallery`; without the marker it falls back to the project log.
+and the glide collapses under the global reduced-motion safeguard. Each shot links
+straight to its case study; the detail page has no on-page back link or keyboard
+shortcuts — navigation back is left to the browser.
 
 ## Accessibility decisions
 
