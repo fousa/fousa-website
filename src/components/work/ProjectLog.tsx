@@ -28,8 +28,12 @@ import {
   type SortDir,
   type Project,
   type Depth,
+  type Frame as FrameKind,
+  type GalleryShot,
   type EmptyStateOverride,
+  frameLabelKey,
 } from "@/lib/work";
+import { Frame } from "./Frame";
 import { ForCell } from "./ForCell";
 import { DepthIcon } from "./DepthIcon";
 import { SearchChip, type SearchChipHandle } from "./SearchChip";
@@ -639,6 +643,11 @@ export function ProjectLog({
                         )}
                         <RowActions p={p} locale={locale} size="sm" />
                       </div>
+                      <PreviewShots
+                        shots={p.previewShots ?? []}
+                        locale={locale}
+                        className="mt-4 flex-wrap"
+                      />
                     </div>
                   </div>
                 </div>
@@ -710,6 +719,52 @@ function SortHeader({
   );
 }
 
+// Per-frame width for the expanded-row preview thumbnails. Chosen so every
+// device lands in a comparable ~110–150px height band when top-aligned, so an
+// iPhone doesn't tower over an iPad sitting beside it.
+const PREVIEW_WIDTH: Record<FrameKind, string> = {
+  phone: "w-[76px]",
+  "tablet-landscape": "w-[150px]",
+  "tablet-portrait": "w-[116px]",
+  tv: "w-[150px]",
+  watch: "w-[92px]",
+  mac: "w-[150px]",
+  browser: "w-[150px]",
+  none: "w-[132px]",
+};
+
+/**
+ * The expanded row's screenshot preview: the project's first two gallery shots,
+ * each in its device frame, top-aligned with a fixed gap. Renders nothing when
+ * the project carries no gallery. Decorative beside the deck + CTA — each shot
+ * is labelled by its device for assistive tech.
+ */
+function PreviewShots({
+  shots,
+  locale,
+  className = "",
+}: {
+  shots: GalleryShot[];
+  locale: Locale;
+  className?: string;
+}) {
+  if (shots.length === 0) return null;
+  return (
+    <div className={`flex shrink-0 items-start gap-4 ${className}`}>
+      {shots.slice(0, 2).map((shot) => (
+        <div
+          key={shot.key}
+          role="img"
+          aria-label={t(locale, frameLabelKey(shot.frame))}
+          className={PREVIEW_WIDTH[shot.frame]}
+        >
+          <Frame shot={shot} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** Single row in the desktop project table. */
 function Row({
   p,
@@ -770,23 +825,30 @@ function Row({
                 inert={!open || undefined}
                 className={`px-11 pb-7 transition-opacity delay-[80ms] duration-150 ${open ? "opacity-100" : "opacity-0"}`}
               >
-                <div className="max-w-[580px] border-l-2 border-accent pl-5">
-                  {p.featureTooling && (
-                    <div className="mb-[14px] -ml-2">
-                      <ToolingChip label={t(locale, "toolingChip")} />
-                    </div>
-                  )}
-                  {p.role && (
-                    <p className="mb-3 text-[14.5px] font-semibold text-ink">
-                      {p.role}
-                    </p>
-                  )}
-                  {p.deck && (
-                    <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
-                      {highlight(p.deck, query)}
-                    </p>
-                  )}
-                  <RowActions p={p} locale={locale} size="base" />
+                <div className="flex items-start gap-8">
+                  <div className="max-w-[580px] border-l-2 border-accent pl-5">
+                    {p.featureTooling && (
+                      <div className="mb-[14px] -ml-2">
+                        <ToolingChip label={t(locale, "toolingChip")} />
+                      </div>
+                    )}
+                    {p.role && (
+                      <p className="mb-3 text-[14.5px] font-semibold text-ink">
+                        {p.role}
+                      </p>
+                    )}
+                    {p.deck && (
+                      <p className="mb-[14px] text-[14.5px] leading-[1.65] text-muted">
+                        {highlight(p.deck, query)}
+                      </p>
+                    )}
+                    <RowActions p={p} locale={locale} size="base" />
+                  </div>
+                  <PreviewShots
+                    shots={p.previewShots ?? []}
+                    locale={locale}
+                    className="ml-auto"
+                  />
                 </div>
               </div>
             </div>
