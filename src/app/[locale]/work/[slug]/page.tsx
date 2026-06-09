@@ -82,11 +82,21 @@ export async function generateMetadata({
 
 export default async function DetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<{ from?: string }>;
 }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
+
+  // A `?from=gallery` marker (set on the cross-project gallery links) makes the
+  // back link return to /gallery; otherwise it falls back to the project log.
+  // Using a marker (not document.referrer) keeps direct/shared links deterministic.
+  const fromGallery = (await searchParams)?.from === "gallery";
+  const back = fromGallery
+    ? { href: localizedHref(locale, "/gallery"), label: t(locale, "backGallery") }
+    : { href: localizedHref(locale, "/"), label: t(locale, "backToTheLog") };
 
   const [project, profile] = await Promise.all([
     getProjectDetail(slug, locale),
@@ -117,10 +127,10 @@ export default async function DetailPage({
         {/* Back link */}
       <div className="px-5 pt-8 md:px-11">
         <Link
-          href={localizedHref(locale, "/")}
+          href={back.href}
           className="font-display text-sm font-semibold text-muted transition-colors hover:text-ink"
         >
-          ← {t(locale, "backToTheLog")}
+          ← {back.label}
         </Link>
       </div>
 
