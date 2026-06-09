@@ -25,8 +25,8 @@ export function TopBar({ locale }: { locale: Locale }) {
   const mounted = useRef(false);
   const NAV = [
     { href: localizedHref(locale, "/"), label: t(locale, "work") },
-    { href: localizedHref(locale, "/about"), label: t(locale, "about") },
     { href: localizedHref(locale, "/gallery"), label: t(locale, "gallery") },
+    { href: localizedHref(locale, "/about"), label: t(locale, "about") },
   ];
 
   // On open: move focus into the menu and allow Escape to close.
