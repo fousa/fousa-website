@@ -103,7 +103,26 @@ export function Frame({ shot, priority }: { shot: GalleryShot; priority?: boolea
     );
   }
 
-  // browser
+  // A macOS application window: the same hairline chrome as the browser, with
+  // three traffic-light dots in the titlebar — but no address pill. That single
+  // omission is what tells a native app window apart from a browser.
+  if (shot.frame === "mac") {
+    return (
+      <figure>
+        <div className="overflow-hidden rounded-[10px] border-[1.5px] border-ink">
+          <div className="flex items-center gap-1.5 border-b-[1.5px] border-ink px-3 py-[9px]">
+            <span className="block h-[9px] w-[9px] rounded-full border-[1.5px] border-ink" />
+            <span className="block h-[9px] w-[9px] rounded-full border-[1.5px] border-ink" />
+            <span className="block h-[9px] w-[9px] rounded-full border-[1.5px] border-ink" />
+          </div>
+          <div className="aspect-[16/10] overflow-hidden bg-surface">{img}</div>
+        </div>
+      </figure>
+    );
+  }
+
+  // browser — like the macOS window but with an address pill after the dots, so
+  // a web page reads as "in a browser" rather than a native app.
   return (
     <figure>
       <div className="overflow-hidden rounded-[10px] border-[1.5px] border-ink">
@@ -111,6 +130,10 @@ export function Frame({ shot, priority }: { shot: GalleryShot; priority?: boolea
           <span className="block h-[9px] w-[9px] rounded-full border-[1.5px] border-ink" />
           <span className="block h-[9px] w-[9px] rounded-full border-[1.5px] border-ink" />
           <span className="block h-[9px] w-[9px] rounded-full border-[1.5px] border-ink" />
+          <span
+            className="ml-2 block h-[11px] flex-1 rounded-full border-[1.5px] border-ink"
+            aria-hidden
+          />
         </div>
         <div className="aspect-[16/10] overflow-hidden bg-surface">{img}</div>
       </div>
