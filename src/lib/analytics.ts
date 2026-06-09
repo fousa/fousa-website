@@ -25,6 +25,9 @@ type Events = {
     locale: string;
   };
   empty_state_shown: { filters: string; locale: string };
+  /** Cross-project gallery device filter pick. `device` is the chosen bucket
+   *  (`all` | `iphone` | `ipad` | `tv` | `web`); `count` is how many shots it shows. */
+  gallery_filter: { device: string; count: number };
   /** Fired on the debounced search commit. Logs the query *length* (not the
    *  text) to avoid storing free-form input, plus how many rows it matched. */
   search_query: { length: number; results: number };
