@@ -84,8 +84,9 @@ English is the unprefixed default; Dutch lives under `/nl`. The URL alone decide
 the language — no browser detection, no cookies. `src/proxy.ts` rewrites unprefixed
 paths to `[locale]=en` internally and 308-redirects to canonical forms.
 
-- `/`, `/about`, `/gallery`, `/work/<slug>` → English (canonical); `/nl/...` → Dutch.
+- `/`, `/about`, `/gallery`, `/game`, `/work/<slug>` → English (canonical); `/nl/...` → Dutch.
 - `/<slug>` (and `/nl/<slug>`) → 308 to `/work/<slug>` — collapses a legacy duplicate route.
+  Top-level routes are guarded by `RESERVED` in `proxy.ts` so this collapse never swallows them.
 - `/en/...` → 308 to the unprefixed equivalent.
 - `/studio` → embedded Sanity Studio (no locale prefix). `/api/revalidate` → webhook.
 
@@ -110,15 +111,16 @@ Grouped by domain under `src/components/`:
   category index, each tag deep-linking into the filtered log).
 - **gallery/** — `GalleryMasonry`, the client masonry behind `/gallery`.
 - **home/** `HomeLead` · **theme/** `ThemeToggle` · **brand/** `Wordmark` · **glide/**
-  `GlideGame` (the hidden glider mini-game) · **seo/** `JsonLd`.
+  `GlidePlay` (the hidden glider mini-game, body of the `/game` route) · **seo/** `JsonLd`.
 
 The wordmark hides an easter egg: on desktop, hovering (or keyboard-focusing) `fousa.be`
-in the `TopBar` wipes out a small "take off ✈" link to its right that launches `GlideGame`
+in the `TopBar` wipes out a small "take off ✈" link to its right that navigates to `/game`
 — styling lives in the scoped `.brand-unit` / `.reveal-*` block in `globals.css` (motion
 collapses under the global `prefers-reduced-motion` safeguard). Touch has no hover, so the
-game becomes a regular item in the mobile menu instead. Both entries reuse the one
-`GlideGame` trigger (its `children`/`ariaLabel`/`onLaunch` props); the wordmark itself stays
-the home link everywhere.
+game becomes a regular item in the mobile menu instead. Both entries are plain links to the
+localized `/game`; the wordmark itself stays the home link everywhere. `/game` renders the
+full-screen `GlidePlay` (fixed over the layout's header/footer); its close control and Escape
+navigate home, and it's `noindex`'d + kept out of the sitemap so it stays stumbled-upon.
 
 The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDepth`,
 `matchesFilters`, plus the sort model `compareProjects` / `sortProjects`) plus

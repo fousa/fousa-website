@@ -10,7 +10,6 @@ import { t } from "@/i18n/messages";
 import type { Locale } from "@/i18n/config";
 import { localizedHref } from "@/lib/href";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { GlideGame } from "@/components/glide/GlideGame";
 import { useScrolled } from "./use-scrolled";
 
 export function TopBar({ locale }: { locale: Locale }) {
@@ -74,16 +73,16 @@ export function TopBar({ locale }: { locale: Locale }) {
             <Wordmark />
           </Link>
           <span className="reveal-clip hidden md:inline-flex">
-            <GlideGame
-              locale={locale}
-              ariaLabel={t(locale, "play.aria")}
-              triggerClassName="reveal-link rounded outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            <Link
+              href={localizedHref(locale, "/game")}
+              aria-label={t(locale, "play.aria")}
+              className="reveal-link rounded outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {t(locale, "play.label")}
               <span className="reveal-plane" aria-hidden>
                 ✈
               </span>
-            </GlideGame>
+            </Link>
           </span>
         </span>
 
@@ -136,17 +135,17 @@ export function TopBar({ locale }: { locale: Locale }) {
           ))}
           {/* No hover on touch, so the easter egg gets a plain menu entry here —
               styled to match the desktop hover-reveal (faint, small uppercase mono). */}
-          <GlideGame
-            locale={locale}
-            ariaLabel={t(locale, "play.aria")}
-            onClose={() => setOpen(false)}
-            triggerClassName="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-faint"
+          <Link
+            href={localizedHref(locale, "/game")}
+            aria-label={t(locale, "play.aria")}
+            onClick={() => setOpen(false)}
+            className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.08em] text-faint"
           >
             {t(locale, "play.label")}
             <span aria-hidden className="text-accent">
               ✈
             </span>
-          </GlideGame>
+          </Link>
           <Link
             href={`${localizedHref(locale, "/about")}#contact`}
             onClick={() => setOpen(false)}

@@ -42,7 +42,7 @@ export function proxy(req: NextRequest) {
   // Legacy shapes were /<slug> (default locale) and /nl/<slug>; a bare single
   // slug that isn't a locale or a reserved top-level route can only be one.
   // 308 (permanent) so any indexed legacy URL keeps its SEO equity.
-  const RESERVED = new Set(['work', 'about', 'gallery'])
+  const RESERVED = new Set(['work', 'about', 'gallery', 'game'])
   const segments = pathname.split('/').filter(Boolean)
   // /nl/<slug> → /nl/work/<slug>
   if (
