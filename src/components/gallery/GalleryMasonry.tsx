@@ -88,34 +88,47 @@ export function GalleryMasonry({
 
   return (
     <>
-      <div className="flex flex-wrap gap-2 pb-6 pt-2">
-        {GALLERY_FILTERS.map((f) => {
+      <div className="flex flex-wrap gap-x-2 gap-y-2 pb-6 pt-2">
+        {GALLERY_FILTERS.filter((f): f is DeviceGroup => f !== "all").map((f) => {
+          const count = shots.filter((s) => s.device === f).length;
+          if (count === 0) return null;
           const on = active === f;
-          const count =
-            f === "all"
-              ? shots.length
-              : shots.filter((s) => s.device === f).length;
-          if (count === 0 && f !== "all") return null;
+          // Single-select: clicking the active chip clears back to all.
+          const next = on ? "all" : f;
           return (
             <button
               key={f}
               type="button"
               onClick={() => {
-                setFilter(f);
-                track("gallery_filter", { device: f, count });
+                setFilter(next);
+                track("gallery_filter", {
+                  device: next,
+                  count: next === "all" ? shots.length : count,
+                });
               }}
               aria-pressed={on}
-              className={`inline-flex h-[31px] items-center gap-[7px] rounded-full border px-[13px] font-display text-[12.5px] font-medium transition-colors ${
+              className={`relative inline-flex shrink-0 items-center rounded-full border px-3 py-[5px] text-[12.5px] font-medium transition-colors cursor-pointer after:absolute after:-inset-y-[9px] after:inset-x-0 after:content-[''] ${
                 on
-                  ? "border-ink bg-ink text-bg"
-                  : "border-line text-text hover:border-muted hover:text-ink"
+                  ? "border-transparent bg-accent-soft text-accent-deep font-semibold"
+                  : "border-line text-muted hover:text-ink"
               }`}
             >
               {t(locale, FILTER_LABEL[f])}
-              <span className="font-mono text-[10px] opacity-55">{count}</span>
             </button>
           );
         })}
+        {active !== "all" && (
+          <button
+            type="button"
+            onClick={() => {
+              setFilter("all");
+              track("gallery_filter", { device: "all", count: shots.length });
+            }}
+            className="shrink-0 text-[12.5px] text-accent transition-colors hover:text-accent-deep cursor-pointer"
+          >
+            {t(locale, "clearAll")}
+          </button>
+        )}
       </div>
 
       <div ref={gridRef} className={`gallery-grid ${ready ? "" : "no-anim"}`}>

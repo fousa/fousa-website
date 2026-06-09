@@ -47,21 +47,25 @@ beforeEach(() => {
 });
 
 describe("<GalleryMasonry>", () => {
-  it("shows every shot when no device filter is active", () => {
+  it("shows every shot, no pressed chip and no clear-all when nothing is selected", () => {
     render(<GalleryMasonry shots={shots} locale="en" />);
 
-    expect(screen.getByRole("button", { name: /All/ })).toHaveAttribute("aria-pressed", "true");
+    // No "All" pill; device chips are all in their off state.
+    expect(screen.queryByRole("button", { name: /^All$/ })).toBeNull();
+    expect(screen.getByRole("button", { name: /iPhone/ })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.queryByRole("button", { name: /Clear all/ })).toBeNull();
+
     expect(screen.getByLabelText("Open Alpha")).toHaveAttribute("data-hidden", "false");
     expect(screen.getByLabelText("Open Beta")).toHaveAttribute("data-hidden", "false");
     expect(screen.getByLabelText("Open Gamma")).toHaveAttribute("data-hidden", "false");
   });
 
-  it("marks the active chip and hides non-matching shots when a device is selected", () => {
+  it("marks the active chip, shows clear-all, and hides non-matching shots when a device is selected", () => {
     state.params = new URLSearchParams("d=iphone");
     render(<GalleryMasonry shots={shots} locale="en" />);
 
     expect(screen.getByRole("button", { name: /iPhone/ })).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByRole("button", { name: /All/ })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByRole("button", { name: /Clear all/ })).toBeInTheDocument();
 
     expect(screen.getByLabelText("Open Alpha")).toHaveAttribute("data-hidden", "false");
     expect(screen.getByLabelText("Open Beta")).toHaveAttribute("data-hidden", "true");
