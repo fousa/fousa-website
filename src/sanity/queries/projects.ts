@@ -50,6 +50,15 @@ export const PROJECTS_QUERY = defineQuery(`
     featureTooling,
     "hasBody": count(body.en) > 0,
     "galleryCount": count(gallery),
+    "previewShots": gallery[0...2]{
+      _key,
+      frame,
+      caption,
+      "image": image{
+        ...,
+        "dimensions": asset->metadata.dimensions
+      }
+    },
     "searchText": lower(
       array::join([
         coalesce(name, ""),

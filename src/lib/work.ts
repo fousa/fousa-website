@@ -15,6 +15,7 @@ import {urlForImage} from '@/sanity/image'
 import type {SanityImageSource} from '@sanity/image-url'
 import {pickLocale} from '@/i18n/pick-locale'
 import type {Locale} from '@/i18n/config'
+import type {MessageKey} from '@/i18n/messages'
 import type {PROJECTS_QUERY_RESULT, CASE_STUDY_QUERY_RESULT, CASE_STUDY_SLUGS_QUERY_RESULT, EMPTY_STATES_QUERY_RESULT, SanityImageCrop, SanityImageDimensions} from '@/sanity.types'
 
 /**
@@ -48,6 +49,34 @@ export type GalleryShot = {
   height: number
   frame: Frame
   caption?: string | null
+}
+
+/**
+ * The i18n key naming the device a `frame` depicts (iPhone, iPad, macOS …),
+ * used to label a framed shot for assistive tech. Both tablet orientations are
+ * an iPad; `none` (a bare image) falls back to the generic "Screens" label.
+ *
+ * @param frame - the shot's `frame`
+ * @returns the message key for that device's display name
+ */
+export function frameLabelKey(frame: Frame): MessageKey {
+  switch (frame) {
+    case 'phone':
+      return 'galleryDeviceIphone'
+    case 'tablet-landscape':
+    case 'tablet-portrait':
+      return 'galleryDeviceIpad'
+    case 'watch':
+      return 'galleryDeviceWatch'
+    case 'tv':
+      return 'galleryDeviceTv'
+    case 'mac':
+      return 'galleryDeviceMac'
+    case 'browser':
+      return 'galleryDeviceBrowser'
+    default:
+      return 'galleryDeviceOther'
+  }
 }
 
 /**
@@ -116,6 +145,13 @@ export type Project = {
   deck?: string | null
   depth: Depth
   gallery: GalleryShot[]
+  /**
+   * The project's first two gallery shots, rendered as a small preview pair in
+   * the expanded log row (the full `gallery` is reserved for the detail page).
+   * Empty when the project carries no gallery; the log query is the only mapper
+   * that populates it.
+   */
+  previewShots?: GalleryShot[]
   featureTooling?: boolean | null
   /** Manually flagged in Studio: a utility, so the "For" column reads "Tool" (an employer/client becomes an "icapps → Tool" prefix). */
   isTool?: boolean | null
@@ -417,6 +453,9 @@ function toProject(
     ...mapProjectBase(row, locale),
     depth: projectDepth(row),
     gallery: [],
+    previewShots: (row.previewShots ?? [])
+      .map((g) => mapGalleryShot(g, locale))
+      .filter((s): s is GalleryShot => s !== null),
     searchText: row.searchText ?? '',
   }
 }
@@ -474,6 +513,7 @@ export async function getProjectDetail(
     ...mapProjectBase(row, locale),
     depth: hasBody ? 'full' : gallery.length > 0 ? 'gallery' : 'none',
     gallery,
+    previewShots: gallery.slice(0, 2),
     body: body ?? null,
     cover: row.cover?.asset
       ? {

@@ -114,6 +114,7 @@ export type Project = {
       | "tablet-portrait"
       | "tv"
       | "watch"
+      | "mac"
       | "browser"
       | "none";
     caption?: {
@@ -773,6 +774,7 @@ export type CASE_STUDY_QUERY_RESULT = {
     _key: string;
     frame:
       | "browser"
+      | "mac"
       | "none"
       | "phone"
       | "tablet-landscape"
@@ -845,6 +847,7 @@ export type GALLERY_SHOTS_QUERY_RESULT = Array<{
     _key: string;
     frame:
       | "browser"
+      | "mac"
       | "none"
       | "phone"
       | "tablet-landscape"
@@ -1022,7 +1025,7 @@ export type PROFILE_QUERY_RESULT =
 
 // Source: src/sanity/queries/projects.ts
 // Variable: PROJECTS_QUERY
-// Query: *[_type == "project"] | order(year desc, name asc) {    _id,    name,    "slug": slug.current,    year,    endYear,    state,    engagement,    isTool,    role,    client,    deck,    liveUrl,    githubUrl,    "employer": employer->{      _id,      "name": organisation,      "slug": lower(organisation)    },    "stack": stack[]->{      _id,      name,      "slug": slug.current,      "category": category->slug.current    },    featureTooling,    "hasBody": count(body.en) > 0,    "galleryCount": count(gallery),    "searchText": lower(      array::join([        coalesce(name, ""),        coalesce(client, ""),        coalesce(role, ""),        coalesce(employer->organisation, ""),        coalesce(array::join(stack[]->name, " "), ""),        coalesce(deck[$locale], deck.en, ""),        coalesce(pt::text(coalesce(body[$locale], body.en)), ""),        coalesce(array::join(gallery[defined(caption[$locale])].caption[$locale], " "), ""),        coalesce(string(year), ""),        coalesce(string(endYear), ""),        coalesce(state, ""),        coalesce(engagement, "")      ], " ")    )  }
+// Query: *[_type == "project"] | order(year desc, name asc) {    _id,    name,    "slug": slug.current,    year,    endYear,    state,    engagement,    isTool,    role,    client,    deck,    liveUrl,    githubUrl,    "employer": employer->{      _id,      "name": organisation,      "slug": lower(organisation)    },    "stack": stack[]->{      _id,      name,      "slug": slug.current,      "category": category->slug.current    },    featureTooling,    "hasBody": count(body.en) > 0,    "galleryCount": count(gallery),    "previewShots": gallery[0...2]{      _key,      frame,      caption,      "image": image{        ...,        "dimensions": asset->metadata.dimensions      }    },    "searchText": lower(      array::join([        coalesce(name, ""),        coalesce(client, ""),        coalesce(role, ""),        coalesce(employer->organisation, ""),        coalesce(array::join(stack[]->name, " "), ""),        coalesce(deck[$locale], deck.en, ""),        coalesce(pt::text(coalesce(body[$locale], body.en)), ""),        coalesce(array::join(gallery[defined(caption[$locale])].caption[$locale], " "), ""),        coalesce(string(year), ""),        coalesce(string(endYear), ""),        coalesce(state, ""),        coalesce(engagement, "")      ], " ")    )  }
 export type PROJECTS_QUERY_RESULT = Array<{
   _id: string;
   name: string | null;
@@ -1054,6 +1057,31 @@ export type PROJECTS_QUERY_RESULT = Array<{
   featureTooling: boolean | null;
   hasBody: boolean | null;
   galleryCount: number | null;
+  previewShots: Array<{
+    _key: string;
+    frame:
+      | "browser"
+      | "mac"
+      | "none"
+      | "phone"
+      | "tablet-landscape"
+      | "tablet-portrait"
+      | "tv"
+      | "watch"
+      | null;
+    caption: {
+      en?: string;
+      nl?: string;
+    } | null;
+    image: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+      dimensions: SanityImageDimensions | null;
+    } | null;
+  }> | null;
   searchText: string | null;
 }>;
 
@@ -1130,7 +1158,7 @@ declare module "@sanity/client" {
     '\n  *[_id == "emptyStates"][0]{\n    overrides[]{\n      filters,\n      headline,\n      body\n    }\n  }\n': EMPTY_STATES_QUERY_RESULT;
     '\n  *[_type == "project" && count(gallery) > 0] | order(year desc, name asc) {\n    "slug": slug.current,\n    "projectName": name,\n    "hasBody": count(body.en) > 0,\n    "gallery": gallery[]{\n      _key,\n      frame,\n      caption,\n      "image": image{\n        ...,\n        "dimensions": asset->metadata.dimensions\n      }\n    }\n  }\n': GALLERY_SHOTS_QUERY_RESULT;
     '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    roleLine,\n    filterIntro,\n    aboutHeadline,\n    bio,\n    "portraitUrl": portrait.asset->url,\n    beyondCode[]{\n      title,\n      body\n    },\n    location,\n    email,\n    socialLinks,\n    "cvEnUrl": cvEn.asset->url,\n    "cvNlUrl": cvNl.asset->url,\n    vatNumber,\n    copyrightYear\n  }\n': PROFILE_QUERY_RESULT;
-    '\n  *[_type == "project"] | order(year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    isTool,\n    role,\n    client,\n    deck,\n    liveUrl,\n    githubUrl,\n    "employer": employer->{\n      _id,\n      "name": organisation,\n      "slug": lower(organisation)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      "category": category->slug.current\n    },\n    featureTooling,\n    "hasBody": count(body.en) > 0,\n    "galleryCount": count(gallery),\n    "searchText": lower(\n      array::join([\n        coalesce(name, ""),\n        coalesce(client, ""),\n        coalesce(role, ""),\n        coalesce(employer->organisation, ""),\n        coalesce(array::join(stack[]->name, " "), ""),\n        coalesce(deck[$locale], deck.en, ""),\n        coalesce(pt::text(coalesce(body[$locale], body.en)), ""),\n        coalesce(array::join(gallery[defined(caption[$locale])].caption[$locale], " "), ""),\n        coalesce(string(year), ""),\n        coalesce(string(endYear), ""),\n        coalesce(state, ""),\n        coalesce(engagement, "")\n      ], " ")\n    )\n  }\n': PROJECTS_QUERY_RESULT;
+    '\n  *[_type == "project"] | order(year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    isTool,\n    role,\n    client,\n    deck,\n    liveUrl,\n    githubUrl,\n    "employer": employer->{\n      _id,\n      "name": organisation,\n      "slug": lower(organisation)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      "category": category->slug.current\n    },\n    featureTooling,\n    "hasBody": count(body.en) > 0,\n    "galleryCount": count(gallery),\n    "previewShots": gallery[0...2]{\n      _key,\n      frame,\n      caption,\n      "image": image{\n        ...,\n        "dimensions": asset->metadata.dimensions\n      }\n    },\n    "searchText": lower(\n      array::join([\n        coalesce(name, ""),\n        coalesce(client, ""),\n        coalesce(role, ""),\n        coalesce(employer->organisation, ""),\n        coalesce(array::join(stack[]->name, " "), ""),\n        coalesce(deck[$locale], deck.en, ""),\n        coalesce(pt::text(coalesce(body[$locale], body.en)), ""),\n        coalesce(array::join(gallery[defined(caption[$locale])].caption[$locale], " "), ""),\n        coalesce(string(year), ""),\n        coalesce(string(endYear), ""),\n        coalesce(state, ""),\n        coalesce(engagement, "")\n      ], " ")\n    )\n  }\n': PROJECTS_QUERY_RESULT;
     '\n  *[_id == "siteSettings"][0]{\n    email,\n    socials[]{\n      platform,\n      url,\n      label\n    },\n    metaDescription,\n    "ogImageUrl": ogImage.asset->url\n  }\n': SITE_SETTINGS_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current) && (count(body.en) > 0 || count(gallery) > 0)]{\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': SITEMAP_SLUGS_QUERY_RESULT;
     '\n  *[_type == "stackTag" && count(*[_type == "project" && references(^._id)]) > 0]{\n    "key": slug.current,\n    "name": name,\n    "category": category->{\n      "key": slug.current,\n      "title": title,\n      "order": orderRank\n    },\n    "count": count(*[_type == "project" && references(^._id)])\n  } | order(count desc, name asc)\n': SKILLS_QUERY_RESULT;
