@@ -23,6 +23,13 @@ export type DeviceGroup = 'iphone' | 'ipad' | 'watch' | 'tv' | 'web' | 'other'
 export type GalleryItem = {
   projectName: string
   slug: string
+  /**
+   * Depth of the project this shot belongs to — `full` when it has a written
+   * case study, otherwise `gallery`. Reported with the `project_open` analytics
+   * event on tap, matching the project log. Never `none` (these projects all
+   * have gallery shots).
+   */
+  depth: 'full' | 'gallery'
   /** Device bucket for the filter, derived from the shot's `frame`. */
   device: DeviceGroup
   /** The renderable shot (image URL, dimensions, frame, caption). */
@@ -61,18 +68,20 @@ export const GALLERY_FILTERS: ('all' | DeviceGroup)[] = ['all', 'iphone', 'ipad'
 export async function getGalleryShots(locale: Locale): Promise<GalleryItem[]> {
   const rows = await fetchSanity<GALLERY_SHOTS_QUERY_RESULT>(GALLERY_SHOTS_QUERY)
   if (!rows) return []
-  return rows.flatMap((project) =>
-    (project.gallery ?? []).flatMap((entry) => {
+  return rows.flatMap((project) => {
+    const depth = project.hasBody ? 'full' : 'gallery'
+    return (project.gallery ?? []).flatMap((entry) => {
       const shot = mapGalleryShot(entry, locale)
       if (!shot) return []
       return [
         {
           projectName: project.projectName ?? '',
           slug: project.slug ?? '',
+          depth,
           device: deviceOf(shot.frame),
           shot,
         },
       ]
-    }),
-  )
+    })
+  })
 }

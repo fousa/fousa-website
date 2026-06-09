@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import type { DeviceGroup, GalleryItem } from "@/lib/gallery";
+import { track } from "@/lib/analytics";
 import { GalleryMasonry } from "./GalleryMasonry";
+
+// Spy on analytics so the screenshot-tap event can be asserted.
+vi.mock("@/lib/analytics", () => ({ track: vi.fn() }));
 
 // The masonry reads its device filter from the URL (`?d=`) via next/navigation.
 // Mock the hooks so it runs outside a Next app; `state.params` is hoisted so
@@ -22,6 +26,7 @@ function item(device: DeviceGroup, slug: string, name: string): GalleryItem {
   return {
     projectName: name,
     slug,
+    depth: "gallery",
     device,
     shot: { key: `${slug}-1`, imageUrl: "x.png", width: 100, height: 100, frame: "phone", caption: null },
   };
@@ -34,6 +39,7 @@ const shots = [
 ];
 
 beforeEach(() => {
+  vi.mocked(track).mockClear();
   state.params = new URLSearchParams();
   // jsdom has no ResizeObserver; the layout effect observes the grid.
   vi.stubGlobal(
@@ -70,5 +76,18 @@ describe("<GalleryMasonry>", () => {
     expect(screen.getByLabelText("Open Alpha")).toHaveAttribute("data-hidden", "false");
     expect(screen.getByLabelText("Open Beta")).toHaveAttribute("data-hidden", "true");
     expect(screen.getByLabelText("Open Gamma")).toHaveAttribute("data-hidden", "true");
+  });
+
+  it("fires project_open with target gallery when a screenshot is tapped", () => {
+    render(<GalleryMasonry shots={shots} locale="en" />);
+
+    screen.getByLabelText("Open Alpha").click();
+
+    expect(track).toHaveBeenCalledWith("project_open", {
+      slug: "alpha",
+      depth: "gallery",
+      target: "gallery",
+      locale: "en",
+    });
   });
 });

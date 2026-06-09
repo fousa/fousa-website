@@ -12,6 +12,7 @@ export const GALLERY_SHOTS_QUERY = defineQuery(`
   *[_type == "project" && count(gallery) > 0] | order(year desc, name asc) {
     "slug": slug.current,
     "projectName": name,
+    "hasBody": count(body.en) > 0,
     "gallery": gallery[]{
       _key,
       frame,

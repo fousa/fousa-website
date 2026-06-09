@@ -145,6 +145,16 @@ export function GalleryMasonry({
             className="gallery-item"
             data-hidden="false"
             aria-label={t(locale, "galleryOpen").replace("{name}", s.projectName)}
+            onClick={() =>
+              track("project_open", {
+                slug: s.slug,
+                depth: s.depth,
+                // The user tapped a screenshot, so the open originates from the
+                // gallery (vs a "case_study" open from a log row).
+                target: "gallery",
+                locale,
+              })
+            }
           >
             <span className="gallery-inner">
               <Frame shot={s.shot} />

@@ -313,10 +313,11 @@ both on push and PR.
   as repository secrets for build + E2E.
 - **Analytics** — Vercel Analytics (cookie-less), mounted once in the locale layout.
   Page hits (incl. `/about`) are tracked automatically; custom events go through the
-  typed `track()` wrapper (`lib/analytics.ts`): `project_expand`, `project_open`,
-  `filter_select`, `sort_change`, `empty_state_shown`, `search_query` (logs the
-  query *length* and result count on the debounced commit, never the text),
-  `gallery_filter` (the picked device bucket + shot count on the `/gallery` page),
-  `locale_switch`, `theme_toggle`, `outbound_click`, `glide_open`, and
-  `glide_close` (records `seconds` played and `runs` flown when the mini-game
-  overlay closes).
+  typed `track()` wrapper (`lib/analytics.ts`): `project_expand`, `project_open`
+  (fired from a log row *and* from a `/gallery` screenshot tap, where it carries
+  `target: "gallery"`), `filter_select`, `sort_change`, `empty_state_shown`,
+  `search_query` (logs the query *length* and result count on the debounced
+  commit, never the text), `gallery_filter` (the picked device bucket + shot
+  count on the `/gallery` page), `locale_switch`, `theme_toggle`,
+  `outbound_click`, `glide_open`, and `glide_close` (records `seconds` played and
+  `runs` flown when the `/game` page unmounts).
