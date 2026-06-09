@@ -73,6 +73,11 @@ and three collections.
   depth + links, no flag. The "Tool" *label* in the "For" column is separate and
   is a manual `isTool` boolean (see below): too many case-study-less personal
   projects carry a link without being a tool, so the call is the editor's.
+  An expanded row shows the project's first two gallery shots beside the deck +
+  CTA — `previewShots` (the log query projects `gallery[0...2]`, mapped through
+  the same `mapGalleryShot` pipeline), each in its `Frame`, top-aligned and
+  right-pushed on desktop, stacked below on mobile, and labelled by device via
+  `frameLabelKey`.
 
 Translatable fields are `{ en, nl }` objects (helpers in `sanity/fields/i18n.ts`),
 so both locales sit side by side in one document and Dutch falls back to English
@@ -101,7 +106,8 @@ Grouped by domain under `src/components/`:
   `EmptyState`, `Frame` (hairline device frames for galleries: phone, tablet-landscape
   (4:3) / tablet-portrait (3:4) — same iPad bezel in two orientations, tv (16:9
   chrome-less bezel with a small centered stand), Apple
-  Watch, browser, none), `Gallery` (screenshots grouped by device — iPad → iPhone →
+  Watch, mac (app window: dots, no address pill), browser (same window + an address
+  pill, so the two read distinctly), none), `Gallery` (screenshots grouped by device — iPad → iPhone →
   Apple Watch, derived from each shot's `frame` via `lib/gallery-devices`; both tablet
   orientations fall under the iPad group, with a
   built-in fit-to-screen lightbox carousel), `StatusDot`, `ToolingChip`.
