@@ -84,7 +84,7 @@ English is the unprefixed default; Dutch lives under `/nl`. The URL alone decide
 the language — no browser detection, no cookies. `src/proxy.ts` rewrites unprefixed
 paths to `[locale]=en` internally and 308-redirects to canonical forms.
 
-- `/`, `/about`, `/work/<slug>` → English (canonical); `/nl/...` → Dutch.
+- `/`, `/about`, `/gallery`, `/work/<slug>` → English (canonical); `/nl/...` → Dutch.
 - `/<slug>` (and `/nl/<slug>`) → 308 to `/work/<slug>` — collapses a legacy duplicate route.
 - `/en/...` → 308 to the unprefixed equivalent.
 - `/studio` → embedded Sanity Studio (no locale prefix). `/api/revalidate` → webhook.
@@ -108,6 +108,7 @@ Grouped by domain under `src/components/`:
   `InfoTip`, `OutboundLink`, `use-scrolled`.
 - **about/** — `CareerTimeline`, `AvailabilityBadge`, `Skills` (numbered
   category index, each tag deep-linking into the filtered log).
+- **gallery/** — `GalleryMasonry`, the client masonry behind `/gallery`.
 - **home/** `HomeLead` · **theme/** `ThemeToggle` · **brand/** `Wordmark` · **glide/**
   `GlideGame` (the hidden glider mini-game) · **seo/** `JsonLd`.
 
@@ -229,6 +230,21 @@ empty. Matches are wrapped in `<mark>` by a module-level `highlight()` helper on
 the name and deck in both the desktop row and mobile card. With a query active the
 empty state reads "No projects match …{q}…" and its clear action resets `?q=`.
 
+**Cross-project gallery** (`/gallery`) flattens every project's `gallery[]` into
+one stream of shots via `lib/gallery.ts` / `getGalleryShots` (query
+`sanity/queries/gallery.ts`), tagging each with its project and a coarse device
+group from `deviceOf` (phone → iphone, tablet-* → ipad, tv → tv, else → web).
+Shots reuse the detail page's image pipeline — both go through the shared
+`mapGalleryShot` in `lib/work.ts`, so there's one loader/crop path. The page
+carries a home-style header (eyebrow "Gallery", display title "Screens." + coral
+period, a count line) over `GalleryMasonry`: an absolutely-positioned masonry
+whose items glide to new columns on filter (a `transform` transition) while
+filtered-out shots fade in place, so nothing jumps; device chips drive a
+shareable `?d=` param and the glide collapses under the global reduced-motion
+safeguard. Each shot links to its case study with `?from=gallery`, which the
+detail page's **context-aware back link** reads (`searchParams.from`) to show
+"← Gallery" → `/gallery`; without the marker it falls back to the project log.
+
 ## Accessibility decisions
 
 Targets practical access for keyboard, screen-reader, and 200%-zoom users rather
@@ -257,8 +273,8 @@ than formal WCAG certification:
 - **Base** — root layout sets `metadataBase` (`https://fousa.be`) and a
   `%s · fousa.be` title template, plus default Open Graph / Twitter cards.
 - **robots.txt** (`app/robots.ts`) allows all, blocks `/studio/`, points at the sitemap.
-- **sitemap.xml** (`app/sitemap.ts`) lists both locales of `/`, `/about`, and every
-  case study with a body or gallery (depth-`none` projects 404, so they're excluded).
+- **sitemap.xml** (`app/sitemap.ts`) lists both locales of `/`, `/about`, `/gallery`,
+  and every case study with a body or gallery (depth-`none` projects 404, so they're excluded).
 - **JSON-LD** (`components/seo/JsonLd.tsx`) emits a site-wide `Person` and a per-case-study
   `CreativeWork` (`lib/json-ld.ts`), escaping `<` to prevent tag breakout.
 - **Per-page OG** — case studies override the share image with the generated
@@ -294,6 +310,7 @@ both on push and PR.
   typed `track()` wrapper (`lib/analytics.ts`): `project_expand`, `project_open`,
   `filter_select`, `sort_change`, `empty_state_shown`, `search_query` (logs the
   query *length* and result count on the debounced commit, never the text),
+  `gallery_filter` (the picked device bucket + shot count on the `/gallery` page),
   `locale_switch`, `theme_toggle`, `outbound_click`, `glide_open`, and
   `glide_close` (records `seconds` played and `runs` flown when the mini-game
   overlay closes).
