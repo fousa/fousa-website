@@ -14,6 +14,11 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => state.params,
 }));
 
+// The preview thumbnails render next/image via Frame; this test is about which
+// shots the expanded row surfaces, not image rendering, so stub Frame out. The
+// device label lives on ProjectLog's own wrapper, so it still renders.
+vi.mock("./Frame", () => ({ Frame: () => null }));
+
 /** A web-only project with a case study (depth "full"). */
 const vulture: Project = {
   slug: "vulture",
@@ -53,6 +58,32 @@ describe("<ProjectLog>", () => {
     await user.keyboard("{Enter}");
 
     expect(row).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("shows the first two gallery shots, device-labelled, in the expanded row", async () => {
+    const user = userEvent.setup();
+    const withShots: Project = {
+      ...vulture,
+      slug: "glide",
+      name: "Glide",
+      previewShots: [
+        { key: "a", imageUrl: "a.png", width: 100, height: 200, frame: "phone", caption: null },
+        { key: "b", imageUrl: "b.png", width: 200, height: 100, frame: "mac", caption: null },
+      ],
+    };
+    render(<ProjectLog projects={[withShots]} locale="en" overrides={[]} />);
+
+    // Collapsed: the previews are mounted but inert; expanding reveals them. We
+    // assert presence by the device label on each preview wrapper.
+    const table = screen.getByRole("table");
+    const row = within(table).getByRole("button", { name: /Glide/i });
+    row.focus();
+    await user.keyboard("{Enter}");
+
+    expect(row).toHaveAttribute("aria-expanded", "true");
+    // Desktop + mobile markup both render the pair, so each label appears twice.
+    expect(screen.getAllByRole("img", { name: "iPhone" }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("img", { name: "macOS" }).length).toBeGreaterThan(0);
   });
 
   it("renders the empty state when active filters match no projects", () => {

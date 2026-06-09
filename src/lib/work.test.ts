@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { projectDepth, matchesFilters, matchesQuery, hasCaseStudy, mapProjectBase, type Project, type Filters } from "./work";
+import { projectDepth, matchesFilters, matchesQuery, hasCaseStudy, mapProjectBase, frameLabelKey, type Project, type Filters } from "./work";
 
 /** Build a Project with sensible defaults; override only what a test cares about. */
 function makeProject(overrides: Partial<Project> = {}): Project {
@@ -153,6 +153,25 @@ describe("Web filter (strict)", () => {
     expect(matchesFilters(active, makeFilters({ stack: ["web"], status: ["active"] }))).toBe(true);
     const ended = makeProject({ tagSlugs: ["web"], endYear: 2019 });
     expect(matchesFilters(ended, makeFilters({ stack: ["web"], status: ["active"] }))).toBe(false);
+  });
+});
+
+describe("frameLabelKey", () => {
+  it("names the device each frame depicts", () => {
+    expect(frameLabelKey("phone")).toBe("galleryDeviceIphone");
+    expect(frameLabelKey("watch")).toBe("galleryDeviceWatch");
+    expect(frameLabelKey("tv")).toBe("galleryDeviceTv");
+    expect(frameLabelKey("mac")).toBe("galleryDeviceMac");
+    expect(frameLabelKey("browser")).toBe("galleryDeviceBrowser");
+  });
+
+  it("folds both tablet orientations onto iPad", () => {
+    expect(frameLabelKey("tablet-landscape")).toBe("galleryDeviceIpad");
+    expect(frameLabelKey("tablet-portrait")).toBe("galleryDeviceIpad");
+  });
+
+  it("falls back to the generic label for a bare image", () => {
+    expect(frameLabelKey("none")).toBe("galleryDeviceOther");
   });
 });
 
