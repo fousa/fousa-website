@@ -51,7 +51,6 @@ export default async function GalleryPage({
   if (!isLocale(locale)) notFound();
 
   const shots = await getGalleryShots(locale);
-  const projectCount = new Set(shots.map((s) => s.slug)).size;
 
   return (
     <main id="main" className="px-5 md:px-11">
@@ -65,11 +64,6 @@ export default async function GalleryPage({
         </h1>
         <p className="mt-[18px] max-w-[560px] text-[16px] leading-[1.6] text-text">
           {t(locale, "galleryDesc")}
-        </p>
-        <p className="mt-[18px] font-mono text-[12px] tracking-[0.04em] text-muted">
-          {t(locale, "galleryMeta")
-            .replace("{screens}", String(shots.length))
-            .replace("{projects}", String(projectCount))}
         </p>
       </header>
 

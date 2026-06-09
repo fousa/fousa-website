@@ -236,8 +236,8 @@ one stream of shots via `lib/gallery.ts` / `getGalleryShots` (query
 group from `deviceOf` (phone → iphone, tablet-* → ipad, tv → tv, else → web).
 Shots reuse the detail page's image pipeline — both go through the shared
 `mapGalleryShot` in `lib/work.ts`, so there's one loader/crop path. The page
-carries a home-style header (eyebrow "Gallery", display title "Screens." + coral
-period, a count line) over `GalleryMasonry`: an absolutely-positioned masonry
+carries a home-style header (eyebrow "Gallery", display title "Screenshots." +
+coral period, a short description) over `GalleryMasonry`: an absolutely-positioned masonry
 whose items glide to new columns on filter (a `transform` transition) while
 filtered-out shots fade in place, so nothing jumps; device chips (styled like
 the log's filter chips, single-select — re-tapping the active one clears it, with

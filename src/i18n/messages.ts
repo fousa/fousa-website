@@ -91,10 +91,9 @@ const messages = {
     linkOpen: 'Open',
     gallery: 'Gallery',
     galleryEyebrow: 'Gallery',
-    galleryTitle: 'Screens',
+    galleryTitle: 'Screenshots',
     galleryDesc:
       'A look at the apps and sites I\u2019ve designed and built — across iPhone, iPad, Apple TV and the web.',
-    galleryMeta: '{screens} screens · {projects} projects',
     galleryFilterAll: 'All',
     galleryFilterIphone: 'iPhone',
     galleryFilterIpad: 'iPad',
@@ -238,10 +237,9 @@ const messages = {
     linkOpen: 'Open',
     gallery: 'Gallery',
     galleryEyebrow: 'Gallery',
-    galleryTitle: 'Screens',
+    galleryTitle: 'Screenshots',
     galleryDesc:
       'Een blik op de apps en sites die ik ontwierp en bouwde — voor iPhone, iPad, Apple TV en het web.',
-    galleryMeta: '{screens} screens · {projects} projecten',
     galleryFilterAll: 'Alles',
     galleryFilterIphone: 'iPhone',
     galleryFilterIpad: 'iPad',
