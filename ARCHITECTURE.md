@@ -233,7 +233,8 @@ empty state reads "No projects match …{q}…" and its clear action resets `?q=
 **Cross-project gallery** (`/gallery`) flattens every project's `gallery[]` into
 one stream of shots via `lib/gallery.ts` / `getGalleryShots` (query
 `sanity/queries/gallery.ts`), tagging each with its project and a coarse device
-group from `deviceOf` (phone → iphone, tablet-* → ipad, tv → tv, else → web).
+group from `deviceOf` (phone → iphone, tablet-* → ipad, watch → watch, tv → tv,
+browser → web, else → other).
 Shots reuse the detail page's image pipeline — both go through the shared
 `mapGalleryShot` in `lib/work.ts`, so there's one loader/crop path. The page
 carries a home-style header (eyebrow "Gallery", display title "Screenshots." +

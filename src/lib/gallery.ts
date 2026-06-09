@@ -13,7 +13,7 @@ import type {Locale} from '@/i18n/config'
 import type {GALLERY_SHOTS_QUERY_RESULT} from '@/sanity.types'
 
 /** Coarse device buckets the cross-project gallery filters by. */
-export type DeviceGroup = 'iphone' | 'ipad' | 'tv' | 'web'
+export type DeviceGroup = 'iphone' | 'ipad' | 'watch' | 'tv' | 'web' | 'other'
 
 /**
  * One screenshot in the cross-project gallery, flattened from every project's
@@ -30,9 +30,10 @@ export type GalleryItem = {
 }
 
 /**
- * Map a per-shot `frame` value onto its filter device group. Phones are
- * iPhone, both tablet orientations are iPad, `tv` is Apple TV, and everything
- * else (browser, watch, none) falls under the catch-all web bucket.
+ * Map a per-shot `frame` value onto its filter device group. Phones are iPhone,
+ * both tablet orientations are iPad, `watch` is Apple Watch, `tv` is Apple TV,
+ * `browser` is web, and anything else (`none`, unknown) falls under the
+ * catch-all other bucket.
  *
  * @param frame - the shot's `frame` value
  * @returns the device group
@@ -40,12 +41,14 @@ export type GalleryItem = {
 export function deviceOf(frame: string): DeviceGroup {
   if (frame === 'phone') return 'iphone'
   if (frame === 'tablet-landscape' || frame === 'tablet-portrait') return 'ipad'
+  if (frame === 'watch') return 'watch'
   if (frame === 'tv') return 'tv'
-  return 'web'
+  if (frame === 'browser') return 'web'
+  return 'other'
 }
 
-/** Filter chips, in display order. `all` clears the device filter. */
-export const GALLERY_FILTERS: ('all' | DeviceGroup)[] = ['all', 'iphone', 'ipad', 'tv', 'web']
+/** Filter chips, in display order (Apple hardware first). `all` clears the device filter. */
+export const GALLERY_FILTERS: ('all' | DeviceGroup)[] = ['all', 'iphone', 'ipad', 'watch', 'tv', 'web', 'other']
 
 /**
  * Fetch every project's gallery shots, flattened into one ordered list. Project

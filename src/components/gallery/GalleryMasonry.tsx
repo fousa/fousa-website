@@ -26,8 +26,10 @@ const FILTER_LABEL: Record<"all" | DeviceGroup, MessageKey> = {
   all: "galleryFilterAll",
   iphone: "galleryFilterIphone",
   ipad: "galleryFilterIpad",
+  watch: "galleryFilterWatch",
   tv: "galleryFilterTv",
   web: "galleryFilterWeb",
+  other: "galleryFilterOther",
 };
 
 export function GalleryMasonry({
