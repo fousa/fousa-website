@@ -240,7 +240,9 @@ Shots reuse the detail page's image pipeline — both go through the shared
 carries a home-style header (eyebrow "Gallery", display title "Screenshots." +
 coral period, a short description) over `GalleryMasonry`: an absolutely-positioned masonry
 whose items glide to new columns on filter (a `transform` transition) while
-filtered-out shots fade in place, so nothing jumps; device chips (styled like
+filtered-out shots fade out, then drop to `display: none` (deferred via
+`allow-discrete` so the fade plays first) so their stale transforms stop padding
+the page with whitespace; nothing jumps; device chips (styled like
 the log's filter chips, single-select — re-tapping the active one clears it, with
 a "Clear all" link beside them while one is active) drive a shareable `?d=` param
 and the glide collapses under the global reduced-motion safeguard. Each shot links to its case study with `?from=gallery`, which the

@@ -170,22 +170,29 @@ tr:hover .depth-ico { opacity: 1; transform: translate(-6px, -50%); }
 
 /* Cross-project gallery masonry: items are absolutely positioned by JS (the
  * shortest-column layout), then glide on filter via `transform`. Filtered-out
- * items keep their last transform and fade in place (opacity), so visible shots
- * glide to new columns while the rest never jump. `no-anim` (first paint, before
- * the initial layout) suppresses the glide so items don't fly in from 0,0. */
+ * items fade + shrink in place, then drop to `display: none` (deferred via
+ * `allow-discrete` so the fade plays first). Dropping them out of flow is what
+ * stops their stale, far-down transforms from padding the page with whitespace
+ * after a filter narrows. `no-anim` (first paint, before the initial layout)
+ * suppresses the glide so items don't fly in from 0,0. */
 .gallery-grid { position: relative; width: 100%; }
 .gallery-grid.no-anim .gallery-item,
 .gallery-grid.no-anim .gallery-inner { transition: none !important; }
 .gallery-item {
   position: absolute; top: 0; left: 0; display: block; will-change: transform;
-  transition: transform 0.46s cubic-bezier(0.2, 0.75, 0.2, 1);
+  transition: transform 0.46s cubic-bezier(0.2, 0.75, 0.2, 1),
+    display 0.34s allow-discrete;
 }
 .gallery-inner {
   display: block;
   transition: opacity 0.34s ease, transform 0.34s cubic-bezier(0.2, 0.75, 0.2, 1);
 }
-.gallery-item[data-hidden="true"] { pointer-events: none; }
+.gallery-item[data-hidden="true"] { pointer-events: none; display: none; }
 .gallery-item[data-hidden="true"] .gallery-inner { opacity: 0; transform: scale(0.93); }
+/* Re-introduced shots (filter widened) fade back in from the shrunk state. */
+@starting-style {
+  .gallery-item[data-hidden="false"] .gallery-inner { opacity: 0; transform: scale(0.93); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .gallery-item, .gallery-inner { transition: none !important; }

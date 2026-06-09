@@ -1,7 +1,8 @@
 "use client";
 /**
  * Cross-project gallery masonry. Items are absolutely positioned; on filter,
- * positions animate (transform) while filtered-out items fade in place, so the
+ * positions animate (transform) while filtered-out items fade, then drop out of
+ * flow (`display: none`, see globals.css) so they don't pad the page height; the
  * remaining shots glide to their new columns and nothing jumps. The device
  * filter persists in `?d=`. Reduced-motion collapses the glide to instant (the
  * global safeguard in globals.css). Each shot links to its case study with
@@ -56,8 +57,9 @@ export function GalleryMasonry({
     });
   };
 
-  // Layout: position visible items into the shortest column; filtered-out items
-  // keep their last transform and just fade (no reposition), so nothing jumps.
+  // Layout: position visible items into the shortest column. Filtered-out items
+  // are flagged hidden (CSS fades them, then drops them to display:none) and are
+  // skipped here, so they neither reposition nor reserve any page height.
   useLayoutEffect(() => {
     const grid = gridRef.current;
     if (!grid) return;
