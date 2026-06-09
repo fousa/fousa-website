@@ -12,6 +12,7 @@ import {CASE_STUDY_QUERY, CASE_STUDY_SLUGS_QUERY} from '@/sanity/queries/case-st
 import {EMPTY_STATES_QUERY} from '@/sanity/queries/empty-states'
 import {isToolProject} from '@/lib/work-display'
 import {urlForImage} from '@/sanity/image'
+import type {SanityImageSource} from '@sanity/image-url'
 import {pickLocale} from '@/i18n/pick-locale'
 import type {Locale} from '@/i18n/config'
 import type {PROJECTS_QUERY_RESULT, CASE_STUDY_QUERY_RESULT, CASE_STUDY_SLUGS_QUERY_RESULT, EMPTY_STATES_QUERY_RESULT, SanityImageCrop, SanityImageDimensions} from '@/sanity.types'
@@ -47,6 +48,44 @@ export type GalleryShot = {
   height: number
   frame: Frame
   caption?: string | null
+}
+
+/**
+ * A single Sanity `gallery[]` entry as projected by both the case-study and the
+ * cross-project gallery queries: the per-shot `frame`, localized `caption`, and
+ * the cropped image (asset ref + crop + dimensions).
+ */
+type GalleryImageRow = {
+  _key: string
+  frame?: string | null
+  caption?: {en?: string; nl?: string} | null
+  image: (SanityImageSource & {crop?: SanityImageCrop; dimensions: SanityImageDimensions | null}) | null
+}
+
+/**
+ * Build a renderable {@link GalleryShot} from a raw Sanity gallery entry. The
+ * single image pipeline shared by the detail-page gallery and the cross-project
+ * gallery, so both resolve the builder URL, cropped dimensions, frame and
+ * localized caption identically.
+ *
+ * @param entry - one `gallery[]` element (with the crop-aware `image` projection)
+ * @param locale - active locale for the caption
+ * @returns the flattened shot, or null when the entry has no image asset
+ */
+export function mapGalleryShot(entry: GalleryImageRow, locale: Locale): GalleryShot | null {
+  const img = entry.image
+  if (!img) return null
+  // Builder URL bakes in the crop; dimensions follow the cropped region so the
+  // frame/lightbox keeps the right aspect ratio.
+  const {width, height} = croppedDimensions(img)
+  return {
+    key: entry._key,
+    imageUrl: urlForImage(img).width(1600).auto('format').url(),
+    width,
+    height,
+    frame: (entry.frame as Frame) ?? 'browser',
+    caption: pickLocale(entry.caption ?? null, locale),
+  }
 }
 
 export type Project = {
@@ -422,21 +461,8 @@ export async function getProjectDetail(
 
   const hasBody = Array.isArray(row.body?.en) && row.body.en.length > 0
   const gallery: GalleryShot[] = (row.gallery ?? [])
-    .filter((g) => g.image?.asset)
-    .map((g) => {
-      const img = g.image!
-      // Builder URL bakes in the crop; dimensions follow the cropped region so
-      // the frame/lightbox keeps the right aspect ratio.
-      const {width, height} = croppedDimensions(img)
-      return {
-        key: g._key,
-        imageUrl: urlForImage(img).width(1600).auto('format').url(),
-        width,
-        height,
-        frame: (g.frame as Frame) ?? 'browser',
-        caption: pickLocale(typeof g.caption === 'object' ? g.caption : null, locale),
-      }
-    })
+    .map((g) => mapGalleryShot(g, locale))
+    .filter((s): s is GalleryShot => s !== null)
 
   const body = hasBody
     ? locale === 'nl' && Array.isArray(row.body?.nl) && row.body.nl.length > 0

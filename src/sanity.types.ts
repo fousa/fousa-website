@@ -834,6 +834,38 @@ export type EMPTY_STATES_QUERY_RESULT =
     }
   | null;
 
+// Source: src/sanity/queries/gallery.ts
+// Variable: GALLERY_SHOTS_QUERY
+// Query: *[_type == "project" && count(gallery) > 0] | order(year desc, name asc) {    "slug": slug.current,    "projectName": name,    "gallery": gallery[]{      _key,      frame,      caption,      "image": image{        ...,        "dimensions": asset->metadata.dimensions      }    }  }
+export type GALLERY_SHOTS_QUERY_RESULT = Array<{
+  slug: string | null;
+  projectName: string | null;
+  gallery: Array<{
+    _key: string;
+    frame:
+      | "browser"
+      | "none"
+      | "phone"
+      | "tablet-landscape"
+      | "tablet-portrait"
+      | "tv"
+      | "watch"
+      | null;
+    caption: {
+      en?: string;
+      nl?: string;
+    } | null;
+    image: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+      dimensions: SanityImageDimensions | null;
+    } | null;
+  }> | null;
+}>;
+
 // Source: src/sanity/queries/profile.ts
 // Variable: PROFILE_QUERY
 // Query: *[_id == "profile"][0]{    name,    tagline,    roleLine,    filterIntro,    aboutHeadline,    bio,    "portraitUrl": portrait.asset->url,    beyondCode[]{      title,      body    },    location,    email,    socialLinks,    "cvEnUrl": cvEn.asset->url,    "cvNlUrl": cvNl.asset->url,    vatNumber,    copyrightYear  }
@@ -1095,6 +1127,7 @@ declare module "@sanity/client" {
     '\n  *[_type == "project" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    role,\n    client,\n    deck,\n    body,\n    liveUrl,\n    githubUrl,\n    featureTooling,\n    isTool,\n    "employer": employer->{\n      _id,\n      "name": organisation,\n      "slug": "employer-" + lower(organisation)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current\n    },\n    "cover": cover{\n      ...,\n      "alt": alt,\n      "dimensions": asset->metadata.dimensions\n    },\n    "gallery": gallery[]{\n      _key,\n      frame,\n      caption,\n      "image": image{\n        ...,\n        "dimensions": asset->metadata.dimensions\n      }\n    },\n    "related": *[\n      _type == "project"\n      && slug.current != $slug\n      && references(^.employer._ref)\n    ] | order(year desc) [0...3] {\n      _id,\n      name,\n      "slug": slug.current,\n      year,\n      deck\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
     '\n  *[_id == "emptyStates"][0]{\n    overrides[]{\n      filters,\n      headline,\n      body\n    }\n  }\n': EMPTY_STATES_QUERY_RESULT;
+    '\n  *[_type == "project" && count(gallery) > 0] | order(year desc, name asc) {\n    "slug": slug.current,\n    "projectName": name,\n    "gallery": gallery[]{\n      _key,\n      frame,\n      caption,\n      "image": image{\n        ...,\n        "dimensions": asset->metadata.dimensions\n      }\n    }\n  }\n': GALLERY_SHOTS_QUERY_RESULT;
     '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    roleLine,\n    filterIntro,\n    aboutHeadline,\n    bio,\n    "portraitUrl": portrait.asset->url,\n    beyondCode[]{\n      title,\n      body\n    },\n    location,\n    email,\n    socialLinks,\n    "cvEnUrl": cvEn.asset->url,\n    "cvNlUrl": cvNl.asset->url,\n    vatNumber,\n    copyrightYear\n  }\n': PROFILE_QUERY_RESULT;
     '\n  *[_type == "project"] | order(year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    isTool,\n    role,\n    client,\n    deck,\n    liveUrl,\n    githubUrl,\n    "employer": employer->{\n      _id,\n      "name": organisation,\n      "slug": lower(organisation)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      "category": category->slug.current\n    },\n    featureTooling,\n    "hasBody": count(body.en) > 0,\n    "galleryCount": count(gallery),\n    "searchText": lower(\n      array::join([\n        coalesce(name, ""),\n        coalesce(client, ""),\n        coalesce(role, ""),\n        coalesce(employer->organisation, ""),\n        coalesce(array::join(stack[]->name, " "), ""),\n        coalesce(deck[$locale], deck.en, ""),\n        coalesce(pt::text(coalesce(body[$locale], body.en)), ""),\n        coalesce(array::join(gallery[defined(caption[$locale])].caption[$locale], " "), ""),\n        coalesce(string(year), ""),\n        coalesce(string(endYear), ""),\n        coalesce(state, ""),\n        coalesce(engagement, "")\n      ], " ")\n    )\n  }\n': PROJECTS_QUERY_RESULT;
     '\n  *[_id == "siteSettings"][0]{\n    email,\n    socials[]{\n      platform,\n      url,\n      label\n    },\n    metaDescription,\n    "ogImageUrl": ogImage.asset->url\n  }\n': SITE_SETTINGS_QUERY_RESULT;
