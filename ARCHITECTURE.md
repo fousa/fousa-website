@@ -273,13 +273,16 @@ than formal WCAG certification:
   reading/data/interactive copy; `text-faint` is reserved for large mono eyebrows
   and `aria-hidden` separators. Light-mode accent darkened to `#e13100` (4.53:1 on white).
 - **Keyboard rows**: the desktop log row is a `role="button"` `<tr>` with Enter/Space
-  activation and a `focus-visible` ring; collapsed expand-bodies get `inert` to stay
-  out of the tab order. Both desktop and mobile toggles expose `aria-expanded`.
+  activation; collapsed expand-bodies get `inert` to stay out of the tab order. Both
+  desktop and mobile toggles expose `aria-expanded`. Page-level ↑/↓ walk the expanded
+  row through the visible list (opening the first when none is open) and scroll it into
+  view; the same `stepRow` helper is reachable from the search field, so ↑/↓ there hand
+  off to the list without leaving the input.
 - **Live regions**: the filtered-count line and empty state use
   `role="status" aria-live="polite"` so filter changes are announced.
 - **Sortable headers**: each sortable `<th>` carries `aria-sort`
   (`ascending`/`descending` on the active column, `none` otherwise); the ↑/↓/↕ caret
-  is `aria-hidden`, and the header button shares the rows' `focus-visible` ring.
+  is `aria-hidden`.
 - **Decorative glyphs** (arrows, dots) are `aria-hidden`; the label/word carries meaning.
 - **Focus management**: the mobile menu traps + restores focus, closes on Escape,
   and is wired with `aria-controls` + a localized label.

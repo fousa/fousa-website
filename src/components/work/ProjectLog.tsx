@@ -397,6 +397,36 @@ export function ProjectLog({
 
   const searchRef = useRef<SearchChipHandle>(null);
 
+  // Walk the expanded row one step through the visible list. With no visible row
+  // open (none open, or the open slug filtered out → findIndex returns -1), it
+  // opens the first row; otherwise it steps one row, clamping at the ends. Shared
+  // by the page-level ↑/↓ handler and the search field's ↓ (which jumps from the
+  // input into the list). Keeps the selected row on screen as it walks the fold.
+  const stepRow = useCallback(
+    (key: "ArrowDown" | "ArrowUp") => {
+      if (rows.length === 0) return;
+      const i = open === null ? -1 : rows.findIndex((p) => p.slug === open);
+      const next =
+        i === -1
+          ? rows[0]
+          : key === "ArrowDown"
+            ? rows[Math.min(i + 1, rows.length - 1)]
+            : rows[Math.max(i - 1, 0)];
+
+      if (next.slug !== open) {
+        expandRow(next.slug);
+        track("project_expand", { slug: next.slug, depth: next.depth, locale });
+      }
+
+      requestAnimationFrame(() => {
+        document
+          .querySelector(`[data-row-slug="${next.slug}"]`)
+          ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      });
+    },
+    [rows, open, expandRow, locale],
+  );
+
   // Page-level keyboard shortcuts (desktop): ↑/↓ walk the expanded row through
   // the visible list (opening the first when none is open), and `f` opens and
   // focuses the search field. Ignored while typing in a field or with a modifier
@@ -458,25 +488,67 @@ export function ProjectLog({
       if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
       if (rows.length === 0) return;
       e.preventDefault();
-
-      // No row open yet → open the first; otherwise step one row, clamping at
-      // the ends. An `open` slug that's been filtered out also resets to first.
-      const i = open === null ? -1 : rows.findIndex((p) => p.slug === open);
-      const next =
-        i === -1
-          ? rows[0]
-          : e.key === "ArrowDown"
-            ? rows[Math.min(i + 1, rows.length - 1)]
-            : rows[Math.max(i - 1, 0)];
-
-      if (next.slug !== open) {
-        expandRow(next.slug);
-        track("project_expand", { slug: next.slug, depth: next.depth, locale });
-      }
+      stepRow(e.key);
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [rows, open, locale, projects, router, expandRow]);
+  }, [rows, open, locale, projects, router, expandRow, stepRow]);
+
+  // Suppress the stray focus ring that Safari/Chrome restore when the window
+  // returns from the background: they re-focus whatever control held focus and
+  // re-apply `:focus-visible`, so a clicked row/sort-header/chip flashes its
+  // orange ring on every app switch. We clear that focus both on the way out and
+  // on the way back (Safari re-focuses on return), but only when the control was
+  // focused by *pointer* — keyboard focus must stay visible — and never for text
+  // fields, so an in-progress search isn't dropped by an app switch.
+  //
+  // `focusedViaKeyboard` records how the *currently focused* element got focus
+  // (set on focusin from the last input kind), so later arrow-key navigation —
+  // which doesn't move DOM focus — can't mislabel a pointer-focused control.
+  useEffect(() => {
+    let lastInputKeyboard = false;
+    let focusedViaKeyboard = false;
+    const onPointerDown = () => {
+      lastInputKeyboard = false;
+    };
+    const onKeyDown = () => {
+      lastInputKeyboard = true;
+    };
+    const onFocusIn = () => {
+      focusedViaKeyboard = lastInputKeyboard;
+    };
+    const clearPointerFocus = () => {
+      if (focusedViaKeyboard) return;
+      const el = document.activeElement;
+      if (
+        el instanceof HTMLElement &&
+        el !== document.body &&
+        el.tagName !== "INPUT" &&
+        el.tagName !== "TEXTAREA" &&
+        !el.isContentEditable
+      ) {
+        el.blur();
+      }
+    };
+    const onWindowFocus = () => {
+      // Run now and next frame: some browsers restore element focus a tick after
+      // firing the window `focus` event.
+      clearPointerFocus();
+      requestAnimationFrame(clearPointerFocus);
+    };
+    document.addEventListener("pointerdown", onPointerDown, true);
+    document.addEventListener("keydown", onKeyDown, true);
+    document.addEventListener("focusin", onFocusIn, true);
+    window.addEventListener("blur", clearPointerFocus);
+    window.addEventListener("focus", onWindowFocus);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown, true);
+      document.removeEventListener("keydown", onKeyDown, true);
+      document.removeEventListener("focusin", onFocusIn, true);
+      window.removeEventListener("blur", clearPointerFocus);
+      window.removeEventListener("focus", onWindowFocus);
+    };
+  }, []);
 
   return (
     <section id="work" className="scroll-mt-20">
@@ -527,6 +599,7 @@ export function ProjectLog({
               setQuery("");
             }}
             label={(k) => t(locale, k as MessageKey)}
+            onArrow={(dir) => stepRow(dir)}
           />
         </span>
         {hasAnyFilter && (
@@ -703,7 +776,7 @@ function SortHeader({
       <button
         type="button"
         onClick={() => onSort(columnKey)}
-        className="group inline-flex cursor-pointer items-center gap-1 font-mono text-[11px] uppercase tracking-[0.09em] text-faint transition-colors hover:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+        className="group inline-flex cursor-pointer items-center gap-1 font-mono text-[11px] uppercase tracking-[0.09em] text-faint transition-colors hover:text-muted focus-visible:outline-none"
       >
         {label}
         <span
@@ -801,6 +874,7 @@ function Row({
   return (
     <>
       <tr
+        data-row-slug={p.slug}
         role="button"
         tabIndex={0}
         aria-expanded={open}
@@ -811,7 +885,10 @@ function Row({
             onToggle();
           }
         }}
-        className={`group cursor-pointer text-[14.5px] text-text [&>td]:border-t [&>td]:border-line focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset ${open ? "[&>td]:bg-hover" : "hover:[&>td]:bg-hover"}`}
+        // scroll-my keeps one extra row visible past the selection when arrow
+        // navigation scrolls this row into view (block: "nearest" stops at the
+        // scroll-margin edge, ~one row short of the viewport edge).
+        className={`group cursor-pointer scroll-my-[80px] text-[14.5px] text-text [&>td]:border-t [&>td]:border-line focus:outline-none focus-visible:outline-none ${open ? "[&>td]:bg-hover" : "hover:[&>td]:bg-hover"}`}
       >
         <td className="px-11 py-5 align-top">
           <span
