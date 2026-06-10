@@ -56,13 +56,11 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://fousa.be",
-    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "fousa.be — Freelance iOS & web developer",
     description: "Freelance iOS & web developer. 65 projects, 20 years — logged.",
-    images: ["/og-image.png"],
   },
 };
 

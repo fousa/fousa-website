@@ -26,7 +26,7 @@ export function buildProjectJsonLd({
     '@type': 'CreativeWork',
     name: project.name,
     description: project.deck ?? project.name,
-    image: `${siteUrl}/og/${project.slug}`,
+    image: `${url}/opengraph-image`,
     url,
     inLanguage: locale,
     creator: {

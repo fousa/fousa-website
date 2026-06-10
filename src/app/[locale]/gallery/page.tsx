@@ -38,7 +38,7 @@ export async function generateMetadata({
       locale: locale === "nl" ? "nl_BE" : "en_US",
       type: "website",
     },
-    twitter: { card: "summary", title, description },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
