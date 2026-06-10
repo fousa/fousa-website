@@ -276,14 +276,21 @@ export const project = defineType({
     select: {
       name: 'name',
       year: 'year',
-      employerName: 'employer.name',
+      endYear: 'endYear',
       state: 'state',
       cover: 'cover',
     },
-    prepare: ({name, year, employerName, state, cover}) => ({
-      title: name,
-      subtitle: `${year} · ${employerName ?? '?'} · ${state ?? '?'}`,
-      media: cover,
-    }),
+    prepare: ({name, year, endYear, state, cover}) => {
+      // Mirror the frontend year range: closed span when an end year is set,
+      // "–present" for ongoing (active/maintained) work, otherwise the single
+      // start year. Replaces the old employer token, which never resolved.
+      const ongoing = (state === 'active' || state === 'maintained') && endYear == null
+      const span = endYear ? `${year}–${endYear}` : ongoing ? `${year}–present` : `${year}`
+      return {
+        title: name,
+        subtitle: `${span} · ${state ?? '?'}`,
+        media: cover,
+      }
+    },
   },
 })
