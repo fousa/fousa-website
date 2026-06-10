@@ -730,6 +730,7 @@ const PREVIEW_WIDTH: Record<FrameKind, string> = {
   watch: "w-[92px]",
   mac: "w-[150px]",
   browser: "w-[150px]",
+  other: "w-[140px]",
   none: "w-[132px]",
 };
 

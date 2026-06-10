@@ -40,7 +40,7 @@ function croppedDimensions(img: {
 export type State = 'active' | 'maintained' | 'archived' | 'cancelled'
 export type Engagement = 'freelance' | 'full-time' | 'student'
 export type Depth = 'none' | 'gallery' | 'full'
-export type Frame = 'phone' | 'tablet-landscape' | 'tablet-portrait' | 'tv' | 'watch' | 'mac' | 'browser' | 'none'
+export type Frame = 'phone' | 'tablet-landscape' | 'tablet-portrait' | 'tv' | 'watch' | 'mac' | 'browser' | 'other' | 'none'
 
 export type GalleryShot = {
   key: string
