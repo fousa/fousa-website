@@ -73,11 +73,15 @@ and three collections.
   depth + links, no flag. The "Tool" *label* in the "For" column is separate and
   is a manual `isTool` boolean (see below): too many case-study-less personal
   projects carry a link without being a tool, so the call is the editor's.
-  An expanded row shows the project's first two gallery shots beside the deck +
-  CTA — `previewShots` (the log query projects `gallery[0...2]`, mapped through
-  the same `mapGalleryShot` pipeline), each in its `Frame`, top-aligned and
-  right-pushed on desktop, stacked below on mobile, and labelled by device via
-  `frameLabelKey`.
+  An expanded row shows the gallery shots the editor flagged "Show in project
+  list" beside the deck + CTA — `previewShots` (the log query projects
+  `gallery[inLog == true][0...2]`, mapped through the same `mapGalleryShot`
+  pipeline; Studio caps the flag at two, none flagged shows no preview), each in
+  its `Frame`, top-aligned and right-pushed on desktop, stacked below on mobile,
+  and labelled by device via `frameLabelKey`. The previews pass `Frame` a per-frame
+  `sizes` (`PREVIEW_SIZES`) plus `quality={90}` so next/image serves a tight, crisp
+  candidate instead of softly downscaling a large source (`qualities` is whitelisted
+  in `next.config.ts`).
 
 Translatable fields are `{ en, nl }` objects (helpers in `sanity/fields/i18n.ts`),
 so both locales sit side by side in one document and Dutch falls back to English

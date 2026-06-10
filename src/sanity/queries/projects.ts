@@ -50,7 +50,7 @@ export const PROJECTS_QUERY = defineQuery(`
     featureTooling,
     "hasBody": count(body.en) > 0,
     "galleryCount": count(gallery),
-    "previewShots": gallery[0...2]{
+    "previewShots": gallery[inLog == true][0...2]{
       _key,
       frame,
       caption,

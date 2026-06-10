@@ -146,10 +146,11 @@ export type Project = {
   depth: Depth
   gallery: GalleryShot[]
   /**
-   * The project's first two gallery shots, rendered as a small preview pair in
-   * the expanded log row (the full `gallery` is reserved for the detail page).
-   * Empty when the project carries no gallery; the log query is the only mapper
-   * that populates it.
+   * The gallery shots the editor flagged "Show in project list" (capped at two
+   * in Studio), rendered as a small preview pair in the expanded log row (the
+   * full `gallery` is reserved for the detail page). Empty when none are flagged
+   * — the row then shows no preview; the log query is the only mapper that
+   * populates it.
    */
   previewShots?: GalleryShot[]
   featureTooling?: boolean | null
@@ -513,7 +514,6 @@ export async function getProjectDetail(
     ...mapProjectBase(row, locale),
     depth: hasBody ? 'full' : gallery.length > 0 ? 'gallery' : 'none',
     gallery,
-    previewShots: gallery.slice(0, 2),
     body: body ?? null,
     cover: row.cover?.asset
       ? {

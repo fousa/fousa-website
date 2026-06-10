@@ -169,7 +169,14 @@ export const project = defineType({
       title: 'Gallery (screenshots)',
       type: 'array',
       group: 'caseStudy',
-      description: 'Screenshots shown on the detail page when there\u2019s no full case study. Each image picks its own frame.',
+      description: 'Screenshots shown on the detail page when there\u2019s no full case study. Each image picks its own frame. Flag up to two with \u201cShow in project list\u201d to preview them in the homepage log row.',
+      // Cap the homepage-log preview at two shots: the log row only has space for
+      // a pair, so refuse a third "Show in project list" flag at save time.
+      validation: (Rule) =>
+        Rule.custom((shots) => {
+          const picked = ((shots as {inLog?: boolean}[]) ?? []).filter((s) => s?.inLog).length
+          return picked > 2 ? 'Pick at most two screenshots to show in the project list.' : true
+        }),
       of: [
         {
           name: 'shot',
@@ -203,10 +210,22 @@ export const project = defineType({
               },
               validation: (Rule) => Rule.required(),
             }),
+            defineField({
+              name: 'inLog',
+              title: 'Show in project list',
+              type: 'boolean',
+              description: 'Preview this screenshot in the homepage log row. Pick at most two per project; none picked shows no preview.',
+              initialValue: false,
+            }),
             i18nString('caption', 'Caption'),
           ],
           preview: {
-            select: {media: 'image', subtitle: 'frame'},
+            select: {media: 'image', frame: 'frame', inLog: 'inLog'},
+            prepare: ({media, frame, inLog}) => ({
+              media,
+              title: inLog ? '★ In project list' : 'Gallery shot',
+              subtitle: frame,
+            }),
           },
         },
       ],
