@@ -15,7 +15,7 @@ import {defineQuery} from 'next-sanity'
 
 export const FEATURED_SHOTS_QUERY = defineQuery(`
   *[_type == "project" && count(gallery) > 0]
-    | order(state == "active" desc, year desc)[0...$n]{
+    | order((state == "active") desc, year desc)[0...$n]{
       "frame": gallery[0].frame,
       "image": gallery[0].image
     }

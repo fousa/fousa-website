@@ -144,6 +144,11 @@ export function OgCard({
           </div>
           <div
             style={{
+              // Satori needs an explicit display on any element with >1 child.
+              // A non-wrapping row with bottom alignment lets the title text wrap
+              // on its own while the accent period stays beside its last line.
+              display: "flex",
+              alignItems: "flex-end",
               fontFamily: "Space Grotesk",
               fontWeight: 700,
               fontSize: 72,

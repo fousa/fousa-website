@@ -21,7 +21,6 @@ export function proxy(req: NextRequest) {
   if (
     pathname.startsWith('/studio') ||
     pathname.startsWith('/api') ||
-    pathname.startsWith('/og') ||
     pathname.startsWith('/_next') ||
     pathname.includes('.')
   ) {
@@ -42,7 +41,7 @@ export function proxy(req: NextRequest) {
   // Legacy shapes were /<slug> (default locale) and /nl/<slug>; a bare single
   // slug that isn't a locale or a reserved top-level route can only be one.
   // 308 (permanent) so any indexed legacy URL keeps its SEO equity.
-  const RESERVED = new Set(['work', 'about', 'gallery', 'game'])
+  const RESERVED = new Set(['work', 'about', 'gallery', 'game', 'opengraph-image'])
   const segments = pathname.split('/').filter(Boolean)
   // /nl/<slug> → /nl/work/<slug>
   if (
@@ -79,5 +78,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|studio|api|og).*)'],
+  matcher: ['/((?!_next|studio|api).*)'],
 }
