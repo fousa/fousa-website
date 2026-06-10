@@ -6,8 +6,9 @@
  * a size comfortably above the card's device boxes so they stay crisp. The crop
  * is baked in via `urlForImage`, matching the rest of the site.
  *
- * `getFeaturedShots` feeds the montage layouts (home / gallery / about);
- * `getCaseShots` feeds a single project's case-study card.
+ * `getFeaturedShots` feeds the home / gallery / about cards with one shot from
+ * each top project; `getCaseShots` feeds a case-study card with several shots
+ * from the one project. Both fill the same four-slot montage.
  */
 import type {SanityImageSource} from '@sanity/image-url'
 import {fetchSanity} from '@/sanity/fetch'
@@ -45,7 +46,7 @@ export async function getFeaturedShots(n = 4): Promise<Shot[]> {
   )
 }
 
-/** The first one or two gallery shots of a single project, for its case card. */
+/** Up to the first four gallery shots of a single project, for its case card. */
 export async function getCaseShots(slug: string): Promise<Shot[]> {
   const row = await fetchSanity<CASE_SHOTS_QUERY_RESULT>(CASE_SHOTS_QUERY, {slug})
   return (row?.shots ?? []).flatMap((s) =>

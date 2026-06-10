@@ -311,9 +311,10 @@ than formal WCAG certification:
   `next/og` (`og/respond.tsx`), built under Satori's constraints — inline styles
   only, explicit px, fonts fetched as woff `ArrayBuffer`s (`og/fonts.ts`). Card
   screenshots come from Sanity (`lib/og-shots.ts`, `sanity/queries/og-shots.ts`),
-  forced to JPEG so Satori can decode them. The case card leads with the
-  project's own shots; the montage routes fan out the most relevant featured
-  shots. Because these routes are dynamic, the `og:image` URL carries the
+  forced to JPEG so Satori can decode them. Every card uses the same four-slot
+  montage cluster: the case card fills it with the project's own gallery shots,
+  the other routes with one shot from each top project. Because these routes are
+  dynamic, the `og:image` URL carries the
   default-locale prefix (`/en/...`) and 308-redirects to the canonical
   unprefixed path, which the proxy reserves so it is never mistaken for a slug.
 

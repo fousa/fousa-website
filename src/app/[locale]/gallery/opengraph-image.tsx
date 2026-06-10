@@ -21,7 +21,6 @@ export default async function Image({params}: {params: Promise<{locale: string}>
 
   return ogResponse(
     <OgCard
-      layout="gallery"
       eyebrow={t(locale, 'galleryEyebrow')}
       title={t(locale, 'galleryTitle')}
       deck={t(locale, 'galleryDesc')}

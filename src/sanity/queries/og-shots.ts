@@ -5,8 +5,8 @@
  * most relevant projects (active first, then newest), for the montage on the
  * home / gallery / about cards.
  *
- * CASE_SHOTS_QUERY — the first one or two gallery shots of a single project, for
- * its case-study card.
+ * CASE_SHOTS_QUERY — up to the first four gallery shots of a single project, to
+ * fill its case-study card's montage with the project's own screenshots.
  *
  * Both project the raw `image` object (asset ref + crop/hotspot) rather than
  * `asset->url`, so `urlForImage` can bake the crop and force a Satori-safe format.
@@ -23,7 +23,7 @@ export const FEATURED_SHOTS_QUERY = defineQuery(`
 
 export const CASE_SHOTS_QUERY = defineQuery(`
   *[_type == "project" && slug.current == $slug][0]{
-    "shots": gallery[0..1]{
+    "shots": gallery[0..3]{
       "frame": frame,
       "image": image
     }

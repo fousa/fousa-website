@@ -1,7 +1,7 @@
 /**
- * Case-study Open Graph card (per slug). `case` layout: one big screenshot plus
- * a tall second, the project's own shots. Title/deck/meta come from the project;
- * an unknown slug falls back to a generic montage card rather than erroring.
+ * Case-study Open Graph card (per slug). The montage fills with the project's
+ * own gallery shots; title/deck/meta come from the project. An unknown slug
+ * falls back to a generic featured-shot card rather than erroring.
  */
 import {OgCard} from '@/og/OgCard'
 import {ogResponse, ogSize} from '@/og/respond'
@@ -32,7 +32,6 @@ export default async function Image({
   if (!project || project.depth === 'none') {
     return ogResponse(
       <OgCard
-        layout="home"
         eyebrow={t(locale, 'galleryEyebrow')}
         title="fousa.be"
         deck={t(locale, 'siteDescription')}
@@ -44,7 +43,6 @@ export default async function Image({
 
   return ogResponse(
     <OgCard
-      layout="case"
       eyebrow={`${t(locale, 'ogCaseStudy')} · ${project.year}`}
       title={project.name}
       deck={project.deck ?? undefined}

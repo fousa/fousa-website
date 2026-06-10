@@ -3,9 +3,8 @@
  * route (home, about, gallery, each case study).
  *
  * Dark split layout: brand · eyebrow · title · deck · domain/meta on the left, a
- * large device cluster on the right that bleeds off the edge. The cluster's
- * positions vary by `layout` — a case study leads with one big shot, the montage
- * layouts fan out up to four.
+ * large device cluster on the right that bleeds off the edge. The cluster fans
+ * out up to four screenshots in a fixed montage, the same for every route.
  *
  * Satori constraint: inline styles only (no Tailwind / external CSS), a CSS
  * subset, and explicit px on everything (no `aspect-ratio`). `<img>` needs
@@ -15,9 +14,6 @@ import type { CSSProperties } from "react";
 
 /** One screenshot for the cluster: an absolute (cdn.sanity.io) URL + frame type. */
 export type Shot = { url: string; frame: string };
-
-/** Which arrangement the right-hand cluster uses. */
-export type OgLayout = "case" | "gallery" | "about" | "home";
 
 /** Card palette — a dark surface with the site's coral accent. */
 const C = {
@@ -63,7 +59,7 @@ function Device({ shot, pos }: { shot: Shot; pos: DevicePos }) {
   );
 }
 
-/** Per-layout cluster placements; the montage layouts share one four-slot plan. */
+/** The four-slot montage every card uses for its screenshot cluster. */
 const MONTAGE: DevicePos[] = [
   { left: 30, top: 50, w: 180, h: 360 },
   { right: -50, top: 40, w: 300, h: 225 },
@@ -78,7 +74,6 @@ export function OgCard({
   domain,
   meta,
   shots,
-  layout,
 }: {
   eyebrow: string;
   title: string;
@@ -86,7 +81,6 @@ export function OgCard({
   domain: string;
   meta?: string;
   shots: Shot[];
-  layout: OgLayout;
 }) {
   return (
     <div
@@ -189,20 +183,13 @@ export function OgCard({
         </div>
       </div>
 
-      {/* Device cluster — positions vary by layout */}
+      {/* Device cluster — the same four-slot montage for every route. */}
       <div style={{ flex: 1, position: "relative", display: "flex" }}>
-        {layout === "case" && shots[0] && (
-          <>
-            <Device shot={shots[0]} pos={{ w: 420, h: 315, right: -70, top: 96 }} />
-            {shots[1] && (
-              <Device shot={shots[1]} pos={{ w: 190, h: 400, left: 10, bottom: -60 }} />
-            )}
-          </>
-        )}
-        {layout !== "case" &&
-          shots
-            .slice(0, 4)
-            .map((shot, i) => <Device key={i} shot={shot} pos={MONTAGE[i]} />)}
+        {shots
+          .slice(0, 4)
+          .map((shot, i) => (
+            <Device key={i} shot={shot} pos={MONTAGE[i]} />
+          ))}
       </div>
     </div>
   );

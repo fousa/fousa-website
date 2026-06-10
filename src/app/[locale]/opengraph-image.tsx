@@ -34,7 +34,6 @@ export default async function Image({params}: {params: Promise<{locale: string}>
 
   return ogResponse(
     <OgCard
-      layout="home"
       eyebrow={role}
       title={name}
       deck={t(locale, 'siteDescription')}
