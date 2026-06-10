@@ -198,6 +198,73 @@ tr:hover .depth-ico { opacity: 1; transform: translate(-6px, -50%); }
   .gallery-item, .gallery-inner { transition: none !important; }
 }
 
+/* Frameless device frames: the screenshot is the element — a hairline border and
+ * a small (4px) radius, no bezel — with a minimal per-device cue (iPhone Dynamic
+ * Island, Mac titlebar dots, Web URL pill, TV pedestal, Watch squircle). One
+ * visual language shared by the log preview, the case study and the cross-project
+ * gallery. `other` (and any unknown value) is the plain catch-all; `none` keeps
+ * the image at its natural ratio. */
+.dframe {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.dframe-img { position: absolute; inset: 0; }
+.dframe-pic { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* aspect + radius per type (4px on flat screens; iPhone rounder, Watch a squircle) */
+.dframe--phone            { aspect-ratio: 9 / 19.3; border-radius: 14px; }
+.dframe--tablet-landscape { aspect-ratio: 4 / 3;    border-radius: 4px; }
+.dframe--tablet-portrait  { aspect-ratio: 3 / 4;    border-radius: 4px; }
+.dframe--mac              { aspect-ratio: 16 / 10;  border-radius: 4px; }
+.dframe--tv               { aspect-ratio: 16 / 9;   border-radius: 4px; }
+.dframe--watch            { aspect-ratio: 5 / 6;    border-radius: 30% / 26%; }
+.dframe--browser          { aspect-ratio: 16 / 10;  border-radius: 4px; }
+.dframe--other            { aspect-ratio: 3 / 2;    border-radius: 4px; }
+
+/* `none`: the bare image at its natural ratio, just clipped + bordered. */
+.dframe--none { border-radius: 4px; }
+.dframe--none .dframe-img { position: static; }
+.dframe--none .dframe-pic { height: auto; }
+
+/* iPhone Dynamic Island */
+.dframe__island {
+  position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+  width: 22%; max-width: 38px; height: 7px; border-radius: 99px;
+  background: var(--ink); z-index: 2;
+}
+
+/* Mac titlebar: three hairline dots, no URL */
+.dframe__bar-mac {
+  position: absolute; inset: 0 0 auto 0; height: 13%; z-index: 2;
+  display: flex; align-items: center; gap: 5px; padding: 0 8px;
+  background: var(--hover); border-bottom: 1px solid var(--line);
+}
+.dframe__bar-mac i { width: 5px; height: 5px; border-radius: 50%; border: 1px solid var(--faint); }
+
+/* Web toolbar: a centred URL pill, no dots */
+.dframe__bar-web {
+  position: absolute; inset: 0 0 auto 0; height: 14%; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--hover); border-bottom: 1px solid var(--line);
+}
+.dframe__bar-web .url { width: 46%; height: 8px; border-radius: 5px; background: var(--line); }
+
+/* The screenshot sits below the Mac/Web toolbar. `top` matches each bar's height
+   (both % of the frame height), so the image edge meets the toolbar exactly. */
+.dframe--mac .dframe-img     { top: 13%; }
+.dframe--browser .dframe-img { top: 14%; }
+
+/* TV with a pedestal stand (wrapper holds screen + stand; the screen stays
+   full-width and top-aligned, the stand hangs below). */
+.dframe-tvwrap { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.dframe-stand  { display: flex; flex-direction: column; align-items: center; }
+.dframe-stand .neck { width: 2px; height: 10px; background: var(--faint); }
+.dframe-stand .foot { width: 48px; height: 2px; border-radius: 2px; background: var(--faint); }
+
 /* Reduced-motion safeguard: collapse every animation/transition to a near-zero
  * duration for users who ask for less motion. `!important` is justified — this
  * intentionally overrides design intent, so no per-component opt-out is needed. */
