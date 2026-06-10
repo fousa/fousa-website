@@ -825,32 +825,71 @@ const PREVIEW_SIZES: Record<FrameKind, string> = {
   none: "132px",
 };
 
+// Larger ("lg") preview widths for the desktop expanded row, where the pair sits
+// vertically centred beside the text. Each width is the frame's `aspect-ratio`
+// (see globals.css) scaled to a uniform ~158px height, so mixed devices line up
+// on a common height instead of a common top edge. `none` keeps its natural
+// ratio, so its width is just a sensible cap.
+const PREVIEW_WIDTH_LG: Record<FrameKind, string> = {
+  phone: "w-[74px]",
+  "tablet-landscape": "w-[210px]",
+  "tablet-portrait": "w-[118px]",
+  tv: "w-[281px]",
+  watch: "w-[132px]",
+  mac: "w-[253px]",
+  browser: "w-[253px]",
+  other: "w-[237px]",
+  none: "w-[180px]",
+};
+
+/** Rendered px widths for the `lg` previews, mirroring {@link PREVIEW_WIDTH_LG}. */
+const PREVIEW_SIZES_LG: Record<FrameKind, string> = {
+  phone: "74px",
+  "tablet-landscape": "210px",
+  "tablet-portrait": "118px",
+  tv: "281px",
+  watch: "132px",
+  mac: "253px",
+  browser: "253px",
+  other: "237px",
+  none: "180px",
+};
+
 /**
  * The expanded row's screenshot preview: the project's first two gallery shots,
- * each in its device frame, top-aligned with a fixed gap. Renders nothing when
- * the project carries no gallery. Decorative beside the deck + CTA — each shot
- * is labelled by its device for assistive tech.
+ * each in its device frame. Renders nothing when the project carries no gallery.
+ * Decorative beside the deck + CTA — each shot is labelled by its device for
+ * assistive tech.
+ *
+ * `size` picks the layout: `base` (mobile) keeps the shots small and top-aligned
+ * below the deck; `lg` (desktop) makes them bigger and vertically centred so they
+ * read as paired with the text column to their left.
  */
 function PreviewShots({
   shots,
   locale,
   className = "",
+  size = "base",
 }: {
   shots: GalleryShot[];
   locale: Locale;
   className?: string;
+  size?: "base" | "lg";
 }) {
   if (shots.length === 0) return null;
+  const widths = size === "lg" ? PREVIEW_WIDTH_LG : PREVIEW_WIDTH;
+  const sizes = size === "lg" ? PREVIEW_SIZES_LG : PREVIEW_SIZES;
+  const layout = size === "lg" ? "items-center gap-3.5" : "items-start gap-4";
   return (
-    <div className={`flex shrink-0 items-start gap-4 ${className}`}>
+    <div className={`flex shrink-0 ${layout} ${className}`}>
       {shots.slice(0, 2).map((shot) => (
         <div
           key={shot.key}
           role="img"
           aria-label={t(locale, frameLabelKey(shot.frame))}
-          className={PREVIEW_WIDTH[shot.frame]}
+          className={widths[shot.frame]}
         >
-          <Frame shot={shot} sizes={PREVIEW_SIZES[shot.frame]} quality={90} />
+          <Frame shot={shot} sizes={sizes[shot.frame]} quality={90} />
         </div>
       ))}
     </div>
@@ -921,8 +960,10 @@ function Row({
                 inert={!open || undefined}
                 className={`px-11 pb-7 transition-opacity delay-[80ms] duration-150 ${open ? "opacity-100" : "opacity-0"}`}
               >
-                <div className="flex items-start gap-8">
-                  <div className="max-w-[580px] border-l-2 border-accent pl-5">
+                <div className="flex flex-wrap items-center gap-10">
+                  {/* Text column, capped so the pair sits close to it (not flung
+                      to the page edge). The coral rail marks the project region. */}
+                  <div className="min-w-[280px] max-w-[460px] flex-1 border-l-2 border-accent pl-5">
                     {p.featureTooling && (
                       <div className="mb-[14px] -ml-2">
                         <ToolingChip label={t(locale, "toolingChip")} />
@@ -940,10 +981,12 @@ function Row({
                     )}
                     <RowActions p={p} locale={locale} size="base" />
                   </div>
+                  {/* The pair sits right after the text (no ml-auto), vertically
+                      centred; on narrow widths flex-wrap drops it below. */}
                   <PreviewShots
                     shots={p.previewShots ?? []}
                     locale={locale}
-                    className="ml-auto"
+                    size="lg"
                   />
                 </div>
               </div>

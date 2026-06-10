@@ -77,11 +77,14 @@ and three collections.
   list" beside the deck + CTA — `previewShots` (the log query projects
   `gallery[inLog == true][0...2]`, mapped through the same `mapGalleryShot`
   pipeline; Studio caps the flag at two, none flagged shows no preview), each in
-  its `Frame`, top-aligned and right-pushed on desktop, stacked below on mobile,
-  and labelled by device via `frameLabelKey`. The previews pass `Frame` a per-frame
-  `sizes` (`PREVIEW_SIZES`) plus `quality={90}` so next/image serves a tight, crisp
-  candidate instead of softly downscaling a large source (`qualities` is whitelisted
-  in `next.config.ts`).
+  its `Frame`. On desktop (`size="lg"`) the pair sits right of a width-capped text
+  column, vertically centred with it and pulled close (no `ml-auto`); on mobile it
+  stacks below the deck, left-aligned and smaller. Each shot is labelled by device
+  via `frameLabelKey`. The `lg` widths (`PREVIEW_WIDTH_LG`) are the per-device
+  `aspect-ratio` scaled to a uniform ~158px height, so mixed frames line up on a
+  common height. The previews pass `Frame` a per-frame `sizes` plus `quality={90}`
+  so next/image serves a tight, crisp candidate instead of softly downscaling a
+  large source (`qualities` is whitelisted in `next.config.ts`).
 
 Translatable fields are `{ en, nl }` objects (helpers in `sanity/fields/i18n.ts`),
 so both locales sit side by side in one document and Dutch falls back to English
