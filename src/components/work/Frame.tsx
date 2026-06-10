@@ -21,7 +21,23 @@ const KNOWN = new Set([
   "none",
 ]);
 
-export function Frame({ shot, priority }: { shot: GalleryShot; priority?: boolean }) {
+export function Frame({
+  shot,
+  priority,
+  sizes,
+  quality,
+}: {
+  shot: GalleryShot;
+  priority?: boolean;
+  /**
+   * The image's rendered CSS width (e.g. `"76px"`), forwarded to next/image so
+   * the optimizer serves a candidate sized for the box instead of downscaling a
+   * large source — keeps small previews sharp. Omit for full-size galleries.
+   */
+  sizes?: string;
+  /** next/image quality (1–100). Raise above the 75 default for crisp small thumbnails. */
+  quality?: number;
+}) {
   // Known frame, or `other` for any unknown/legacy value (defensive: old data won't break).
   const f = KNOWN.has(shot.frame) ? shot.frame : "other";
 
@@ -32,6 +48,8 @@ export function Frame({ shot, priority }: { shot: GalleryShot; priority?: boolea
       width={shot.width}
       height={shot.height}
       priority={priority}
+      sizes={sizes}
+      quality={quality}
       className="dframe-pic"
     />
   );

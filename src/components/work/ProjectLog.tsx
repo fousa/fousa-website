@@ -735,6 +735,24 @@ const PREVIEW_WIDTH: Record<FrameKind, string> = {
 };
 
 /**
+ * The rendered px width of each preview thumbnail, mirroring {@link PREVIEW_WIDTH}.
+ * Passed to next/image as `sizes` so the optimizer serves an appropriately small,
+ * crisp candidate (at higher quality) rather than downscaling a large, re-encoded
+ * source — the previews stay sharp without shipping oversized images.
+ */
+const PREVIEW_SIZES: Record<FrameKind, string> = {
+  phone: "76px",
+  "tablet-landscape": "150px",
+  "tablet-portrait": "116px",
+  tv: "150px",
+  watch: "92px",
+  mac: "150px",
+  browser: "150px",
+  other: "140px",
+  none: "132px",
+};
+
+/**
  * The expanded row's screenshot preview: the project's first two gallery shots,
  * each in its device frame, top-aligned with a fixed gap. Renders nothing when
  * the project carries no gallery. Decorative beside the deck + CTA — each shot
@@ -759,7 +777,7 @@ function PreviewShots({
           aria-label={t(locale, frameLabelKey(shot.frame))}
           className={PREVIEW_WIDTH[shot.frame]}
         >
-          <Frame shot={shot} />
+          <Frame shot={shot} sizes={PREVIEW_SIZES[shot.frame]} quality={90} />
         </div>
       ))}
     </div>
