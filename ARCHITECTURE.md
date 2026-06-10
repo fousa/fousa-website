@@ -103,11 +103,14 @@ Internal links use `localizedHref(locale, path)` (`lib/href.ts`); metadata uses
 Grouped by domain under `src/components/`:
 
 - **work/** — `ProjectLog` (filterable table/cards with expand-in-place rows),
-  `EmptyState`, `Frame` (hairline device frames for galleries: phone, tablet-landscape
-  (4:3) / tablet-portrait (3:4) — same iPad bezel in two orientations, tv (16:9
-  chrome-less bezel with a small centered stand), Apple
-  Watch, mac (app window: dots, no address pill), browser (same window + an address
-  pill, so the two read distinctly), none), `Gallery` (screenshots grouped by device — iPad → iPhone →
+  `EmptyState`, `Frame` (frameless device frames: the screenshot *is* the element —
+  a hairline border + small radius (4px on flat screens, ~14px on iPhone, a squircle
+  on Watch), no bezel — with one minimal per-device cue: iPhone Dynamic Island, Mac
+  titlebar dots, Web (browser) a centred URL pill, TV a 16:9 screen on a pedestal
+  stand, Watch a squircle. `other` is the plain 3:2 catch-all and the fallback for
+  any unknown value; `none` keeps the image at its natural ratio. Styles live in
+  `globals.css` (`.dframe*`); the shot-based API is shared verbatim by the log
+  preview, the case study and the gallery), `Gallery` (screenshots grouped by device — iPad → iPhone →
   Apple Watch, derived from each shot's `frame` via `lib/gallery-devices`; both tablet
   orientations fall under the iPad group, with a
   built-in fit-to-screen lightbox carousel), `StatusDot`, `ToolingChip`.
