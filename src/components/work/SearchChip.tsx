@@ -55,6 +55,7 @@ function XIcon() {
  * @param onChange - called on every keystroke with the new value
  * @param onClear - clears the query (× button or Escape)
  * @param label - i18n lookup bound to the active locale (key → string)
+ * @param onArrow - ↑/↓ in the field hands off to the list (expand first / step row)
  * @param ref - exposes `focus()` to open the chip and focus its input
  */
 export function SearchChip({
@@ -62,12 +63,14 @@ export function SearchChip({
   onChange,
   onClear,
   label,
+  onArrow,
   ref,
 }: {
   value: string;
   onChange: (v: string) => void;
   onClear: () => void;
   label: (k: string) => string;
+  onArrow?: (dir: "ArrowDown" | "ArrowUp") => void;
   ref?: Ref<SearchChipHandle>;
 }) {
   const [open, setOpen] = useState(false);
@@ -135,6 +138,13 @@ export function SearchChip({
               if (e.key === "Escape") {
                 e.stopPropagation();
                 inputRef.current?.blur();
+              }
+              // ↑/↓ hand the keyboard off to the list: expand the first row, or
+              // step to the next/previous if a visible row is already open. Focus
+              // stays in the field so further ↑/↓ keep walking the list.
+              if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                e.preventDefault();
+                onArrow?.(e.key);
               }
             }}
             aria-label={label("search.label")}
