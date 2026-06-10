@@ -197,6 +197,7 @@ export const project = defineType({
                   {title: 'Apple Watch', value: 'watch'},
                   {title: 'macOS', value: 'mac'},
                   {title: 'Browser', value: 'browser'},
+                  {title: 'Other', value: 'other'},
                   {title: 'None (bare image)', value: 'none'},
                 ],
               },
