@@ -874,6 +874,56 @@ export type GALLERY_SHOTS_QUERY_RESULT = Array<{
   }> | null;
 }>;
 
+// Source: src/sanity/queries/og-shots.ts
+// Variable: FEATURED_SHOTS_QUERY
+// Query: *[_type == "project" && count(gallery) > 0]    | order(state == "active" desc, year desc)[0...$n]{      "frame": gallery[0].frame,      "image": gallery[0].image    }
+export type FEATURED_SHOTS_QUERY_RESULT = Array<{
+  frame:
+    | "browser"
+    | "mac"
+    | "none"
+    | "other"
+    | "phone"
+    | "tablet-landscape"
+    | "tablet-portrait"
+    | "tv"
+    | "watch"
+    | null;
+  image: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+}>;
+
+// Source: src/sanity/queries/og-shots.ts
+// Variable: CASE_SHOTS_QUERY
+// Query: *[_type == "project" && slug.current == $slug][0]{    "shots": gallery[0..1]{      "frame": frame,      "image": image    }  }
+export type CASE_SHOTS_QUERY_RESULT = {
+  shots: Array<{
+    frame:
+      | "browser"
+      | "mac"
+      | "none"
+      | "other"
+      | "phone"
+      | "tablet-landscape"
+      | "tablet-portrait"
+      | "tv"
+      | "watch"
+      | null;
+    image: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    } | null;
+  }> | null;
+} | null;
+
 // Source: src/sanity/queries/profile.ts
 // Variable: PROFILE_QUERY
 // Query: *[_id == "profile"][0]{    name,    tagline,    roleLine,    filterIntro,    aboutHeadline,    bio,    "portraitUrl": portrait.asset->url,    beyondCode[]{      title,      body    },    location,    email,    socialLinks,    "cvEnUrl": cvEn.asset->url,    "cvNlUrl": cvNl.asset->url,    vatNumber,    copyrightYear  }
@@ -1162,6 +1212,8 @@ declare module "@sanity/client" {
     '\n  *[_type == "project" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
     '\n  *[_id == "emptyStates"][0]{\n    overrides[]{\n      filters,\n      headline,\n      body\n    }\n  }\n': EMPTY_STATES_QUERY_RESULT;
     '\n  *[_type == "project" && count(gallery) > 0] | order(year desc, name asc) {\n    "slug": slug.current,\n    "projectName": name,\n    "hasBody": count(body.en) > 0,\n    "gallery": gallery[]{\n      _key,\n      frame,\n      caption,\n      "image": image{\n        ...,\n        "dimensions": asset->metadata.dimensions\n      }\n    }\n  }\n': GALLERY_SHOTS_QUERY_RESULT;
+    '\n  *[_type == "project" && count(gallery) > 0]\n    | order(state == "active" desc, year desc)[0...$n]{\n      "frame": gallery[0].frame,\n      "image": gallery[0].image\n    }\n': FEATURED_SHOTS_QUERY_RESULT;
+    '\n  *[_type == "project" && slug.current == $slug][0]{\n    "shots": gallery[0..1]{\n      "frame": frame,\n      "image": image\n    }\n  }\n': CASE_SHOTS_QUERY_RESULT;
     '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    roleLine,\n    filterIntro,\n    aboutHeadline,\n    bio,\n    "portraitUrl": portrait.asset->url,\n    beyondCode[]{\n      title,\n      body\n    },\n    location,\n    email,\n    socialLinks,\n    "cvEnUrl": cvEn.asset->url,\n    "cvNlUrl": cvNl.asset->url,\n    vatNumber,\n    copyrightYear\n  }\n': PROFILE_QUERY_RESULT;
     '\n  *[_type == "project"] | order(year desc, name asc) {\n    _id,\n    name,\n    "slug": slug.current,\n    year,\n    endYear,\n    state,\n    engagement,\n    isTool,\n    role,\n    client,\n    deck,\n    liveUrl,\n    githubUrl,\n    "employer": employer->{\n      _id,\n      "name": organisation,\n      "slug": lower(organisation)\n    },\n    "stack": stack[]->{\n      _id,\n      name,\n      "slug": slug.current,\n      "category": category->slug.current\n    },\n    featureTooling,\n    "hasBody": count(body.en) > 0,\n    "galleryCount": count(gallery),\n    "previewShots": gallery[inLog == true][0...2]{\n      _key,\n      frame,\n      caption,\n      "image": image{\n        ...,\n        "dimensions": asset->metadata.dimensions\n      }\n    },\n    "searchText": lower(\n      array::join([\n        coalesce(name, ""),\n        coalesce(client, ""),\n        coalesce(role, ""),\n        coalesce(employer->organisation, ""),\n        coalesce(array::join(stack[]->name, " "), ""),\n        coalesce(deck[$locale], deck.en, ""),\n        coalesce(pt::text(coalesce(body[$locale], body.en)), ""),\n        coalesce(array::join(gallery[defined(caption[$locale])].caption[$locale], " "), ""),\n        coalesce(string(year), ""),\n        coalesce(string(endYear), ""),\n        coalesce(state, ""),\n        coalesce(engagement, "")\n      ], " ")\n    )\n  }\n': PROJECTS_QUERY_RESULT;
     '\n  *[_id == "siteSettings"][0]{\n    email,\n    socials[]{\n      platform,\n      url,\n      label\n    },\n    metaDescription,\n    "ogImageUrl": ogImage.asset->url\n  }\n': SITE_SETTINGS_QUERY_RESULT;
