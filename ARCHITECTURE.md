@@ -295,15 +295,27 @@ than formal WCAG certification:
 
 ## SEO surface
 
-- **Base** — root layout sets `metadataBase` (`https://fousa.be`) and a
-  `%s · fousa.be` title template, plus default Open Graph / Twitter cards.
+- **Base** — root layout sets `metadataBase` (`https://fousa.be`), a
+  `%s · fousa.be` title template, and the default `summary_large_image` Twitter
+  card. The og/twitter *images* are supplied per route by the file convention
+  below, so the root carries no static share image of its own.
 - **robots.txt** (`app/robots.ts`) allows all, blocks `/studio/`, points at the sitemap.
 - **sitemap.xml** (`app/sitemap.ts`) lists both locales of `/`, `/about`, `/gallery`,
   and every case study with a body or gallery (depth-`none` projects 404, so they're excluded).
 - **JSON-LD** (`components/seo/JsonLd.tsx`) emits a site-wide `Person` and a per-case-study
-  `CreativeWork` (`lib/json-ld.ts`), escaping `<` to prevent tag breakout.
-- **Per-page OG** — case studies override the share image with the generated
-  `/og/<slug>` card; everything else inherits the site default.
+  `CreativeWork` (`lib/json-ld.ts`), escaping `<` to prevent tag breakout; its `image`
+  points at the page's own `opengraph-image` route.
+- **Share cards** — every shareable route owns an `opengraph-image.tsx` (home,
+  `/about`, `/gallery`, `/work/[slug]`) that Next wires to `og:image` +
+  `twitter:image`. They render a shared dark split card (`og/OgCard.tsx`) via
+  `next/og` (`og/respond.tsx`), built under Satori's constraints — inline styles
+  only, explicit px, fonts fetched as woff `ArrayBuffer`s (`og/fonts.ts`). Card
+  screenshots come from Sanity (`lib/og-shots.ts`, `sanity/queries/og-shots.ts`),
+  forced to JPEG so Satori can decode them. The case card leads with the
+  project's own shots; the montage routes fan out the most relevant featured
+  shots. Because these routes are dynamic, the `og:image` URL carries the
+  default-locale prefix (`/en/...`) and 308-redirects to the canonical
+  unprefixed path, which the proxy reserves so it is never mistaken for a slug.
 
 ## Testing
 
