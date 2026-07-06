@@ -58,7 +58,11 @@ and three collections.
   end on one line with the same faint arrow the "For" column uses (`2020 → 2022`),
   `2022` for a single year. Ongoing work (active/maintained with no `endYear`,
   derived not flagged) shows just its start year; the status dot already signals
-  it's still live.
+  it's still live. A `visible` boolean (default on) lets an editor pull a
+  project off the site entirely — every project GROQ query (log, case study +
+  static params, gallery, sitemap, OG shots, related work) filters on
+  `visible != false`, so unticking it hides the project everywhere and its
+  detail URL 404s; documents saved before the field existed stay visible.
   Detail depth is derived from content — `body` → full case study,
   `gallery` → framed screenshots, neither → no detail page. Rows with depth
   carry a **depth marker** (`DepthIcon`) next to the name: a document glyph for a

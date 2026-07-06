@@ -12,7 +12,7 @@
 import {defineQuery} from 'next-sanity'
 
 export const CASE_STUDY_QUERY = defineQuery(`
-  *[_type == "project" && slug.current == $slug][0]{
+  *[_type == "project" && slug.current == $slug && visible != false][0]{
     _id,
     name,
     "slug": slug.current,
@@ -56,6 +56,7 @@ export const CASE_STUDY_QUERY = defineQuery(`
       _type == "project"
       && slug.current != $slug
       && references(^.employer._ref)
+      && visible != false
     ] | order(year desc) [0...3] {
       _id,
       name,
@@ -67,7 +68,7 @@ export const CASE_STUDY_QUERY = defineQuery(`
 `)
 
 export const CASE_STUDY_SLUGS_QUERY = defineQuery(`
-  *[_type == "project" && defined(slug.current)]{
+  *[_type == "project" && defined(slug.current) && visible != false]{
     "slug": slug.current
   }
 `)

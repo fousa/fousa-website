@@ -14,7 +14,7 @@
 import {defineQuery} from 'next-sanity'
 
 export const FEATURED_SHOTS_QUERY = defineQuery(`
-  *[_type == "project" && count(gallery) > 0]
+  *[_type == "project" && visible != false && count(gallery) > 0]
     | order((state == "active") desc, year desc)[0...$n]{
       "frame": gallery[0].frame,
       "image": gallery[0].image
@@ -22,7 +22,7 @@ export const FEATURED_SHOTS_QUERY = defineQuery(`
 `)
 
 export const CASE_SHOTS_QUERY = defineQuery(`
-  *[_type == "project" && slug.current == $slug][0]{
+  *[_type == "project" && slug.current == $slug && visible != false][0]{
     "shots": gallery[0..3]{
       "frame": frame,
       "image": image

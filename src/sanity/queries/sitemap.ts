@@ -10,7 +10,7 @@
 import {defineQuery} from 'next-sanity'
 
 export const SITEMAP_SLUGS_QUERY = defineQuery(`
-  *[_type == "project" && defined(slug.current) && (count(body.en) > 0 || count(gallery) > 0)]{
+  *[_type == "project" && visible != false && defined(slug.current) && (count(body.en) > 0 || count(gallery) > 0)]{
     "slug": slug.current,
     "lastModified": _updatedAt
   }

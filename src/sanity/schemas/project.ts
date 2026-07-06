@@ -123,6 +123,15 @@ export const project = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'visible',
+      title: 'Visible on the website',
+      type: 'boolean',
+      group: 'basics',
+      description:
+        'Untick to hide this project everywhere on the site — log, case study, gallery, sitemap and OG cards.',
+      initialValue: true,
+    }),
+    defineField({
       name: 'stack',
       title: 'Stack tags',
       type: 'array',
