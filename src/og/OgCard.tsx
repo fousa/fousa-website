@@ -54,7 +54,8 @@ function Device({ shot, pos }: { shot: Shot; pos: DevicePos }) {
         ...(placement as CSSProperties),
       }}
     >
-      <img src={shot.url} width={w} height={h} style={{ objectFit: "cover" }} />
+      {/* eslint-disable-next-line @next/next/no-img-element -- Satori renders plain <img>; next/image cannot run inside next/og */}
+      <img src={shot.url} alt="" width={w} height={h} style={{ objectFit: "cover" }} />
     </div>
   );
 }

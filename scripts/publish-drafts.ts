@@ -66,7 +66,8 @@ async function publishDrafts() {
     const publishedId = draftId.replace(/^drafts\./, '')
 
     // Write the published version (without the drafts. prefix)
-    const {_id, ...rest} = doc
+    const rest = {...doc}
+    delete (rest as {_id?: string})._id
     tx.createOrReplace({_id: publishedId, ...rest} as Parameters<typeof tx.createOrReplace>[0])
 
     // Remove the draft

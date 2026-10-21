@@ -46,8 +46,7 @@ function deriveEngagement(
 async function ensureEmployer(
   client: SanityClient,
   index: EmployerIndex,
-  name: string,
-  engagement: Engagement
+  name: string
 ): Promise<string> {
   const key = name.toLowerCase()
   const existing = index.get(key)
@@ -93,7 +92,7 @@ export async function migrateProjects(
   const stackTags = await ensureStackTags(client, allTechs)
 
   // Ensure Fousa exists as the personal-project employer.
-  await ensureEmployer(client, employers, 'Fousa', 'freelance')
+  await ensureEmployer(client, employers, 'Fousa')
 
   let written = 0
   for (const {data, body, file} of parsed) {
@@ -113,12 +112,7 @@ export async function migrateProjects(
     } else {
       employerName = 'Fousa'
     }
-    const employerId = await ensureEmployer(
-      client,
-      employers,
-      employerName,
-      deriveEngagement(data.type, hasEmployer)
-    )
+    const employerId = await ensureEmployer(client, employers, employerName)
 
     // Stack tag references.
     const stack = (data.techStack ?? []).map((name, i) => ({
