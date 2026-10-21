@@ -99,10 +99,12 @@ export default async function AboutPage({
         : bioObj.en) ?? null
     : null;
 
+  // Sanity file first; the repo's own render (see cv/) is the fallback.
   const cvUrl =
-    locale === "nl"
+    (locale === "nl"
       ? (profile?.cvNlUrl ?? profile?.cvEnUrl)
-      : profile?.cvEnUrl;
+      : profile?.cvEnUrl) ?? "/cv-en.pdf";
+  const cvHref = cvUrl.startsWith("/") ? cvUrl : `${cvUrl}?dl=cv-${locale}.pdf`;
 
   const email = settings?.email ?? profile?.email ?? "jelle@fousa.be";
   const socials = settings?.socials ?? [];
@@ -133,18 +135,16 @@ export default async function AboutPage({
                   {t(locale, "hireMe")}
                   <span aria-hidden className="text-accent"> →</span>
                 </Link>
-                {cvUrl && (
-                  <OutboundLink
-                    kind="cv"
-                    href={`${cvUrl}?dl=cv-${locale}.pdf`}
-                    locale={locale}
-                    download
-                    className="font-display text-sm font-semibold text-ink"
-                  >
-                    {t(locale, "cv")}
-                    <span aria-hidden className="text-accent"> →</span>
-                  </OutboundLink>
-                )}
+                <OutboundLink
+                  kind="cv"
+                  href={cvHref}
+                  locale={locale}
+                  download
+                  className="font-display text-sm font-semibold text-ink"
+                >
+                  {t(locale, "cv")}
+                  <span aria-hidden className="text-accent"> →</span>
+                </OutboundLink>
               </div>
             </div>
             {profile?.portraitUrl ? (
