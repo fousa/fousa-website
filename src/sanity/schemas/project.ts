@@ -195,6 +195,7 @@ export const project = defineType({
               name: 'image',
               title: 'Image',
               type: 'image',
+              description: 'The screenshot. Crop and hotspot are honoured everywhere it renders.',
               options: {hotspot: true},
               validation: (Rule) => Rule.required(),
             }),
@@ -202,6 +203,8 @@ export const project = defineType({
               name: 'frame',
               title: 'Frame',
               type: 'string',
+              description:
+                'Which device frame wraps the shot on the site. Also groups it in the gallery. "None" shows the bare image.',
               initialValue: 'browser',
               options: {
                 layout: 'radio',

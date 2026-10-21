@@ -138,6 +138,7 @@ export const profile = defineType({
               name: 'url',
               title: 'URL',
               type: 'url',
+              description: 'Where the link goes. http(s) or mailto.',
               validation: (Rule) => Rule.required().uri({scheme: ['http', 'https', 'mailto']}),
             }),
           ],

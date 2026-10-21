@@ -34,6 +34,7 @@ export const siteSettings = defineType({
               name: 'platform',
               title: 'Platform',
               type: 'string',
+              description: 'Picks the icon and the analytics label for this link.',
               validation: (Rule) => Rule.required(),
               options: {
                 list: [
@@ -49,6 +50,7 @@ export const siteSettings = defineType({
               name: 'url',
               title: 'URL',
               type: 'url',
+              description: 'Full profile URL on that platform.',
               validation: (Rule) => Rule.required(),
             }),
             defineField({

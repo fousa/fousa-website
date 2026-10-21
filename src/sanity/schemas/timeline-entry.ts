@@ -47,6 +47,7 @@ export const timelineEntry = defineType({
       name: 'startDate',
       title: 'Start date',
       type: 'date',
+      description: 'Month the role began. Orders the timeline and drives tenure.',
       options: {dateFormat: 'YYYY-MM'},
       validation: (Rule) => Rule.required(),
     }),
