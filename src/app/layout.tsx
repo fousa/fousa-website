@@ -64,6 +64,8 @@ export const metadata: Metadata = {
   },
 };
 
+// Browser-chrome colour. `viewport` needs a literal, so this mirrors the
+// `--ink` token in globals.css rather than referencing it.
 export const viewport: Viewport = { themeColor: "#0c0c0d" };
 
 /** Pre-paint script: reads localStorage theme and sets .dark before first render. */

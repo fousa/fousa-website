@@ -276,7 +276,7 @@ export function Gallery({
                         : anim === "prev"
                           ? "translateX(0%)"
                           : `translateX(calc(-100% + ${drag}px))`,
-                    transition: anim ? "transform 300ms ease-out" : "none",
+                    transition: anim ? "transform 280ms ease-out" : "none",
                   }}
                   onTransitionEnd={onTrackTransitionEnd}
                 >
