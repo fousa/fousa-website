@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jelle Vandebeeck — CV</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&family=Space+Mono:wght@400;700&display=swap">
+<style>
+  /*
+   * One-page A4 CV in the fousa.be minimal-modern system.
+   * Tokens mirror src/app/globals.css (light theme); the dark sidebar is the
+   * site's single filled surface (`--panel`). Print: Cmd+P → Save as PDF.
+   */
+  :root {
+    --bg: #ffffff;
+    --ink: #0c0c0d;
+    --text: #3f3f46;
+    --muted: #71717a;
+    --faint: #a1a1aa;
+    --line: #e4e4e7;          /* a touch darker than the web hairline so it survives paper */
+    --accent: #e13100;
+    --panel: #0c0c0d;
+    --panel-text: #ffffff;
+    --panel-soft: #c2c2c8;
+    --panel-muted: #8a8a92;
+    --panel-faint: #5e5e66;
+    --panel-line: #2a2a2e;
+    --display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --mono: "Space Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    margin: 0;
+    background: #f4f4f5;
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; text-decoration: none; }
+  p { margin: 0; }
+
+  /* The sheet: exactly A4 at 96 dpi, centred on screen, bare on paper. */
+  .sheet {
+    width: 794px;
+    height: 1123px;
+    margin: 32px auto;
+    background: var(--bg);
+    display: grid;
+    grid-template-columns: 236px minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  /* --- type roles --------------------------------------------------------- */
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .mono { font-family: var(--mono); }
+  .org  { font-family: var(--display); font-size: 14.5px; font-weight: 600; color: var(--ink); }
+  .dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .sep { color: var(--faint); }
+
+  /* --- sidebar ------------------------------------------------------------- */
+  .side {
+    padding: 56px 30px 44px;
+    background: var(--panel);
+    color: var(--panel-text);
+    display: flex;
+    flex-direction: column;
+  }
+  .side .eyebrow { color: var(--panel-muted); }
+  .side h1 {
+    margin: 26px 0 0;
+    font-family: var(--display);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+  .side h1 .period { color: var(--accent); }
+  .side .role { margin-top: 12px; font-size: 13px; line-height: 1.5; color: var(--panel-soft); }
+  .side .status {
+    margin-top: 20px;
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--mono); font-size: 11px; color: var(--panel-text);
+  }
+  .side section { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--panel-line); }
+  .side .contact { margin-top: 12px; display: flex; flex-direction: column; gap: 7px; font-size: 12.5px; line-height: 1.4; }
+  .side .contact .quiet { color: var(--panel-soft); }
+  .side .skills { margin-top: 12px; display: flex; flex-direction: column; gap: 13px; }
+  .side .cat { font-family: var(--mono); font-size: 11px; color: var(--panel-muted); }
+  .side .cat .n { color: var(--panel-faint); }
+  .side .tags { margin-top: 4px; font-size: 12.5px; line-height: 1.55; }
+  .side .langs { margin-top: 12px; font-size: 12.5px; line-height: 1.7; }
+  .side .langs span { color: var(--panel-muted); }
+  .side .foot {
+    margin-top: auto;
+    padding-top: 16px;
+    font-family: var(--mono); font-size: 10.5px; line-height: 1.5;
+    color: var(--panel-muted);
+  }
+
+  /* --- main column --------------------------------------------------------- */
+  .main { padding: 56px 46px 44px 40px; display: flex; flex-direction: column; }
+  .intro { max-width: 500px; font-size: 13.5px; line-height: 1.6; color: var(--text); }
+  .main section { margin-top: 22px; }
+  .main section > .eyebrow { display: block; padding-top: 12px; border-top: 1px solid var(--line); }
+
+  /* experience: one hairline row per role */
+  .xp { display: flex; flex-direction: column; }
+  .xp .row {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: baseline;
+    padding: 8px 0;
+    border-top: 1px solid var(--line);
+  }
+  .xp .row:first-child { border-top: 0; padding-top: 10px; }
+  .xp .when { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .xp .org { white-space: nowrap; }
+  .xp .title { font-size: 12.5px; color: var(--text); text-align: right; white-space: nowrap; }
+  .xp .place { font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--muted); }
+
+  /* selected work: the log's table */
+  .log { display: flex; flex-direction: column; }
+  .log .head, .log .row {
+    display: grid;
+    grid-template-columns: 108px minmax(0, 1fr) 78px;
+    gap: 12px;
+    align-items: baseline;
+  }
+  .log .head {
+    padding: 10px 0 6px;
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint);
+  }
+  .log .row { padding: 6px 0; border-top: 1px solid var(--line); }
+  .log .name { font-family: var(--display); font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .log .deck { font-size: 12px; line-height: 1.45; color: var(--text); }
+  .log .platform { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: right; white-space: nowrap; }
+  .log .group { padding: 10px 0 4px; font-family: var(--mono); font-size: 10px; color: var(--faint); letter-spacing: 0.06em; }
+  .log .more { margin-top: 8px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .log .more a { color: var(--ink); }
+
+  .edu { padding: 10px 0 0; margin: 0; display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font-size: 13px; }
+  .edu p { margin: 0; }
+  .edu .what { color: var(--text); }
+  .edu .when { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  /* --- print --------------------------------------------------------------- */
+  @page { size: A4 portrait; margin: 0; }
+  @media print {
+    body { background: #fff; }
+    .sheet { margin: 0; width: 210mm; height: 297mm; }
+  }
+</style>
+</head>
+<body>
+<main class="sheet">
+
+  <aside class="side">
+    <p class="eyebrow">Curriculum vitae</p>
+    <h1>Jelle<br>Vandebeeck<span class="period">.</span></h1>
+    <p class="role">Freelance iOS &amp; web developer</p>
+    <p class="status"><span class="dot" aria-hidden="true"></span>Available for new work</p>
+
+    <section>
+      <p class="eyebrow">Contact</p>
+      <div class="contact">
+        <a href="mailto:jelle@fousa.be">jelle@fousa.be</a>
+        <a href="https://fousa.be">fousa.be</a>
+        <span>+32 494 86 03 25</span>
+        <span class="quiet">Edegem, Belgium</span>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">Skills</p>
+      <div class="skills">
+        <div>
+          <p class="cat"><span class="n">01</span>&nbsp;&nbsp;Apple</p>
+          <p class="tags">Swift, SwiftUI, UIKit, Objective-C, iOS, tvOS, macOS</p>
+        </div>
+        <div>
+          <p class="cat"><span class="n">02</span>&nbsp;&nbsp;Web</p>
+          <p class="tags">Ruby on Rails, JavaScript</p>
+        </div>
+        <div>
+          <p class="cat"><span class="n">03</span>&nbsp;&nbsp;Tooling</p>
+          <p class="tags">Fastlane, Jenkins, GitHub Actions</p>
+        </div>
+        <div>
+          <p class="cat"><span class="n">04</span>&nbsp;&nbsp;AI</p>
+          <p class="tags">Claude Code, Antigravity</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">Languages</p>
+      <p class="langs">
+        Dutch <span>· native</span><br>
+        English <span>· fluent</span><br>
+        French <span>· good</span>
+      </p>
+    </section>
+
+    <p class="foot">65 projects · 20 years<br>logged at fousa.be</p>
+  </aside>
+
+  <div class="main">
+    <p class="intro">Twenty years of building software, mostly iOS with Rails on the web side. Freelance since 2012. Lately I pair with AI agents on most work, running my own apps as a product owner. Off the keyboard I fly gliders, which is where those apps come from.</p>
+
+    <section>
+      <p class="eyebrow">Experience</p>
+      <div class="xp">
+        <div class="row">
+          <span class="when"><span class="dot" aria-hidden="true"></span>2022 → now</span>
+          <span class="org">itsme <span class="place">· Brussels</span></span><span class="title">Freelance iOS developer</span>
+        </div>
+        <div class="row">
+          <span class="when">2021 → 2022</span>
+          <span class="org">Aviobook <span class="place">· Hasselt</span></span><span class="title">Expert iOS developer</span>
+        </div>
+        <div class="row">
+          <span class="when">2014 → 2021</span>
+          <span class="org">icapps <span class="place">· Antwerp</span></span><span class="title">iOS lead / senior developer</span>
+        </div>
+        <div class="row">
+          <span class="when"><span class="dot" aria-hidden="true"></span>2012 → now</span>
+          <span class="org">Fousa <span class="place">· Edegem</span></span><span class="title">iOS, macOS &amp; Ruby developer</span>
+        </div>
+        <div class="row">
+          <span class="when">2010 → 2014</span>
+          <span class="org">10to1 <span class="place">· Kontich</span></span><span class="title">Ruby / iOS developer</span>
+        </div>
+        <div class="row">
+          <span class="when">2009 → 2010</span>
+          <span class="org">Belighted <span class="place">· Louvain-la-Neuve</span></span><span class="title">Ruby developer</span>
+        </div>
+        <div class="row">
+          <span class="when">2005 → 2009</span>
+          <span class="org">KBC Group <span class="place">· Leuven</span></span><span class="title">Mainframe &amp; Java developer</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">Selected work</p>
+      <div class="log">
+        <div class="head"><span>Project</span><span>Role</span><span style="text-align: right">Platform</span></div>
+
+        <div class="row"><span class="name">Aviobook</span><span class="deck">Expert iOS developer, cockpit app</span><span class="platform">iOS</span></div>
+        <div class="row"><span class="name">Telenet Yugo</span><span class="deck">Lead iOS developer, video on demand</span><span class="platform">iOS, tvOS</span></div>
+        <div class="row"><span class="name">Horizon Go</span><span class="deck">Lead tvOS developer, video streaming</span><span class="platform">tvOS</span></div>
+        <div class="row"><span class="name">Philips Hue</span><span class="deck">Lead iOS developer, development</span><span class="platform">iOS</span></div>
+        <div class="row"><span class="name">Yelo Play</span><span class="deck">Senior iOS developer, maintenance</span><span class="platform">iOS</span></div>
+        <div class="row"><span class="name">Bolero</span><span class="deck">Lead iOS developer, development</span><span class="platform">iOS</span></div>
+
+        <p class="group">PERSONAL</p>
+        <div class="row"><span class="name">Vulture</span><span class="deck">Gliding planning and analysis</span><span class="platform">iOS</span></div>
+        <div class="row"><span class="name">Soaring Book</span><span class="deck">iPad &amp; web app for my gliding club</span><span class="platform">iOS, Rails</span></div>
+        <div class="row"><span class="name">RASP</span><span class="deck">Soaring weather charts on iOS</span><span class="platform">iOS</span></div>
+        <div class="row"><span class="name">Track</span><span class="deck">Read your flight log files</span><span class="platform">macOS, iOS</span></div>
+        <div class="row"><span class="name">GPX Reader</span><span class="deck">Read your GPX and TCX files</span><span class="platform">macOS, iOS</span></div>
+        <div class="row"><span class="name">Punch</span><span class="deck">Menu bar app for time tracking</span><span class="platform">macOS</span></div>
+
+        <p class="more">Full log of 65 projects → <a href="https://fousa.be">fousa.be</a></p>
+      </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">Education</p>
+      <div class="edu">
+        <p><span class="org">KHLeuven</span> <span class="what">· Bachelor Applied Informatics</span></p>
+        <span class="when">2002 → 2005</span>
+      </div>
+      <div class="edu">
+        <p><span class="org">HHC Tervuren</span> <span class="what">· Modern Languages &amp; Science</span></p>
+        <span class="when">1996 → 2002</span>
+      </div>
+    </section>
+  </div>
+
+</main>
+</body>
+</html>
