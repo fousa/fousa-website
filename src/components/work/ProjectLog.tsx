@@ -4,12 +4,13 @@
  * / cards (mobile), with rows that expand in place to a deck + case-study
  * link.
  *
- * Filter state is multi-select with three groups (stack / status / affiliation),
- * OR within a group and AND across groups. Synced to URL search params so
- * selections survive reloads and are shareable.
+ * Filter state is multi-select across six groups (stack / status / tool /
+ * caseStudy / affiliation / skill) plus a free-text `?q=` search and a
+ * `?s=` sort: OR within a group, AND across groups. Everything is synced to
+ * URL search params so selections survive reloads and are shareable.
  */
 import Link from "next/link";
-import { useMemo, useState, useCallback, useEffect, useRef, type ReactNode } from "react";
+import { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   matchesFilters,
@@ -18,22 +19,24 @@ import {
   yearRange,
   DEFAULT_SORT,
   type Filters,
-  type StackFilter,
-  type StatusFilter,
-  type AffiliationFilter,
-  type ToolFilter,
-  type CaseStudyFilter,
   type Sort,
   type SortKey,
   type SortDir,
   type Project,
   type Depth,
-  type Frame as FrameKind,
-  type GalleryShot,
   type EmptyStateOverride,
-  frameLabelKey,
 } from "@/lib/work";
-import { Frame } from "./Frame";
+import {
+  SORT_KEYS,
+  activeValues,
+  filterCount,
+  filtersFromParams,
+  filtersToParams,
+  matchOverride,
+  parseSort,
+} from "@/lib/work-params";
+import { highlight } from "./highlight";
+import { PreviewShots } from "./PreviewShots";
 import { ForCell } from "./ForCell";
 import { DepthIcon } from "./DepthIcon";
 import { SearchChip, type SearchChipHandle } from "./SearchChip";
@@ -67,117 +70,6 @@ const CHIPS: ChipDef[] = [
 
 /** Map table column headers to i18n keys. */
 const COLUMNS = ["project", "for", "platform", "year", "state"] as const;
-
-// ---------------------------------------------------------------------------
-// URL ↔ Filters helpers
-// ---------------------------------------------------------------------------
-
-const ALLOWED_STACK: StackFilter[] = ["apple", "web"];
-const ALLOWED_STATUS: StatusFilter[] = ["active"];
-const ALLOWED_TOOL: ToolFilter[] = ["tools"];
-const ALLOWED_CASESTUDY: CaseStudyFilter[] = ["casestudy"];
-const ALLOWED_AFFILIATION: AffiliationFilter[] = ["freelance", "icapps", "10to1"];
-
-function parseList<T extends string>(raw: string | null, allowed: T[]): T[] {
-  if (!raw) return [];
-  return raw.split(",").filter((v): v is T => (allowed as string[]).includes(v));
-}
-
-/**
- * Parse the open-ended `skill` param: any non-empty, de-duplicated tag slugs.
- * No allowlist (skills are data-driven) — an unknown key just matches nothing.
- */
-function parseSkills(raw: string | null): string[] {
-  if (!raw) return [];
-  return [...new Set(raw.split(",").map((s) => s.trim()).filter(Boolean))];
-}
-
-function filtersFromParams(params: URLSearchParams): Filters {
-  return {
-    stack: parseList(params.get("stack"), ALLOWED_STACK),
-    status: parseList(params.get("status"), ALLOWED_STATUS),
-    tool: parseList(params.get("tool"), ALLOWED_TOOL),
-    caseStudy: parseList(params.get("caseStudy"), ALLOWED_CASESTUDY),
-    affiliation: parseList(params.get("affiliation"), ALLOWED_AFFILIATION),
-    skill: parseSkills(params.get("skill")),
-  };
-}
-
-function filtersToParams(f: Filters, base: URLSearchParams): URLSearchParams {
-  const sp = new URLSearchParams(base);
-  (["stack", "status", "tool", "caseStudy", "affiliation", "skill"] as Group[]).forEach((g) => {
-    f[g].length ? sp.set(g, f[g].join(",")) : sp.delete(g);
-  });
-  return sp;
-}
-
-function filterCount(f: Filters): number {
-  return f.stack.length + f.status.length + f.tool.length + f.caseStudy.length + f.affiliation.length + f.skill.length;
-}
-
-// ---------------------------------------------------------------------------
-// URL ↔ Sort helpers
-// ---------------------------------------------------------------------------
-
-const SORT_KEYS: SortKey[] = ["project", "year", "state"];
-
-/** Parse the `?s=<key>-<dir>` param; anything invalid falls back to default. */
-function parseSort(raw: string | null): Sort {
-  if (!raw) return DEFAULT_SORT;
-  const [key, dir] = raw.split("-");
-  const validKey = (SORT_KEYS as string[]).includes(key);
-  const validDir = dir === "asc" || dir === "desc";
-  return validKey && validDir
-    ? { key: key as SortKey, dir: dir as SortDir }
-    : DEFAULT_SORT;
-}
-
-/** Flatten the active filter values across all groups into one list. */
-function activeValues(f: Filters): string[] {
-  return [...f.stack, ...f.status, ...f.tool, ...f.caseStudy, ...f.affiliation, ...f.skill];
-}
-
-/**
- * Find the override whose filter set exactly matches the active one
- * (order-independent). First match wins; null when none match.
- */
-function matchOverride(
-  active: string[],
-  list: EmptyStateOverride[],
-): EmptyStateOverride | null {
-  if (active.length === 0) return null;
-  const key = [...active].sort().join(",");
-  return list.find((o) => [...o.filters].sort().join(",") === key) ?? null;
-}
-
-/**
- * Wrap case-insensitive occurrences of `q` within `text` in `<mark>`, returning
- * the text unchanged when `q` is empty. Pass plain text only — React escapes the
- * children, so this introduces no markup injection.
- */
-function highlight(text: string, q: string): ReactNode {
-  const query = q.trim();
-  if (!query) return text;
-  const parts: ReactNode[] = [];
-  const lower = text.toLowerCase();
-  const ql = query.toLowerCase();
-  let i = 0;
-  let n = 0;
-  for (let idx = lower.indexOf(ql); idx !== -1; idx = lower.indexOf(ql, i)) {
-    if (idx > i) parts.push(text.slice(i, idx));
-    parts.push(
-      <mark
-        key={n++}
-        className="rounded-[2px] bg-accent-soft px-[1px] text-ink"
-      >
-        {text.slice(idx, idx + query.length)}
-      </mark>,
-    );
-    i = idx + query.length;
-  }
-  if (i < text.length) parts.push(text.slice(i));
-  return parts;
-}
 
 // Session key for the expanded row. Persisted so it survives a round trip into
 // a project's detail and back (incl. the browser back button), but scoped to
@@ -789,110 +681,6 @@ function SortHeader({
         </span>
       </button>
     </th>
-  );
-}
-
-// Per-frame width for the expanded-row preview thumbnails. Chosen so every
-// device lands in a comparable ~110–150px height band when top-aligned, so an
-// iPhone doesn't tower over an iPad sitting beside it.
-const PREVIEW_WIDTH: Record<FrameKind, string> = {
-  phone: "w-[76px]",
-  "tablet-landscape": "w-[150px]",
-  "tablet-portrait": "w-[116px]",
-  tv: "w-[150px]",
-  watch: "w-[92px]",
-  mac: "w-[150px]",
-  browser: "w-[150px]",
-  other: "w-[140px]",
-  none: "w-[132px]",
-};
-
-/**
- * The rendered px width of each preview thumbnail, mirroring {@link PREVIEW_WIDTH}.
- * Passed to next/image as `sizes` so the optimizer serves an appropriately small,
- * crisp candidate (at higher quality) rather than downscaling a large, re-encoded
- * source — the previews stay sharp without shipping oversized images.
- */
-const PREVIEW_SIZES: Record<FrameKind, string> = {
-  phone: "76px",
-  "tablet-landscape": "150px",
-  "tablet-portrait": "116px",
-  tv: "150px",
-  watch: "92px",
-  mac: "150px",
-  browser: "150px",
-  other: "140px",
-  none: "132px",
-};
-
-// Larger ("lg") preview widths for the desktop expanded row, where the pair sits
-// vertically centred beside the text. Each width is the frame's `aspect-ratio`
-// (see globals.css) scaled to a uniform ~158px height, so mixed devices line up
-// on a common height instead of a common top edge. `none` keeps its natural
-// ratio, so its width is just a sensible cap.
-const PREVIEW_WIDTH_LG: Record<FrameKind, string> = {
-  phone: "w-[74px]",
-  "tablet-landscape": "w-[210px]",
-  "tablet-portrait": "w-[118px]",
-  tv: "w-[281px]",
-  watch: "w-[132px]",
-  mac: "w-[253px]",
-  browser: "w-[253px]",
-  other: "w-[237px]",
-  none: "w-[180px]",
-};
-
-/** Rendered px widths for the `lg` previews, mirroring {@link PREVIEW_WIDTH_LG}. */
-const PREVIEW_SIZES_LG: Record<FrameKind, string> = {
-  phone: "74px",
-  "tablet-landscape": "210px",
-  "tablet-portrait": "118px",
-  tv: "281px",
-  watch: "132px",
-  mac: "253px",
-  browser: "253px",
-  other: "237px",
-  none: "180px",
-};
-
-/**
- * The expanded row's screenshot preview: the project's first two gallery shots,
- * each in its device frame. Renders nothing when the project carries no gallery.
- * Decorative beside the deck + CTA — each shot is labelled by its device for
- * assistive tech.
- *
- * `size` picks the layout: `base` (mobile) keeps the shots small and top-aligned
- * below the deck; `lg` (desktop) makes them bigger and vertically centred so they
- * read as paired with the text column to their left.
- */
-function PreviewShots({
-  shots,
-  locale,
-  className = "",
-  size = "base",
-}: {
-  shots: GalleryShot[];
-  locale: Locale;
-  className?: string;
-  size?: "base" | "lg";
-}) {
-  if (shots.length === 0) return null;
-  const widths = size === "lg" ? PREVIEW_WIDTH_LG : PREVIEW_WIDTH;
-  const sizes = size === "lg" ? PREVIEW_SIZES_LG : PREVIEW_SIZES;
-  const layout = size === "lg" ? "items-center gap-3.5" : "items-start gap-4";
-  return (
-    <div className={`flex shrink-0 ${layout} ${className}`}>
-      {shots.slice(0, 2).map((shot) => (
-        <div
-          key={shot.key}
-          role="img"
-          aria-label={t(locale, frameLabelKey(shot.frame))}
-          className={widths[shot.frame]}
-        >
-          <Frame shot={shot} sizes={sizes[shot.frame]} quality={90} />
-        </div>
-      ))}
-    </div>
   );
 }
 
