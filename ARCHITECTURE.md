@@ -40,7 +40,10 @@ and four collections.
 
 **Singletons**
 - **Profile** — name, `roleLine`, `filterIntro`, bio (portable text), portrait,
-  beyond-code items, per-locale CV files, contact + social details.
+  beyond-code items, per-locale CV files, contact + social details. The English
+  CV is authored in the repo (`cv/cv-en.html`, same tokens and type roles as the
+  site) and rendered to `public/cv-en.pdf` by `pnpm cv:pdf`; the Sanity file is
+  what the About page links first, the repo PDF is the fallback.
 - **Availability** — status (`available` / `after-hours` / `unavailable`) + a
   localized message; drives the coloured dot in the About contact panel.
 - **Site settings** — email, ordered social links, localized meta description, OG override.

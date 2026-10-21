@@ -41,6 +41,8 @@ For CI, set `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, and
 | `pnpm test:e2e:ui` | Playwright UI mode |
 | `pnpm typegen` | Extract Sanity schema (`pnpm schema:extract`) → regenerate `sanity.types.ts` |
 | `pnpm backup` | Export the production dataset to `backups/` |
+| `pnpm cv:pdf` | Render `cv/cv-en.html` to `public/cv-en.pdf` with headless Chrome |
+| `pnpm cv:upload[:dry]` | Upload that PDF to Sanity as the profile's English CV (needs `pnpm sanity login`) |
 
 Content maintenance (one-shot, dotenv-loaded from `.env.local`; the `:dry`
 variants only print what would change): `pnpm seed:stack-tags`,
@@ -76,6 +78,7 @@ src/
 ├── hooks/               # shared React hooks
 └── proxy.ts             # i18n + redirect middleware (Next "proxy")
 
+cv/                      # the CV as printable HTML (source of public/cv-en.pdf)
 e2e/                     # Playwright specs
 ```
 
@@ -90,6 +93,9 @@ Open the embedded Studio at `/studio`. The singletons to fill first (pinned at t
 top of the Studio nav):
 
 - **Profile** — name, role line, bio, beyond-code items (with images), portrait, per-locale CV PDFs.
+  The English CV itself is authored in `cv/cv-en.html` (same tokens and type roles as the
+  site); run `pnpm cv:pdf` after editing it, then `pnpm cv:upload` or pick the PDF in the
+  Studio. Without a Sanity file the About page links to `/cv-en.pdf` from the repo.
 - **Site settings** — contact email, ordered social links, meta description, OG image.
 - **Availability** — status (`available` / `after-hours` / `unavailable`) and a message line.
 - **Empty states** — optional per-filter-combo overrides for the project-log empty state.
