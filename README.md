@@ -1,6 +1,6 @@
 # fousa.be
 
-Portfolio site of Frederik Vandebeeck — freelance iOS & web developer.
+Portfolio site of Jelle Vandebeeck — freelance iOS & web developer.
 Next.js 16 App Router · TypeScript · Tailwind v4 · Sanity v5 · pnpm · Vercel.
 
 ## Quick start
@@ -39,31 +39,38 @@ For CI, set `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, and
 | `pnpm test:cov` | Vitest with coverage report |
 | `pnpm test:e2e` | Playwright E2E (boots prod build first) |
 | `pnpm test:e2e:ui` | Playwright UI mode |
-| `pnpm typegen` | Extract Sanity schema → regenerate `sanity.types.ts` |
+| `pnpm typegen` | Extract Sanity schema (`pnpm schema:extract`) → regenerate `sanity.types.ts` |
 | `pnpm backup` | Export the production dataset to `backups/` |
 
-Content maintenance (one-shot, dotenv-loaded): `pnpm seed:stack-tags`,
-`pnpm migrate:content[:dry]`, `pnpm publish:drafts[:dry]`.
+Content maintenance (one-shot, dotenv-loaded from `.env.local`; the `:dry`
+variants only print what would change): `pnpm seed:stack-tags`,
+`pnpm seed:skill-categories[:dry]`, `pnpm migrate:content[:dry]`,
+`pnpm publish:drafts[:dry]`, `pnpm cleanup:project-fields[:dry]`,
+`pnpm backfill:visible[:dry]`.
 
 ## Project structure
 
 ```
 src/
 ├── app/                 # Next App Router
-│   ├── [locale]/        #   home, about, work/[slug], not-found
+│   ├── [locale]/        #   home, about, gallery, game, work/[slug], not-found
+│   │                    #   (each shareable route owns an opengraph-image.tsx)
 │   ├── studio/          #   embedded Sanity Studio (/studio)
 │   ├── api/revalidate/  #   Sanity webhook → ISR
-│   ├── og/[slug]/       #   per-case-study OG image
 │   ├── robots.ts · sitemap.ts · layout.tsx
 ├── components/          # React components, grouped by domain
 │   ├── work/            #   project log, filters, empty state, device frames
 │   ├── layout/          #   top bar, footer, locale switch, info tip, outbound link
-│   ├── about/           #   career timeline, availability badge
+│   ├── about/           #   career timeline, availability badge, skills index
+│   ├── gallery/         #   GalleryMasonry (/gallery)
+│   ├── glide/           #   GlidePlay, the hidden mini-game (/game)
 │   ├── home/            #   HomeLead
 │   ├── theme/           #   ThemeToggle
 │   ├── brand/           #   Wordmark
 │   └── seo/             #   JsonLd
 ├── lib/                 # pure helpers (work filtering, display, SEO, JSON-LD, analytics)
+│                        #   *-data.ts siblings hold the server-only Sanity fetchers
+├── og/                  # shared Open Graph card renderer (OgCard, fonts, respond)
 ├── sanity/              # schemas, GROQ queries, client, image helpers
 ├── i18n/                # locale config + UI string dictionaries (en, nl)
 ├── hooks/               # shared React hooks
@@ -88,7 +95,7 @@ top of the Studio nav):
 - **Empty states** — optional per-filter-combo overrides for the project-log empty state.
 
 Projects are added under **Project**. Set `engagement`
-(freelance / full-time / internship / student), pick the matching employer
+(freelance / full-time / student), pick the matching employer
 (timeline entry) when relevant, fill the localized summary, and add either a
 case-study body (full case study) or a gallery (screenshots-only). The detail-page
 depth is derived automatically: `body` → full, `gallery` → screenshots, neither →

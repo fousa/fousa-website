@@ -35,8 +35,8 @@ expand for row bodies, and a keyed cross-fade when the filter set changes. A glo
 
 ## Content model
 
-Seven Sanity document types — four singletons (pinned at the top of the Studio nav)
-and three collections.
+Eight Sanity document types — four singletons (pinned at the top of the Studio nav)
+and four collections.
 
 **Singletons**
 - **Profile** — name, `roleLine`, `filterIntro`, bio (portable text), portrait,
@@ -50,9 +50,11 @@ and three collections.
 - **Timeline entry** — a row on the About career list (freelance / employed /
   education, by `group`); `startDate`/`endDate` drive tenure. Also referenced by
   Project as its employer (its display name is `organisation`, not `name`).
+- **Skill category** — the drag-ordered buckets the About Skills index groups stack
+  tags into (see *Skills* below); seeded via `pnpm seed:skill-categories`.
 - **Stack tag** — technology labels (Swift, Rails, …), seeded via `pnpm seed:stack-tags`.
 - **Project** — the workhorse: one homepage log row *and* one detail page.
-  `engagement` (freelance/full-time/internship/student) drives filters; `state`
+  `engagement` (freelance/full-time/student) drives filters; `state`
   (active/maintained/archived/cancelled) drives the status dot (only `active` is
   coral). `year` plus an optional `endYear` render a range in the log — start and
   end on one line with the same faint arrow the "For" column uses (`2020 → 2022`),
@@ -60,9 +62,9 @@ and three collections.
   derived not flagged) shows just its start year; the status dot already signals
   it's still live. A `visible` boolean (default on) lets an editor pull a
   project off the site entirely — every project GROQ query (log, case study +
-  static params, gallery, sitemap, OG shots, related work) filters on
-  `visible != false`, so unticking it hides the project everywhere and its
-  detail URL 404s; documents saved before the field existed stay visible.
+  static params, gallery, sitemap, OG shots, related work, and the About skills
+  usage counts) filters on `visible != false`, so unticking it hides the
+  project everywhere and its detail URL 404s; documents saved before the field existed stay visible.
   Detail depth is derived from content — `body` → full case study,
   `gallery` → framed screenshots, neither → no detail page. Rows with depth
   carry a **depth marker** (`DepthIcon`) next to the name: a document glyph for a
@@ -127,7 +129,7 @@ Grouped by domain under `src/components/`:
   built-in fit-to-screen lightbox carousel), `StatusDot`, `ToolingChip`.
 - **layout/** — `TopBar` (scroll-revealed hairline + blur), `SiteFooter`, `LocaleSwitch`,
   `InfoTip`, `OutboundLink`, `use-scrolled`.
-- **about/** — `CareerTimeline`, `AvailabilityBadge`, `Skills` (numbered
+- **about/** — `CareerTimeline` (in `career-section.tsx`), `AvailabilityBadge`, `Skills` (numbered
   category index, each tag deep-linking into the filtered log).
 - **gallery/** — `GalleryMasonry`, the client masonry behind `/gallery`.
 - **home/** `HomeLead` · **theme/** `ThemeToggle` · **brand/** `Wordmark` · **glide/**
@@ -142,7 +144,7 @@ localized `/game`; the wordmark itself stays the home link everywhere. `/game` r
 full-screen `GlidePlay` (fixed over the layout's header/footer); its close control and Escape
 navigate home, and it's `noindex`'d + kept out of the sitemap so it stays stumbled-upon.
 
-The content layer is `lib/work.ts` (typed `Project`, GROQ fetchers, `projectDepth`,
+The content layer is `lib/work.ts` (typed `Project`, `projectDepth`,
 `matchesFilters`, plus the sort model `compareProjects` / `sortProjects`) plus
 `lib/work-display.ts` (`forLabel` — the single source for the "For" label from
 employer + client). The manual `isTool` Studio flag is authoritative: when set,
@@ -163,8 +165,8 @@ It also derives `platforms` — the stack tags whose skill category is `platform
 joined for display — which the home log's "Platform" column shows in place of the
 full `stack` (the detail page still renders the complete `stack`). Tag a stack
 tag's category as **Platform** in Studio to surface it there.
-`getProjects` builds log `Project`s from it; the detail page calls one
-`getProjectDetail(slug, locale)` that returns a `ProjectDetail` (the base plus
+`getProjects` (in `lib/work-data.ts`, with the other fetchers) builds log
+`Project`s from it; the detail page calls one `getProjectDetail(slug, locale)` that returns a `ProjectDetail` (the base plus
 `body`, `cover`, and `related`) — no second raw fetch, and `links` ride
 along on the base. Cover and gallery URLs go through the `@sanity/image-url`
 builder (`sanity/image.ts` → `urlForImage`), not `asset->url`, so the editor's
@@ -193,8 +195,8 @@ the single predicate that also drives the row's depth marker in the log, so the
 chip and the marker can never disagree. OR within a group, AND across groups, all
 URL-backed via `useSearchParams` (one param per group). The per-helper rules live
 in their JSDoc.
-The skill axis powers the About **Skills** section: `lib/skills.ts` / `getSkills`
-(query `sanity/queries/skills.ts`) returns every tag used by ≥1 project with its
+The skill axis powers the About **Skills** section: `lib/skills.ts` +
+`lib/skills-data.ts` / `getSkills` (query `sanity/queries/skills.ts`) returns every tag used by ≥1 project with its
 usage count and its grouping category — a **reference** to a `skillCategory`
 document, dereferenced to its key, translatable title, and `orderRank`. Each tag
 links to `/?skill=<key>#work`. It renders as a **numbered category index** (layout B,
@@ -253,7 +255,7 @@ the name and deck in both the desktop row and mobile card. With a query active t
 empty state reads "No projects match …{q}…" and its clear action resets `?q=`.
 
 **Cross-project gallery** (`/gallery`) flattens every project's `gallery[]` into
-one stream of shots via `lib/gallery.ts` / `getGalleryShots` (query
+one stream of shots via `lib/gallery.ts` + `lib/gallery-data.ts` / `getGalleryShots` (query
 `sanity/queries/gallery.ts`), tagging each with its project and a coarse device
 group from `deviceOf` (phone → iphone, tablet-* → ipad, watch → watch, tv → tv,
 browser → web, else → other).
@@ -295,7 +297,8 @@ than formal WCAG certification:
   and is wired with `aria-controls` + a localized label.
 - **Touch targets**: small controls extend to ~44px via an `::after` hit area without
   changing visual size.
-- **Skip link** in the root layout jumps to the single `<main id="main">` landmark per route.
+- **Skip link** in the locale layout (it needs the localized label) jumps to the
+  single `<main id="main">` landmark per route.
 
 ## SEO surface
 
@@ -342,8 +345,18 @@ both on push and PR.
 ## Operational notes
 
 - **Rendering** — SSG with on-demand ISR. Pages build at deploy time; a Sanity
-  webhook hits `/api/revalidate` (guarded by `SANITY_REVALIDATE_SECRET`) which calls
-  `revalidatePath` for the affected routes. Visitors always get CDN-cached HTML.
+  webhook hits `/api/revalidate` (guarded by `SANITY_REVALIDATE_SECRET`, compared
+  in constant time) which purges the whole route tree with
+  `revalidatePath('/', 'layout')` — the site is small enough that one blanket
+  purge beats tracking which locale/detail/gallery/OG routes a document feeds.
+  Fetches also carry a 1-hour `revalidate` as a fallback. Visitors always get
+  CDN-cached HTML.
+- **Server boundary** — `sanity/client.ts` and `sanity/fetch.ts` import
+  `server-only`, so the token-bearing client can never land in a browser bundle;
+  the build fails if a client component reaches it. That is why each content
+  module is split in two: pure types/helpers (`lib/work.ts`, `lib/gallery.ts`,
+  `lib/skills.ts`, importable anywhere) and the fetchers that use them
+  (`lib/work-data.ts`, `lib/gallery-data.ts`, `lib/skills-data.ts`, server only).
 - **Deploys** — Vercel, automatic on `main`. CI (`.github/workflows/test.yml`) needs
   `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, and `SANITY_API_TOKEN`
   as repository secrets for build + E2E.
@@ -351,7 +364,8 @@ both on push and PR.
   Page hits (incl. `/about`) are tracked automatically; custom events go through the
   typed `track()` wrapper (`lib/analytics.ts`): `project_expand`, `project_open`
   (fired from a log row *and* from a `/gallery` screenshot tap, where it carries
-  `target: "gallery"`), `filter_select`, `sort_change`, `empty_state_shown`,
+  `target: "gallery"`), `filter_select`, `skill_click`, `clear_filters`,
+  `sort_change`, `empty_state_shown`,
   `search_query` (logs the query *length* and result count on the debounced
   commit, never the text), `gallery_filter` (the picked device bucket + shot
   count on the `/gallery` page), `locale_switch`, `theme_toggle`,
