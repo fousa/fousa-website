@@ -1,3 +1,4 @@
+/** Unit tests for the About skills helpers (`sizeSkills`, `groupByCategory`, `coreKeys`). */
 import { describe, it, expect } from "vitest";
 import { sizeSkills, groupByCategory, coreKeys, type SkillCategory } from "./skills";
 

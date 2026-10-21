@@ -1,3 +1,4 @@
+/** Unit tests for the locale switch URL helpers (`pathParts`, `hrefFor`). */
 import { describe, it, expect } from "vitest";
 import { pathParts, hrefFor } from "./LocaleSwitch";
 

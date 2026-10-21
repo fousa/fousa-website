@@ -1,3 +1,4 @@
+/** Unit tests for `forLabel`, the single source of the "For" column label. */
 import { describe, it, expect } from "vitest";
 import { forLabel } from "./work-display";
 

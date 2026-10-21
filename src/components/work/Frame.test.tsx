@@ -1,3 +1,4 @@
+/** Component tests for `Frame`: per-device wrapper classes and the bare `none` case. */
 import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
 import type { Frame as FrameValue, GalleryShot } from "@/lib/work";

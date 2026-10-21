@@ -1,3 +1,4 @@
+/** Sanity Studio config: project/dataset, schema registry, desk structure, plugins. */
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'

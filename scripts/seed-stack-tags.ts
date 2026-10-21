@@ -1,5 +1,3 @@
-import 'dotenv/config'
-
 /**
  * One-shot seed script: creates the initial set of Stack tag documents in Sanity.
  *
@@ -11,6 +9,8 @@ import 'dotenv/config'
  *
  * Requires SANITY_API_TOKEN in the environment with write permissions.
  */
+import 'dotenv/config'
+
 import {createClient} from '@sanity/client'
 import {apiVersion, dataset, projectId} from '../src/sanity/env'
 

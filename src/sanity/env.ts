@@ -1,3 +1,10 @@
+/**
+ * Public Sanity connection values, read once from the environment.
+ *
+ * `projectId` and `dataset` are required and throw at import time when
+ * missing so a misconfigured deploy fails loudly; `apiVersion` falls back to
+ * a pinned date. `vitest.setup.ts` stubs the public vars for the unit suite.
+ */
 export const apiVersion =
   process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-12-01'
 

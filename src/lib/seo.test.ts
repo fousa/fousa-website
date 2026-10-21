@@ -1,3 +1,4 @@
+/** Unit tests for `altMetadata` (canonical + hreflang alternates). */
 import { describe, it, expect } from "vitest";
 import { altMetadata } from "./seo";
 

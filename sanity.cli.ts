@@ -1,3 +1,4 @@
+/** Sanity CLI config (dataset export, schema extract, typegen). */
 /**
  * Sanity CLI configuration.
  *

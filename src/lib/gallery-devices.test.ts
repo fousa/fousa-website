@@ -1,3 +1,4 @@
+/** Unit tests for the gallery device grouping (`deviceForFrame`, order, labels). */
 import { describe, it, expect } from "vitest";
 import { deviceForFrame, DEVICE_ORDER, DEVICE_LABEL_KEY } from "./gallery-devices";
 

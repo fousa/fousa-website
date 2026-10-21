@@ -1,3 +1,4 @@
+/** Unit tests for the log sort model (`compareProjects`, `sortProjects`, default chain). */
 import { describe, it, expect } from "vitest";
 import {
   sortProjects,

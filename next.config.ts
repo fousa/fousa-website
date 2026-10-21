@@ -1,3 +1,4 @@
+/** Next.js config: Sanity CDN image host and the whitelisted image qualities. */
 import type {NextConfig} from 'next'
 
 const config: NextConfig = {

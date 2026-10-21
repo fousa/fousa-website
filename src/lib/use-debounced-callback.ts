@@ -1,5 +1,3 @@
-import {useCallback, useEffect, useRef} from 'react'
-
 /**
  * A stable callback that defers invoking `fn` until `delay` ms have passed
  * without another call. The most recent `fn` is always used, and any pending
@@ -10,6 +8,8 @@ import {useCallback, useEffect, useRef} from 'react'
  * @param delay - quiet period in milliseconds before `fn` runs
  * @returns a debounced version of `fn` with a stable identity
  */
+import {useCallback, useEffect, useRef} from 'react'
+
 export function useDebouncedCallback<A extends unknown[]>(
   fn: (...args: A) => void,
   delay: number,

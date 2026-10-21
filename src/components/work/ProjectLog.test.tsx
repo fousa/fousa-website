@@ -1,3 +1,4 @@
+/** Component tests for `ProjectLog`: keyboard row expansion and the empty state. */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

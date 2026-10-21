@@ -1,3 +1,4 @@
+/** Unit tests for the work content layer: depth, filters, search, mapping, frame labels. */
 import { describe, it, expect } from "vitest";
 import { projectDepth, matchesFilters, matchesQuery, hasCaseStudy, mapProjectBase, frameLabelKey, type Project, type Filters } from "./work";
 

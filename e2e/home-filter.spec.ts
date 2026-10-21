@@ -1,3 +1,4 @@
+/** E2E: filter the work log by chip and check the URL + row count follow. */
 import { test, expect } from "@playwright/test";
 
 /**

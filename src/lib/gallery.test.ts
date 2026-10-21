@@ -1,3 +1,4 @@
+/** Unit tests for the cross-project gallery helpers (`deviceOf`, filter set). */
 import { describe, it, expect } from "vitest";
 import { deviceOf, GALLERY_FILTERS } from "./gallery";
 

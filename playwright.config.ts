@@ -1,3 +1,4 @@
+/** Playwright config: Chromium only, boots the production build before the E2E suite. */
 import { defineConfig, devices } from "@playwright/test";
 
 /**

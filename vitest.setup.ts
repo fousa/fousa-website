@@ -1,3 +1,4 @@
+/** Vitest setup: jest-dom matchers and stubbed public Sanity env vars. */
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterEach } from "vitest";

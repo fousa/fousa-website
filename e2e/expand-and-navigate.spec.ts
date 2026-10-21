@@ -1,3 +1,4 @@
+/** E2E: expand a log row and follow its case-study CTA when one exists (data-driven). */
 import { test, expect } from "@playwright/test";
 
 /**

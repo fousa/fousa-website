@@ -1,3 +1,4 @@
+/** E2E: toggle the theme and switch locale without losing scroll position. */
 import { test, expect } from "@playwright/test";
 
 /**
