@@ -1,10 +1,9 @@
 /**
  * GROQ query for everything the about page renders.
  *
- * Three sub-queries combined:
+ * Two sub-queries combined:
  *   - profile: full Profile singleton (bio, portrait asset, socials, CV)
  *   - timeline: every TimelineEntry ordered most-recent-first (career timeline)
- *   - ownApps: every Project with engagement = "owner", most-recent first
  *
  * Single round-trip — Sanity handles the multi-query in one request.
  */
@@ -46,15 +45,6 @@ export const ABOUT_QUERY = defineQuery(`
       endDate,
       description,
       location
-    },
-    "ownApps": *[_type == "project" && engagement == "owner"] | order(year desc) {
-      _id,
-      name,
-      "slug": slug.current,
-      deck,
-      year,
-      state,
-      liveUrl
     }
   }
 `)
