@@ -26,7 +26,7 @@ import type {
 } from "@/sanity.types";
 import { CareerTimeline } from "@/components/about/career-section";
 import { Skills } from "@/components/about/Skills";
-import { getSkills } from "@/lib/skills";
+import { getSkills } from "@/lib/skills-data";
 import { localizedHref } from "@/lib/href";
 import { altMetadata } from "@/lib/seo";
 import { OutboundLink } from "@/components/layout/OutboundLink";

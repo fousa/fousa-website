@@ -12,7 +12,7 @@ import type { Metadata } from "next";
 import { isLocale } from "@/i18n/config";
 import { t } from "@/i18n/messages";
 import { altMetadata } from "@/lib/seo";
-import { getGalleryShots } from "@/lib/gallery";
+import { getGalleryShots } from "@/lib/gallery-data";
 import { GalleryMasonry } from "@/components/gallery/GalleryMasonry";
 
 export async function generateMetadata({

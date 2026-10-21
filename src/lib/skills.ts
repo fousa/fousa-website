@@ -7,9 +7,6 @@
  * skillCategory it references (with its own key, translatable title, and display
  * order) or null when unclassified. Backed by SKILLS_QUERY.
  */
-import {fetchSanity} from '@/sanity/fetch'
-import {SKILLS_QUERY} from '@/sanity/queries/skills'
-import type {SKILLS_QUERY_RESULT} from '@/sanity.types'
 
 /** Translatable label, EN always present, NL optional (falls back to EN). */
 export type I18nTitle = {en: string; nl: string | null}
@@ -129,34 +126,4 @@ export function groupByCategory(skills: Skill[]): SkillGroup[] {
       return a.order.localeCompare(c.order) || (a.title?.en ?? '').localeCompare(c.title?.en ?? '')
     })
     .map(({key, title, skills}) => ({key, title, skills}))
-}
-
-/**
- * Fetch every stack tag used by at least one project, most-used first.
- * Rows missing a slug or name are dropped — a skill with no filter key can't
- * be linked, and one with no display name has nothing to show. A category
- * reference is kept only when it resolves to a key; otherwise the skill is
- * treated as uncategorized.
- *
- * @returns the usable skills, ordered count desc then name asc
- */
-export async function getSkills(): Promise<Skill[]> {
-  const rows = await fetchSanity<SKILLS_QUERY_RESULT>(SKILLS_QUERY)
-  if (!rows) return []
-  return rows
-    .filter((r): r is (typeof rows)[number] & {key: string; name: string} =>
-      Boolean(r.key) && Boolean(r.name),
-    )
-    .map((r) => {
-      const cat = r.category
-      const category: SkillCategory | null =
-        cat && cat.key
-          ? {
-              key: cat.key,
-              title: {en: cat.title?.en ?? cat.key, nl: cat.title?.nl ?? null},
-              order: cat.order ?? '',
-            }
-          : null
-      return {key: r.key, name: r.name, count: r.count ?? 0, category}
-    })
 }

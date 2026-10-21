@@ -1,11 +1,12 @@
-import {createClient} from 'next-sanity'
-import {apiVersion, dataset, projectId} from './env'
-
 /**
  * Sanity client — uses a viewer-only API token (`SANITY_API_TOKEN`) because
  * the dataset is private. The token should have "Viewer" permissions only;
  * never use a write-capable token here.
  */
+import 'server-only'
+import {createClient} from 'next-sanity'
+import {apiVersion, dataset, projectId} from './env'
+
 export const client = createClient({
   apiVersion,
   dataset,

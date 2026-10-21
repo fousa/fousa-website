@@ -6,7 +6,7 @@
 import {OgCard} from '@/og/OgCard'
 import {ogResponse, ogSize} from '@/og/respond'
 import {getCaseShots, getFeaturedShots} from '@/lib/og-shots'
-import {getProjectDetail} from '@/lib/work'
+import {getProjectDetail} from '@/lib/work-data'
 import {isLocale, defaultLocale} from '@/i18n/config'
 import {t} from '@/i18n/messages'
 

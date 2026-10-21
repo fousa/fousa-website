@@ -6,11 +6,7 @@
  * device group used by the page's filter. Reuses the detail page's image
  * pipeline (`mapGalleryShot`) — no second image loader.
  */
-import {fetchSanity} from '@/sanity/fetch'
-import {GALLERY_SHOTS_QUERY} from '@/sanity/queries/gallery'
-import {mapGalleryShot, type GalleryShot} from '@/lib/work'
-import type {Locale} from '@/i18n/config'
-import type {GALLERY_SHOTS_QUERY_RESULT} from '@/sanity.types'
+import type {GalleryShot} from '@/lib/work'
 
 /** Coarse device buckets the cross-project gallery filters by. */
 export type DeviceGroup = 'iphone' | 'ipad' | 'watch' | 'tv' | 'web' | 'other'
@@ -56,32 +52,3 @@ export function deviceOf(frame: string): DeviceGroup {
 
 /** Filter chips, in display order (Apple hardware first). `all` clears the device filter. */
 export const GALLERY_FILTERS: ('all' | DeviceGroup)[] = ['all', 'iphone', 'ipad', 'watch', 'tv', 'web', 'other']
-
-/**
- * Fetch every project's gallery shots, flattened into one ordered list. Project
- * order follows the log (newest first); shots keep their authored order within a
- * project. Each shot is tagged with its project + device group.
- *
- * @param locale - active locale for resolving shot captions
- * @returns the flattened cross-project shot list (empty when none exist)
- */
-export async function getGalleryShots(locale: Locale): Promise<GalleryItem[]> {
-  const rows = await fetchSanity<GALLERY_SHOTS_QUERY_RESULT>(GALLERY_SHOTS_QUERY)
-  if (!rows) return []
-  return rows.flatMap((project) => {
-    const depth = project.hasBody ? 'full' : 'gallery'
-    return (project.gallery ?? []).flatMap((entry) => {
-      const shot = mapGalleryShot(entry, locale)
-      if (!shot) return []
-      return [
-        {
-          projectName: project.projectName ?? '',
-          slug: project.slug ?? '',
-          depth,
-          device: deviceOf(shot.frame),
-          shot,
-        },
-      ]
-    })
-  })
-}

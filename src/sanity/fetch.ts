@@ -8,6 +8,7 @@
  * Use this from Server Components only. Client Components should never
  * read from Sanity directly; pass data down as props.
  */
+import 'server-only'
 import {client} from './client'
 
 /**
