@@ -36,6 +36,8 @@ const GRID_COLUMNS: Record<DeviceKind, string> = {
   ipad: "grid-cols-2 sm:[grid-template-columns:repeat(auto-fill,280px)]",
   iphone: "grid-cols-3 sm:[grid-template-columns:repeat(auto-fill,180px)]",
   watch: "grid-cols-3 sm:[grid-template-columns:repeat(auto-fill,150px)]",
+  tv: "grid-cols-2 sm:[grid-template-columns:repeat(auto-fill,560px)]",
+  mac: "grid-cols-2 sm:[grid-template-columns:repeat(auto-fill,560px)]",
   browser: "grid-cols-2 sm:[grid-template-columns:repeat(auto-fill,560px)]",
   other: "grid-cols-2 sm:[grid-template-columns:repeat(auto-fill,560px)]",
 };

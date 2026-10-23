@@ -8,6 +8,8 @@ describe("deviceForFrame", () => {
     expect(deviceForFrame("tablet-portrait")).toBe("ipad");
     expect(deviceForFrame("phone")).toBe("iphone");
     expect(deviceForFrame("watch")).toBe("watch");
+    expect(deviceForFrame("tv")).toBe("tv");
+    expect(deviceForFrame("mac")).toBe("mac");
     expect(deviceForFrame("browser")).toBe("browser");
     expect(deviceForFrame("none")).toBe("other");
   });
