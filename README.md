@@ -55,7 +55,8 @@ variants only print what would change): `pnpm seed:stack-tags`,
 ```
 src/
 ├── app/                 # Next App Router
-│   ├── [locale]/        #   home, about, gallery, game, work/[slug], not-found
+│   ├── [locale]/        #   home, about, gallery, game, work/[slug], not-found,
+│   │                    #   winter/privacy (the Winter app's privacy policy)
 │   │                    #   (each shareable route owns an opengraph-image.tsx)
 │   ├── studio/          #   embedded Sanity Studio (/studio)
 │   ├── api/revalidate/  #   Sanity webhook → ISR
