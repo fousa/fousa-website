@@ -3,7 +3,7 @@
  *
  * Dereferences employer (so we can show the name in the row) and stack tags
  * (so we can render chips by category). Ordered most-recent-first (year
- * descending, name ascending) — matches what the homepage table needs out of the box.
+ * descending, then most recently updated) — matches the homepage table's default sort.
  *
  * Includes the lightweight case-study fields the expanded log row needs (deck,
  * links). ~65 documents, so the payload stays small.
@@ -22,8 +22,9 @@
 import {defineQuery} from 'next-sanity'
 
 export const PROJECTS_QUERY = defineQuery(`
-  *[_type == "project" && visible != false] | order(year desc, name asc) {
+  *[_type == "project" && visible != false] | order(year desc, _updatedAt desc) {
     _id,
+    "updatedAt": _updatedAt,
     name,
     "slug": slug.current,
     year,

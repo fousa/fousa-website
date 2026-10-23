@@ -158,6 +158,8 @@ export type Project = {
    * hand-built fixtures; mapped rows always set both to a value or null.
    */
   links?: { live: string | null; github: string | null }
+  /** Sanity `_updatedAt` (ISO timestamp) — breaks year ties in the log sort. Set only by the log mapper. */
+  updatedAt?: string | null
   /**
    * Precomputed lowercase search haystack (name + deck + flattened body),
    * built server-side in the log query. The client substring-matches against
@@ -335,7 +337,7 @@ export type SortKey = 'project' | 'year' | 'state'
 export type SortDir = 'asc' | 'desc'
 export type Sort = {key: SortKey; dir: SortDir}
 
-/** Page default: newest projects first (year ties break on state, then name). */
+/** Page default: newest projects first (year ties break on most recently updated, then name). */
 export const DEFAULT_SORT: Sort = {key: 'year', dir: 'desc'}
 
 /** State ordering for sort purposes: active first, then maintained, archived, cancelled. */
@@ -348,7 +350,7 @@ const STATE_RANK: Record<State, number> = {
 
 /**
  * Compare two projects for a given sort. Ties always fall back to the default
- * priority chain (year desc → state rank → name asc) so ordering is
+ * priority chain (year desc → updated desc → name asc) so ordering is
  * deterministic regardless of the chosen key/direction.
  */
 export function compareProjects(a: Project, b: Project, sort: Sort): number {
@@ -370,7 +372,10 @@ export function compareProjects(a: Project, b: Project, sort: Sort): number {
   const ay = effectiveEndYear(a)
   const by = effectiveEndYear(b)
   if (ay !== by) return ay < by ? 1 : -1 // newer (larger effective end) first
-  if (a.state !== b.state) return STATE_RANK[a.state] - STATE_RANK[b.state]
+  // ISO timestamps compare lexically; a missing one sorts as oldest.
+  const au = a.updatedAt ?? ''
+  const bu = b.updatedAt ?? ''
+  if (au !== bu) return au < bu ? 1 : -1 // most recently updated first
   return a.name.localeCompare(b.name)
 }
 
@@ -454,6 +459,7 @@ export function toProject(
       .map((g) => mapGalleryShot(g, locale))
       .filter((s): s is GalleryShot => s !== null),
     searchText: row.searchText ?? '',
+    updatedAt: row.updatedAt ?? null,
   }
 }
 

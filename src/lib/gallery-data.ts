@@ -12,7 +12,7 @@ import {deviceOf, type GalleryItem} from './gallery'
 
 /**
  * Fetch every project's gallery shots, flattened into one ordered list. Project
- * order follows the log (newest first); shots keep their authored order within a
+ * order follows the log (newest year first, then most recently updated); shots keep their authored order within a
  * project. Each shot is tagged with its project + device group.
  *
  * @param locale - active locale for resolving shot captions

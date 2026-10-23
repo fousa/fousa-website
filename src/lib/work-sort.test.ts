@@ -34,14 +34,15 @@ function makeProject(
 }
 
 describe("sortProjects", () => {
-  it("default: newest year first, then state rank, then name", () => {
+  it("default: newest year first, then most recently updated, then name", () => {
     const list = [
-      makeProject("Beta", 2022, "archived"),
-      makeProject("Alpha", 2024, "active"),
-      makeProject("Gamma", 2024, "archived"),
+      { ...makeProject("Beta", 2022, "archived"), updatedAt: "2026-10-01T00:00:00Z" },
+      { ...makeProject("Alpha", 2024, "archived"), updatedAt: "2026-01-01T00:00:00Z" },
+      { ...makeProject("Gamma", 2024, "archived"), updatedAt: "2026-06-01T00:00:00Z" },
+      makeProject("Delta", 2024, "archived"), // no timestamp → oldest in its year
     ];
     const out = sortProjects(list, DEFAULT_SORT).map((x) => x.name);
-    expect(out).toEqual(["Alpha", "Gamma", "Beta"]); // 2024 active, 2024 archived, 2022
+    expect(out).toEqual(["Gamma", "Alpha", "Delta", "Beta"]);
   });
 
   it("sorting by project asc is alphabetical", () => {
@@ -69,7 +70,7 @@ describe("sortProjects", () => {
       makeProject("B", 2024, "active"),
       makeProject("A", 2024, "active"),
     ];
-    // same year, same state → name asc
+    // same year, no updatedAt → name asc
     expect(
       sortProjects(list, { key: "year", dir: "desc" }).map((x) => x.name),
     ).toEqual(["A", "B"]);
