@@ -1,6 +1,6 @@
 /**
  * Dynamic sitemap — lists every locale variant of the homepage, about page,
- * the Winter privacy policy, and all case study slugs fetched from Sanity.
+ * the Winter and Zand privacy policies, and all case study slugs fetched from Sanity.
  * English is unprefixed (default); Dutch is under /nl. Revalidated via ISR.
  */
 import type {MetadataRoute} from 'next'
@@ -22,6 +22,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {url: `${SITE_URL}/nl/gallery`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.7},
     {url: `${SITE_URL}/winter/privacy`, lastModified: new Date('2026-10-23'), changeFrequency: 'yearly' as const, priority: 0.3},
     {url: `${SITE_URL}/nl/winter/privacy`, lastModified: new Date('2026-10-23'), changeFrequency: 'yearly' as const, priority: 0.2},
+    {url: `${SITE_URL}/zand/privacy`, lastModified: new Date('2026-10-27'), changeFrequency: 'yearly' as const, priority: 0.3},
+    {url: `${SITE_URL}/nl/zand/privacy`, lastModified: new Date('2026-10-27'), changeFrequency: 'yearly' as const, priority: 0.2},
   ]
 
   const projectPages = slugs
