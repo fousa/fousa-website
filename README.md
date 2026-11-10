@@ -43,6 +43,8 @@ For CI, set `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, and
 | `pnpm backup` | Export the production dataset to `backups/` |
 | `pnpm cv:pdf` | Render `cv/cv-en.html` to `public/cv-en.pdf` with headless Chrome |
 | `pnpm cv:upload[:dry]` | Upload that PDF to Sanity as the profile's English CV (needs `pnpm sanity login`) |
+| `pnpm kmo:pdf[:dry]` | Render the KMO sales sheets from the KMO page in Sanity and upload them to it (`:dry` renders to a temp folder only; needs `pnpm sanity login`) |
+| `pnpm kmo:seed[:dry]` | One-shot: fill empty KMO page fields with the original copy (`scripts/kmo-page-content.ts`) |
 
 Content maintenance (one-shot, dotenv-loaded from `.env.local`; the `:dry`
 variants only print what would change): `pnpm seed:stack-tags`,
@@ -58,6 +60,7 @@ src/
 │   ├── [locale]/        #   home, about, gallery, game, work/[slug], not-found,
 │   │                    #   winter/privacy (the Winter app's privacy policy)
 │   │                    #   zand/privacy (the Zand app's privacy policy)
+│   │                    #   kmo (unlisted, noindex KMO packages page, /nl/kmo)
 │   │                    #   (each shareable route owns an opengraph-image.tsx)
 │   ├── studio/          #   embedded Sanity Studio (/studio)
 │   ├── api/revalidate/  #   Sanity webhook → ISR
@@ -81,6 +84,7 @@ src/
 └── proxy.ts             # i18n + redirect middleware (Next "proxy")
 
 cv/                      # the CV as printable HTML (source of public/cv-en.pdf)
+kmo/mocks/               # device-mock HTML used on the KMO sales sheets
 e2e/                     # Playwright specs
 ```
 
@@ -101,6 +105,10 @@ top of the Studio nav):
 - **Site settings** — contact email, ordered social links, meta description, OG image.
 - **Availability** — status (`available` / `after-hours` / `unavailable`) and a message line.
 - **Empty states** — optional per-filter-combo overrides for the project-log empty state.
+- **KMO page** — everything on the unlisted `/nl/kmo` page: intro, packages and
+  prices, steps, reasons, FAQ, contact (email falls back to Site settings). After
+  changing anything that is on a sales sheet, run `pnpm kmo:pdf` to re-render and
+  re-upload the PDFs; no commit needed.
 
 Projects are added under **Project**. Set `engagement`
 (freelance / full-time / student), pick the matching employer

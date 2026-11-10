@@ -211,6 +211,85 @@ export type TimelineEntry = {
   location?: string;
 };
 
+export type SanityFileAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
+};
+
+export type KmoPage = {
+  _id: string;
+  _type: "kmoPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  intro?: string;
+  overviewNote?: string;
+  packages?: Array<{
+    name?: string;
+    shortName?: string;
+    summary?: string;
+    audience?: string;
+    features?: Array<{
+      name?: string;
+      detail?: string;
+      sheetOnly?: boolean;
+      _type: "feature";
+      _key: string;
+    }>;
+    priceFrom?: number;
+    priceTo?: number;
+    maintenanceFrom?: number;
+    mock?: "phone" | "portal" | "tool";
+    sheetHeadline?: string;
+    sheetIntro?: string;
+    painPoints?: Array<string>;
+    stepNotes?: Array<string>;
+    ownershipNote?: string;
+    sheetPdf?: {
+      asset?: SanityFileAssetReference;
+      media?: unknown;
+      _type: "file";
+    };
+    _type: "kmoPackage";
+    _key: string;
+  }>;
+  steps?: Array<{
+    title?: string;
+    body?: string;
+    _type: "step";
+    _key: string;
+  }>;
+  reasons?: Array<{
+    title?: string;
+    body?: string;
+    linkLabel?: string;
+    linkHref?: string;
+    _type: "reason";
+    _key: string;
+  }>;
+  faq?: Array<{
+    question?: string;
+    answer?: string;
+    _type: "faqItem";
+    _key: string;
+  }>;
+  contactTitle?: string;
+  contactBadge?: string;
+  contactBody?: string;
+  email?: string;
+  phone?: string;
+  allSheetsPdf?: {
+    asset?: SanityFileAssetReference;
+    media?: unknown;
+    _type: "file";
+  };
+};
+
 export type EmptyStates = {
   _id: string;
   _type: "emptyStates";
@@ -270,13 +349,6 @@ export type Availability = {
     nl?: string;
   };
   nextOpening?: string;
-};
-
-export type SanityFileAssetReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
 };
 
 export type Profile = {
@@ -499,10 +571,11 @@ export type AllSanitySchemaTypes =
   | StackTag
   | SkillCategory
   | TimelineEntry
+  | SanityFileAssetReference
+  | KmoPage
   | EmptyStates
   | SiteSettings
   | Availability
-  | SanityFileAssetReference
   | Profile
   | SanityImagePaletteSwatch
   | SanityImagePalette
@@ -874,6 +947,73 @@ export type GALLERY_SHOTS_QUERY_RESULT = Array<{
   }> | null;
 }>;
 
+// Source: src/sanity/queries/kmo.ts
+// Variable: KMO_PAGE_QUERY
+// Query: *[_type == "kmoPage" && _id == "kmoPage"][0]{    eyebrow,    title,    description,    intro,    overviewNote,    packages[]{      _key,      name,      summary,      audience,      features[]{ _key, name, detail, sheetOnly },      priceFrom,      priceTo,      maintenanceFrom,      mock,      "pdfFile": sheetPdf.asset->originalFilename    },    steps[]{ _key, title, body },    reasons[]{ _key, title, body, linkLabel, linkHref },    faq[]{ _key, question, answer },    contactTitle,    contactBadge,    contactBody,    "email": coalesce(email, *[_id == "siteSettings"][0].email),    phone,    "allPdfFile": allSheetsPdf.asset->originalFilename  }
+export type KMO_PAGE_QUERY_RESULT = {
+  eyebrow: string | null;
+  title: string | null;
+  description: string | null;
+  intro: string | null;
+  overviewNote: string | null;
+  packages: Array<{
+    _key: string;
+    name: string | null;
+    summary: string | null;
+    audience: string | null;
+    features: Array<{
+      _key: string;
+      name: string | null;
+      detail: string | null;
+      sheetOnly: boolean | null;
+    }> | null;
+    priceFrom: number | null;
+    priceTo: number | null;
+    maintenanceFrom: number | null;
+    mock: "phone" | "portal" | "tool" | null;
+    pdfFile: string | null;
+  }> | null;
+  steps: Array<{
+    _key: string;
+    title: string | null;
+    body: string | null;
+  }> | null;
+  reasons: Array<{
+    _key: string;
+    title: string | null;
+    body: string | null;
+    linkLabel: string | null;
+    linkHref: string | null;
+  }> | null;
+  faq: Array<{
+    _key: string;
+    question: string | null;
+    answer: string | null;
+  }> | null;
+  contactTitle: string | null;
+  contactBadge: string | null;
+  contactBody: string | null;
+  email: string | null;
+  phone: string | null;
+  allPdfFile: string | null;
+} | null;
+
+// Source: src/sanity/queries/kmo.ts
+// Variable: KMO_OG_QUERY
+// Query: *[_type == "kmoPage" && _id == "kmoPage"][0]{ eyebrow, title, description }
+export type KMO_OG_QUERY_RESULT = {
+  eyebrow: string | null;
+  title: string | null;
+  description: string | null;
+} | null;
+
+// Source: src/sanity/queries/kmo.ts
+// Variable: KMO_PDF_QUERY
+// Query: *[_type == "kmoPage" && _id == "kmoPage"][0]{    "url": select(      allSheetsPdf.asset->originalFilename == $file => allSheetsPdf.asset->url,      packages[sheetPdf.asset->originalFilename == $file][0].sheetPdf.asset->url    )  }
+export type KMO_PDF_QUERY_RESULT = {
+  url: string | null;
+} | null;
+
 // Source: src/sanity/queries/og-shots.ts
 // Variable: FEATURED_SHOTS_QUERY
 // Query: *[_type == "project" && visible != false && count(gallery) > 0]    | order((state == "active") desc, year desc)[0...$n]{      "frame": gallery[0].frame,      "image": gallery[0].image    }
@@ -1213,6 +1353,9 @@ declare module "@sanity/client" {
     '\n  *[_type == "project" && defined(slug.current) && visible != false]{\n    "slug": slug.current\n  }\n': CASE_STUDY_SLUGS_QUERY_RESULT;
     '\n  *[_id == "emptyStates"][0]{\n    overrides[]{\n      filters,\n      headline,\n      body\n    }\n  }\n': EMPTY_STATES_QUERY_RESULT;
     '\n  *[_type == "project" && visible != false && count(gallery) > 0] | order(year desc, _updatedAt desc) {\n    "slug": slug.current,\n    "projectName": name,\n    "hasBody": count(body.en) > 0,\n    "gallery": gallery[]{\n      _key,\n      frame,\n      caption,\n      "image": image{\n        ...,\n        "dimensions": asset->metadata.dimensions\n      }\n    }\n  }\n': GALLERY_SHOTS_QUERY_RESULT;
+    '\n  *[_type == "kmoPage" && _id == "kmoPage"][0]{\n    eyebrow,\n    title,\n    description,\n    intro,\n    overviewNote,\n    packages[]{\n      _key,\n      name,\n      summary,\n      audience,\n      features[]{ _key, name, detail, sheetOnly },\n      priceFrom,\n      priceTo,\n      maintenanceFrom,\n      mock,\n      "pdfFile": sheetPdf.asset->originalFilename\n    },\n    steps[]{ _key, title, body },\n    reasons[]{ _key, title, body, linkLabel, linkHref },\n    faq[]{ _key, question, answer },\n    contactTitle,\n    contactBadge,\n    contactBody,\n    "email": coalesce(email, *[_id == "siteSettings"][0].email),\n    phone,\n    "allPdfFile": allSheetsPdf.asset->originalFilename\n  }\n': KMO_PAGE_QUERY_RESULT;
+    '\n  *[_type == "kmoPage" && _id == "kmoPage"][0]{ eyebrow, title, description }\n': KMO_OG_QUERY_RESULT;
+    '\n  *[_type == "kmoPage" && _id == "kmoPage"][0]{\n    "url": select(\n      allSheetsPdf.asset->originalFilename == $file => allSheetsPdf.asset->url,\n      packages[sheetPdf.asset->originalFilename == $file][0].sheetPdf.asset->url\n    )\n  }\n': KMO_PDF_QUERY_RESULT;
     '\n  *[_type == "project" && visible != false && count(gallery) > 0]\n    | order((state == "active") desc, year desc)[0...$n]{\n      "frame": gallery[0].frame,\n      "image": gallery[0].image\n    }\n': FEATURED_SHOTS_QUERY_RESULT;
     '\n  *[_type == "project" && slug.current == $slug && visible != false][0]{\n    "shots": gallery[0..3]{\n      "frame": frame,\n      "image": image\n    }\n  }\n': CASE_SHOTS_QUERY_RESULT;
     '\n  *[_id == "profile"][0]{\n    name,\n    tagline,\n    roleLine,\n    filterIntro,\n    aboutHeadline,\n    bio,\n    "portraitUrl": portrait.asset->url,\n    beyondCode[]{\n      title,\n      body\n    },\n    location,\n    email,\n    socialLinks,\n    "cvEnUrl": cvEn.asset->url,\n    "cvNlUrl": cvNl.asset->url,\n    vatNumber,\n    copyrightYear\n  }\n': PROFILE_QUERY_RESULT;

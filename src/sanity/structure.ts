@@ -16,7 +16,7 @@ import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
  * Document creation for these types is also blocked in sanity.config.ts via
  * the `actions` resolver (set up at the end of this file's accompanying changes).
  */
-const SINGLETONS = ['profile', 'availability', 'siteSettings', 'emptyStates'] as const
+const SINGLETONS = ['profile', 'availability', 'siteSettings', 'emptyStates', 'kmoPage'] as const
 
 export const structure: StructureResolver = (S, context) =>
   S.list()
@@ -58,6 +58,15 @@ export const structure: StructureResolver = (S, context) =>
             .id('emptyStates')
             .schemaType('emptyStates')
             .documentId('emptyStates')
+        ),
+      S.listItem()
+        .title('KMO page')
+        .id('kmoPage')
+        .child(
+          S.editor()
+            .id('kmoPage')
+            .schemaType('kmoPage')
+            .documentId('kmoPage')
         ),
       S.divider(),
       // Collections — Sanity's default list views

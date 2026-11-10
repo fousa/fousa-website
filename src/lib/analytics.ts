@@ -36,7 +36,16 @@ type Events = {
   glide_open: { locale: string };
   glide_close: { seconds: number; runs: number; locale: string };
   outbound_click: {
-    kind: "email" | "github" | "linkedin" | "bluesky" | "instagram" | "cv" | "live";
+    kind:
+      | "email"
+      | "phone"
+      | "github"
+      | "linkedin"
+      | "bluesky"
+      | "instagram"
+      | "cv"
+      | "pdf"
+      | "live";
     href: string;
     locale: string;
   };

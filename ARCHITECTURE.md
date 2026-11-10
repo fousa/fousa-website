@@ -48,6 +48,11 @@ and four collections.
   localized message; drives the coloured dot in the About contact panel.
 - **Site settings** — email, ordered social links, localized meta description, OG override.
 - **Empty states** — optional per-filter-combo overrides for the project-log empty state.
+- **KMO page** — all content of the unlisted `/nl/kmo` page: intro, packages
+  (prices, features, device mock, sales-sheet copy), steps, reasons, FAQ and the
+  contact panel (email falls back to Site settings). `pnpm kmo:pdf` renders the
+  sales sheets from it (`lib/kmo-sheet.ts` + `kmo/mocks/*.html`) and uploads them
+  back into its file fields; `/kmo/<file>.pdf` serves them with a noindex header.
 
 **Collections**
 - **Timeline entry** — a row on the About career list (freelance / employed /
@@ -109,6 +114,11 @@ paths to `[locale]=en` internally and 308-redirects to canonical forms.
 - `/<slug>` (and `/nl/<slug>`) → 308 to `/work/<slug>` — collapses a legacy duplicate route.
   Top-level routes are guarded by `RESERVED` in `proxy.ts` so this collapse never swallows them.
 - `/en/...` → 308 to the unprefixed equivalent.
+- `/nl/kmo` → the unlisted KMO page (Dutch only; `/kmo` redirects there). Not in the
+  nav or sitemap, `noindex` via meta robots and an `X-Robots-Tag` header (see
+  `next.config.ts`). Not disallowed in robots.txt on purpose: crawlers must fetch
+  it to see the noindex. `/kmo/<file>.pdf` → the sales sheets, proxied from the
+  Sanity CDN by `app/kmo/[file]/route.ts` with the same header.
 - `/studio` → embedded Sanity Studio (no locale prefix). `/api/revalidate` → webhook.
 
 Internal links use `localizedHref(locale, path)` (`lib/href.ts`); metadata uses

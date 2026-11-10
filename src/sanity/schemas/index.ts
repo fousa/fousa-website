@@ -11,6 +11,7 @@ import {profile} from './profile'
 import {availability} from './availability'
 import {siteSettings} from './site-settings'
 import {emptyStates} from './empty-states'
+import {kmoPage} from './kmo-page'
 import {timelineEntry} from './timeline-entry'
 import {skillCategory} from './skill-category'
 import {stackTag} from './stack-tag'
@@ -22,6 +23,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   availability,
   siteSettings,
   emptyStates,
+  kmoPage,
   // Collections (many documents, listed in the Studio sidebar)
   timelineEntry,
   skillCategory,
