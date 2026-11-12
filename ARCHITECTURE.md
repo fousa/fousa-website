@@ -384,3 +384,5 @@ both on push and PR.
   count on the `/gallery` page), `locale_switch`, `theme_toggle`,
   `outbound_click`, `glide_open`, and `glide_close` (records `seconds` played and
   `runs` flown when the `/game` page unmounts).
+- **Speed Insights** — Vercel Speed Insights (`@vercel/speed-insights`), mounted next
+  to Analytics in the locale layout; reports real-user Core Web Vitals per route.

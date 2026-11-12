@@ -17,6 +17,7 @@ import type {
   SITE_SETTINGS_QUERY_RESULT,
 } from "@/sanity.types";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { TopBar } from "@/components/layout/TopBar";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -101,6 +102,7 @@ export default async function LocaleLayout({
       <div className="flex-1">{children}</div>
       <SiteFooter locale={locale} />
       <Analytics />
+      <SpeedInsights />
     </div>
   );
 }
