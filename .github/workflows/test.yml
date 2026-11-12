@@ -2,7 +2,7 @@ name: test
 on: [push, pull_request]
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Build + E2E need Sanity access. Set these as repository secrets; the unit
     # suite stubs them, so it runs without configuration.
     env:
