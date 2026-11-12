@@ -4,9 +4,7 @@
       "Bash(*)",
       "Read(*)",
       "Write(*)",
-      "Edit(*)",
-      "Glob(*)",
-      "Grep(*)"
+      "Edit(*)"
     ]
   }
 }
